@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="hi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML एक्सपर्ट बनने का इंटरैक्टिव रोडमैप</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals with Tech Blue -->
+    <!-- Application Structure Plan: The application uses a vertical, single-page scrolling structure with a sticky top navigation to mirror the linear, step-by-step nature of the source roadmap. This is the most intuitive flow for a learning path. Each of the 5 steps is a distinct section. Within each section, content is organized into interactive accordion cards to prevent information overload and allow users to explore topics at their own pace. A bar chart at the top visualizes the time commitment for each phase, providing an immediate, high-level overview. This structure was chosen to make the dense textual information digestible and easily navigable, prioritizing user-guided exploration over a static document. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Roadmap with 5 steps and estimated durations. Goal: Show the overall time commitment at a glance. Viz/Method: Horizontal Bar Chart. Interaction: Hovering over bars shows a tooltip with the exact duration range. Justification: A bar chart is excellent for comparing the discrete values (durations) of different categories (steps), making it easy to see which phases are longer. Library: Chart.js (Canvas).
+        2. Report Info: Hierarchical content within each step (e.g., चरण 1 -> गणित -> Linear Algebra). Goal: Organize complex information hierarchically and prevent cognitive overload. Viz/Method: Interactive Accordion Cards. Interaction: Clicking a topic header expands to show details. Justification: Accordions are ideal for progressive disclosure, allowing users to focus on one topic at a time without being overwhelmed by the full text of the roadmap. Library/Method: HTML/CSS/JS with Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion-button.active + .accordion-content {
+            max-height: 1000px;
+        }
+        .accordion-button .arrow {
+            transition: transform 0.3s ease-in-out;
+        }
+        .accordion-button.active .arrow {
+            transform: rotate(90deg);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-blue-600">AI/ML रोडमैप</h1>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="#charan-1" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">चरण 1</a>
+                    <a href="#charan-2" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">चरण 2</a>
+                    <a href="#charan-3" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">चरण 3</a>
+                    <a href="#charan-4" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">चरण 4</a>
+                    <a href="#charan-5" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">चरण 5</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
+                        <option value="#home">नेविगेट करें</option>
+                        <option value="#charan-1">चरण 1</option>
+                        <option value="#charan-2">चरण 2</option>
+                        <option value="#charan-3">चरण 3</option>
+                        <option value="#charan-4">चरण 4</option>
+                        <option value="#charan-5">चरण 5</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12" id="home">
+        
+        <section class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">AI, ML, DL & Data Science एक्सपर्ट बनें</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                यह इंटरैक्टिव रोडमैप आपको एक मज़बूत नींव बनाने से लेकर एडवांस टॉपिक्स में महारत हासिल करने तक का रास्ता दिखाएगा। हर चरण को क्रम से पूरा करना आपकी सफलता के लिए महत्वपूर्ण है।
+            </p>
+        </section>
+
+        <section class="mb-12 md:mb-16">
+            <h3 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">प्रत्येक चरण में अनुमानित समय</h3>
+            <p class="text-center text-gray-600 mb-8">यह चार्ट आपको प्रत्येक चरण के लिए आवश्यक अनुमानित समय की तुलना करने में मदद करता है। ध्यान दें कि चरण 4 और 5 निरंतर सीखने की प्रक्रिया हैं।</p>
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                <div class="chart-container">
+                    <canvas id="durationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <div id="charan-1" class="pt-20 -mt-16">
+            <section class="mb-12">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-3 py-1 rounded-full">चरण 1</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-2">बुनियाद मज़बूत करें</h3>
+                    <p class="text-gray-600 mt-2">यह चरण सबसे महत्वपूर्ण है। इन कॉन्सेप्ट्स के बिना आगे बढ़ना मुश्किल होगा। (अवधि: 3-4 महीने)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">📊 गणित (Mathematics)</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Linear Algebra:</strong> Vectors, Matrices, Eigenvalues</li>
+                                <li><strong>Calculus:</strong> Derivatives, Gradients</li>
+                                <li><strong>Probability & Statistics:</strong> Mean, Median, Variance, Distributions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">💻 प्रोग्रामिंग (Programming)</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Python (Must Have):</strong> सीखें और माहिर बनें।</li>
+                                <li><strong>Libraries:</strong> NumPy, Pandas, Matplotlib & Seaborn</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">🛠️ ज़रूरी टूल्स (Essential Tools)</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Jupyter Notebooks / Google Colab</strong></li>
+                                <li><strong>Git & GitHub</strong></li>
+                                <li><strong>SQL (Database)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div id="charan-2" class="pt-20 -mt-16">
+             <section class="mb-12">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-3 py-1 rounded-full">चरण 2</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-2">Data Science और Machine Learning</h3>
+                    <p class="text-gray-600 mt-2">अब आप असली डेटा पर काम करना और मॉडल्स बनाना शुरू करेंगे। (अवधि: 4-6 महीने)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">🔄 Data Science प्रक्रिया</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Data Collection:</strong> Web Scraping, APIs</li>
+                                <li><strong>Data Cleaning & Preprocessing:</strong> Missing Values, Outliers</li>
+                                <li><strong>Exploratory Data Analysis (EDA)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">🧠 Machine Learning के सिद्धांत</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Supervised Learning:</strong> Regression, Classification</li>
+                                <li><strong>Unsupervised Learning:</strong> Clustering, Dimensionality Reduction</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">⚙️ मॉडल बनाना और सुधारना</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Feature Engineering</strong></li>
+                                <li><strong>Model Evaluation Metrics:</strong> Accuracy, Precision, Recall</li>
+                                <li><strong>Hyperparameter Tuning</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="charan-3" class="pt-20 -mt-16">
+            <section class="mb-12">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-3 py-1 rounded-full">चरण 3</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-2">Deep Learning में गहराई</h3>
+                    <p class="text-gray-600 mt-2">यह ML का सबसे एडवांस और शक्तिशाली हिस्सा है। (अवधि: 4-6 महीने)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">🕸️ Neural Networks की मूल बातें</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Artificial Neural Networks (ANN)</strong></li>
+                                <li><strong>Activation Functions, Backpropagation</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">📚 Deep Learning Frameworks</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>TensorFlow</strong> या <strong>PyTorch</strong> (किसी एक में माहिर बनें)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="accordion-button w-full text-left p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="text-lg font-semibold text-gray-800">🏗️ एडवांस्ड आर्किटेक्चर</span>
+                            <span class="arrow text-blue-500 text-2xl font-bold transform transition-transform">›</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="p-5 pt-0 list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>CNNs:</strong> Computer Vision</li>
+                                <li><strong>RNNs & LSTMs:</strong> Natural Language Processing (NLP)</li>
+                                <li><strong>Transformers (BERT, GPT)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="charan-4" class="pt-20 -mt-16">
+            <section class="mb-12">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-3 py-1 rounded-full">चरण 4</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-2">प्रोजेक्ट्स और प्रैक्टिकल अनुभव</h3>
+                    <p class="text-gray-600 mt-2">ज्ञान को असली दुनिया में लागू करने का समय। (अवधि: हमेशा जारी)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h4 class="font-bold text-xl mb-2">🚀 प्रोजेक्ट्स बनाएँ (Build Projects)</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li>शुरू में आसान प्रोजेक्ट्स बनाएँ (जैसे: घर की कीमत का अनुमान लगाना)।</li>
+                            <li>धीरे-धीरे मुश्किल प्रोजेक्ट्स पर काम करें (जैसे: चेहरे की पहचान)।</li>
+                            <li>GitHub पर अपना पोर्टफोलियो बनाएँ।</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h4 class="font-bold text-xl mb-2">🏆 प्रतियोगिताओं में भाग लें</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>Kaggle:</strong> सीखने और प्रैक्टिस करने के लिए सबसे अच्छी जगह।</li>
+                            <li>वास्तविक डेटासेट पर काम करें और दूसरों से सीखें।</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="charan-5" class="pt-20 -mt-16">
+            <section class="mb-12">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-3 py-1 rounded-full">चरण 5</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-2">विशेषज्ञता और MLOps</h3>
+                    <p class="text-gray-600 mt-2">एक खास क्षेत्र में एक्सपर्ट बनें और मॉडल्स को असल दुनिया में डिप्लॉय करना सीखें। (अवधि: हमेशा जारी)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div class="bg-white rounded-xl shadow-md p-6">
+                        <h4 class="font-bold text-xl mb-2">⭐ किसी एक क्षेत्र में विशेषज्ञता</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li>Computer Vision</li>
+                            <li>Natural Language Processing (NLP)</li>
+                            <li>Reinforcement Learning</li>
+                            <li>AI Ethics & Fairness</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h4 class="font-bold text-xl mb-2">☁️ MLOps (Machine Learning Operations)</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>Model Deployment:</strong> Flask, FastAPI</li>
+                            <li><strong>Containerization:</strong> Docker</li>
+                            <li><strong>Cloud Platforms:</strong> AWS, Google Cloud, Azure</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+            <p>&copy; 2024 इंटरैक्टिव AI/ML रोडमैप. सीखने की यात्रा का आनंद लें!</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const currentlyActive = document.querySelector('.accordion-button.active');
+                    if (currentlyActive && currentlyActive !== button) {
+                        currentlyActive.classList.remove('active');
+                    }
+                    button.classList.toggle('active');
+                });
+            });
+
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', function() {
+                if (this.value) {
+                    window.location.hash = this.value;
+                }
+            });
+
+            const ctx = document.getElementById('durationChart').getContext('2d');
+            const durationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['चरण 1: बुनियाद', 'चरण 2: ML/DS', 'चरण 3: Deep Learning'],
+                    datasets: [{
+                        label: 'न्यूनतम महीने',
+                        data: [3, 4, 4],
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'अधिकतम महीने',
+                        data: [4, 6, 6],
+                        backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: false,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'महीनों में अवधि'
+                            }
+                        },
+                        y: {
+                            stacked: false,
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' महीने';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
