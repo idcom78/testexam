@@ -271,18 +271,23 @@
                     <p class="text-gray-400 mt-3 text-lg">Aapka idea + Hamari strategy = Success.</p>
                 </div>
                 <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl shadow-2xl reveal">
-                    <!-- Netlify Form Handling -->
-                    <form name="contact" method="POST" data-netlify="true">
-                        <input type="hidden" name="form-name" value="contact" />
+                    <form
+                        id="contact-form"
+                        method="POST"
+                        action="https://script.google.com/macros/s/AKfycbxtWke6xIh20xUGTO2fBnVnSggRxTb-tpjUvUuorRWLcNtpl29p6CB70q9WLhAhEQ9zCA/exec"
+                        target="hidden_iframe"
+                        onsubmit="submitted=true;"
+                    >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <input type="text" name="name" placeholder="Aapka Naam" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" required>
-                            <input type="email" name="email" placeholder="Aapka Email" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" required>
+                            <input type="text" name="Name" placeholder="Aapka Naam" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" required>
+                            <input type="email" name="Email" placeholder="Aapka Email" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" required>
                         </div>
-                        <textarea name="message" placeholder="Aapke project ke baare mein batayein..." rows="6" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all mb-6" required></textarea>
+                        <textarea name="Message" placeholder="Aapke project ke baare mein batayein..." rows="6" class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all mb-6" required></textarea>
                         <div class="text-center">
-                            <button type="submit" class="btn-primary w-full md:w-auto">Let's Connect</button>
+                            <button id="submit-button" type="submit" class="btn-primary w-full md:w-auto">Let's Connect</button>
                         </div>
                     </form>
+                    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='thankyou.html';}"></iframe>
                 </div>
             </div>
         </section>
@@ -298,6 +303,9 @@
     </footer>
 
     <script>
+        // Form submission variable
+        var submitted = false;
+
         // Mobile Menu Toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -359,8 +367,6 @@
 
         // Three.js Particle Background
         let scene, camera, renderer, particles;
-        const heroSection = document.getElementById('home');
-
         function initParticles() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -380,7 +386,6 @@
                 positions[i * 3 + 1] = y;
                 positions[i * 3 + 2] = z;
                 
-                // Color based on position
                 color.setHSL(0.6 + (x / 20) * 0.2, 0.7, 0.5 + (y / 20) * 0.2);
                 colors[i * 3] = color.r;
                 colors[i * 3 + 1] = color.g;
@@ -412,16 +417,12 @@
 
         function animateParticles() {
             requestAnimationFrame(animateParticles);
-            
             const time = Date.now() * 0.0005;
             particles.rotation.x = time * 0.25;
             particles.rotation.y = time * 0.5;
-
-            // Mouse interaction
             camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
             camera.position.y += (mouseY * 2 - camera.position.y) * 0.05;
             camera.lookAt(scene.position);
-
             renderer.render(scene, camera);
         }
 
@@ -432,9 +433,9 @@
         }
 
         window.addEventListener('resize', onWindowResize, false);
-
         initParticles();
         animateParticles();
+        
     </script>
 </body>
 </html>
