@@ -1,239 +1,585 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drownford Academy - Social Media Marketing Course</title>
+    <title>GGC - Professional Painting Contractor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
         }
-        /* Style for the active tab */
-        .tab-active {
-            border-bottom-color: #3B82F6; /* blue-600 */
-            color: #2563EB; /* blue-700 */
-            font-weight: 600;
+        :root {
+            --primary-color: #1a202c; /* Charcoal */
+            --secondary-color: #f7fafc; /* Off-white */
+            --accent-color: #d69e2e; /* Gold/Amber */
         }
-        /* Hide inactive tab content */
-        .tab-content {
+        .bg-primary { background-color: var(--primary-color); }
+        .bg-secondary { background-color: var(--secondary-color); }
+        .text-accent { color: var(--accent-color); }
+        .border-accent { border-color: var(--accent-color); }
+        .hover\:bg-accent:hover { background-color: var(--accent-color); }
+
+        .hero-section {
+            background: linear-gradient(rgba(26, 32, 44, 0.8), rgba(26, 32, 44, 0.8)), url('https://placehold.co/1920x1080/1a202c/d69e2e?text=Luxury+Interior+Finish') no-repeat center center/cover;
+        }
+        .notification {
             display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
         }
-        .tab-content-active {
-            display: block;
-            animation: fadeIn 0.5s ease-in-out;
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-color);
+            transition: width 0.3s;
         }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            position: relative;
+            margin: auto;
+            padding: 0;
+            width: 90%;
+            max-width: 800px;
+        }
+        .modal-body {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+        .close {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            background-color: #1a202c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .thumbnail {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .thumbnail:hover, .thumbnail.active {
+            border-color: var(--accent-color);
+        }
+        .admin-control { display: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-secondary text-gray-800">
 
-    <!-- Header Section -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal" style="display: none;">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <h3 class="text-2xl font-bold text-center text-primary mb-6">Admin Login</h3>
+            <form id="admin-login-form">
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent" required>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white font-bold p-3 rounded-lg hover:bg-gray-800">Login</button>
+                <p id="login-error" class="text-red-500 text-sm mt-2 text-center"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-600">Drownford Academy</h1>
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="text-gray-600 hover:text-blue-600">Home</a>
-                <a href="#course" class="text-gray-600 hover:text-blue-600">Course Details</a>
-                <a href="#about" class="text-gray-600 hover:text-blue-600">About Us</a>
-                <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700">Join Now</a>
+            <a href="#" class="flex items-center space-x-2">
+                <span class="bg-primary text-white text-2xl font-bold p-2 rounded-md">GGC</span>
+                <span class="text-xl font-semibold text-primary hidden sm:block">Gupta Group Contractor</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#services" class="nav-link text-gray-700 font-medium">Services</a>
+                <a href="#designs" class="nav-link text-gray-700 font-medium">Designs</a>
+                <a href="#projects" class="nav-link text-gray-700 font-medium">Projects</a>
+                <a href="#contact" class="nav-link text-gray-700 font-medium">Contact</a>
             </div>
-            <button class="md:hidden text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
+            <div class="hidden md:flex items-center">
+                 <button id="logout-btn" class="admin-control bg-red-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-600 mr-4">Logout</button>
+                <a href="#contact" class="bg-primary text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md">Get a Free Quote</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-primary">
+                <i class="fas fa-bars text-2xl"></i>
             </button>
         </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-6 pb-4 border-t border-gray-200">
+            <a href="#services" class="block py-2 text-gray-700 hover:text-accent">Services</a>
+            <a href="#designs" class="block py-2 text-gray-700 hover:text-accent">Designs</a>
+            <a href="#projects" class="block py-2 text-gray-700 hover:text-accent">Projects</a>
+            <a href="#contact" class="block py-2 text-gray-700 hover:text-accent">Contact</a>
+            <a href="#contact" class="block mt-2 bg-primary text-white text-center px-4 py-2 rounded-full hover:bg-gray-800 transition duration-300">Get a Free Quote</a>
+            <button id="mobile-logout-btn" class="admin-control w-full mt-2 bg-red-500 text-white text-center px-4 py-2 rounded-full hover:bg-red-600">Logout</button>
+        </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="bg-white py-20 md:py-32">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Technical Knowledge, Ab Bilkul Aasaan.</h2>
-                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">Drownford Academy me hum mushkil topics ko diagrams aur real-world examples se samjhate hain, taaki aap aasani se seekh sakein aur aage badh sakein.</p>
-                <a href="#course" class="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300">Hamara Course Dekhein</a>
-            </div>
-        </section>
-
-        <!-- Course Details Section with Tabs -->
-        <section id="course" class="py-20">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h3 class="text-4xl font-bold text-gray-800">Social Media Marketing Master Course</h3>
-                    <p class="text-gray-600 mt-2">Social media ki duniya me expert banne ke liye aapka complete guide.</p>
-                </div>
-
-                <div class="bg-white p-4 sm:p-8 rounded-xl shadow-lg">
-                    <!-- Tab Navigation -->
-                    <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
-                            <button onclick="changeTab(1)" class="tab tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Module 1: Parichay</button>
-                            <button onclick="changeTab(2)" class="tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Module 2: Platforms</button>
-                            <button onclick="changeTab(3)" class="tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Module 3: Content Strategy</button>
-                            <button onclick="changeTab(4)" class="tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Module 4: Audience</button>
-                            <button onclick="changeTab(5)" class="tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Module 5: Ads</button>
-                        </nav>
-                    </div>
-
-                    <!-- Tab Content -->
-                    <div class="pt-8">
-                        <!-- Module 1 Content -->
-                        <div id="tab-content-1" class="tab-content">
-                            <h4 class="text-3xl font-bold text-blue-700 mb-6">Module 1: Social Media Marketing ka Parichay</h4>
-                            <p>Module 1 ka content yahan...</p>
-                        </div>
-
-                        <!-- Module 2 Content -->
-                        <div id="tab-content-2" class="tab-content">
-                            <h4 class="text-3xl font-bold text-blue-700 mb-6">Module 2: Sahi Social Media Platform Chunna</h4>
-                            <p>Module 2 ka content yahan...</p>
-                        </div>
-
-                        <!-- Module 3 Content -->
-                        <div id="tab-content-3" class="tab-content">
-                            <h4 class="text-3xl font-bold text-blue-700 mb-6">Module 3: Content Strategy aur Content Creation</h4>
-                           <p>Module 3 ka content yahan...</p>
-                        </div>
-
-                        <!-- Module 4 Content (Expanded) -->
-                        <div id="tab-content-4" class="tab-content tab-content-active">
-                             <h4 class="text-3xl font-bold text-blue-700 mb-6">Module 4: Apni Audience ko Samjhein</h4>
-                             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8"><h5 class="font-semibold text-lg text-blue-800">Is Module Me Aap Seekhenge:</h5><ul class="list-disc list-inside text-blue-700 mt-2"><li>Audience research marketing ka sabse pehla kadam kyun hai.</li><li>'Buyer Persona' kya hota hai aur ise kaise banate hain.</li><li>Demographics aur Psychographics ke beech ka antar.</li><li>Apni audience ki zarooraton (pain points) ko kaise pehchanein.</li><li>Audience research ke liye practical tools aur techniques.</li></ul></div>
-                            
-                            <h5 class="text-2xl font-semibold text-gray-800 mb-3">4.1 Aap Kisse Baat Kar Rahe Hain?</h5>
-                            <p class="text-gray-700 mb-6">Imagine kijiye ki aap ek bhari bheed me chilla rahe hain. Shayad hi koi aapki baat sunega. Ab imagine kijiye ki aap ek dost ko uska naam lekar bula rahe hain. Woh turant aapki taraf dekhega. Social media marketing me bhi yahi hota hai. Jab aap sabke liye content banate hain, to woh kisi ko bhi accha nahi lagta. Lekin jab aap ek specific group of people (aapki 'Target Audience') ke liye content banate hain, to woh aapse connect karte hain.</p>
-
-                            <h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">4.2 Buyer Persona: Apne Ideal Customer ki Tasveer Banayein</h5>
-                            <p class="text-gray-700 mb-6">Buyer Persona aapke ideal customer ka ek kalpanik character hai. Yeh research par based hota hai. Aap use ek naam, ek chehra, aur ek personality dete hain. Isse aapko yeh samajhne me aasani hoti hai ki aapka customer kya sochta hai, kya mehsoos karta hai, aur use kya chahiye. Jab bhi aap koi post banayein, to sochein, "Kya mere is Buyer Persona ko yeh post pasand aayega?"</p>
-                            <div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x500/E9F5FF/3B82F6?text=Diagram:+Sample+Buyer+Persona+Template" alt="Buyer Persona Template" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Diagram: Ek Buyer Persona template jisme Name, Photo, Demographics, Goals, aur Challenges ke sections hain.</p></div>
-
-                            <h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">4.3 Persona ke Components: Demographics aur Psychographics</h5>
-                            <p class="text-gray-700 mb-6">Ek accha persona banane ke liye aapko do tarah ki information chahiye:</p>
-                            <div class="grid md:grid-cols-2 gap-8 items-start">
-                                <div class="bg-white p-6 border rounded-lg">
-                                    <h6 class="font-bold text-lg text-gray-700">Demographics (Jansankhyiki)</h6>
-                                    <p class="text-gray-600 mt-2">Yeh 'kaun' ka jawab deta hai. Yeh aasaani se milne wala data hai.</p>
-                                    <ul class="list-disc list-inside text-gray-600 mt-3 space-y-1">
-                                        <li><strong>Age:</strong> Woh kis age group me hain?</li>
-                                        <li><strong>Gender:</strong> Male, Female, etc.</li>
-                                        <li><strong>Location:</strong> Woh kahan rehte hain? (Sheher, gaanv)</li>
-                                        <li><strong>Occupation:</strong> Woh kya kaam karte hain?</li>
-                                        <li><strong>Income Level:</strong> Unki aamdani kitni hai?</li>
-                                    </ul>
-                                </div>
-                                <div class="bg-white p-6 border rounded-lg">
-                                    <h6 class="font-bold text-lg text-gray-700">Psychographics (Manovigyan)</h6>
-                                    <p class="text-gray-600 mt-2">Yeh 'kyun' ka jawab deta hai. Yeh unke personality aur values ke baare me hai.</p>
-                                     <ul class="list-disc list-inside text-gray-600 mt-3 space-y-1">
-                                        <li><strong>Interests & Hobbies:</strong> Unhe kya karna pasand hai?</li>
-                                        <li><strong>Values & Beliefs:</strong> Unke liye kya cheezein mayne rakhti hain?</li>
-                                        <li><strong>Lifestyle:</strong> Unka rehen-sehen kaisa hai?</li>
-                                        <li><strong>Goals:</strong> Woh life me kya haasil karna chahte hain?</li>
-                                        <li><strong>Challenges (Pain Points):</strong> Unki sabse badi samasyayein kya hain?</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <p class="text-gray-700 mt-6"><strong>Example:</strong> Ek gym ka 'Buyer Persona' ho sakta hai "Rahul, 28 saal ka software engineer jo Delhi me rehta hai (Demographics). Woh fit rehna chahta hai lekin office ke kaaran time nahi nikal paata (Psychographics - Goal & Challenge)."</p>
-
-                            <h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">4.4 Audience Research Kaise Karein?</h5>
-                            <p class="text-gray-700 mb-6">Toh yeh saari jaankari milegi kahan se? Hawa me teer nahi chalana hai. Research ke kuch aasaan tareeke hain:</p>
-                            <ul class="list-decimal list-inside space-y-3 text-gray-700">
-                                <li><strong>Apne Current Customers se Puchein:</strong> Agar aapke paas pehle se customers hain, to unse seedhe baat karein ya ek chhota sa online survey (Google Forms se) bhejein.</li>
-                                <li><strong>Social Media Analytics Dekhein:</strong> Facebook aur Instagram ke 'Insights' ya 'Analytics' section me aapko apne followers ke demographics (age, gender, location) ka poora data mil jayega.</li>
-                                <li><strong>Competitors ko Dekhein:</strong> Aapke competitors ke social media pages par jayein. Dekhein ki unke posts par kaise log comment kar rahe hain. Unke followers ke profiles ko check karein.</li>
-                                <li><strong>Online Forums aur Groups Join Karein:</strong> Facebook groups, Quora, ya Reddit par apne industry se related conversations ko padhein. Wahan log apni problems openly discuss karte hain.</li>
-                            </ul>
-                        </div>
-
-                        <!-- Module 5 Content (Placeholder) -->
-                        <div id="tab-content-5" class="tab-content">
-                            <h4 class="text-3xl font-bold text-gray-500 mb-6">Module 5: Social Media Advertising (Jald hi aa raha hai)</h4>
-                            <p class="text-gray-500">Organic reach ke alawa, paid ads se aap tezi se grow kar sakte hain. Hum Facebook aur Instagram par ads chalane ke basics seekhenge.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- About Us Section -->
-        <section id="about" class="bg-white py-20">
-            <div class="container mx-auto px-6 text-center">
-                <h3 class="text-3xl font-bold text-gray-800">Humare Baare Me</h3>
-                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Drownford Academy ka ek hi maqsad hai - quality technical education ko sabke liye accessible aur aasaan banana. Hum visuals aur practical knowledge par focus karte hain, theory par nahi.</p>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer Section -->
-    <footer class="bg-gray-800 text-white py-8">
+    <!-- Hero Section -->
+    <section class="hero-section text-white h-[80vh] flex items-center">
         <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 Drownford Academy. All Rights Reserved.</p>
-            <p class="text-sm text-gray-400 mt-2">Ek behtar kal ke liye, aaj seekhein.</p>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Painting Perfection, <span class="text-accent">Guaranteed.</span></h1>
+            <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto text-gray-300">GGC delivers flawless painting solutions for residential and commercial properties, crafting spaces that inspire.</p>
+            <a href="#projects" class="bg-accent text-primary font-bold px-8 py-3 rounded-full hover:bg-yellow-600 transition duration-300 transform hover:scale-105 shadow-lg">Explore Our Portfolio</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Expertise</h2>
+                <p class="text-gray-600 mt-3 max-w-2xl mx-auto">We offer a complete range of professional painting services.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="p-8 text-center bg-secondary rounded-xl card-hover">
+                    <div class="inline-block p-4 bg-accent rounded-full mb-5">
+                        <i class="fas fa-home text-3xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-primary">Residential Painting</h3>
+                    <p class="text-gray-600">Expert interior and exterior services to bring new life to your home.</p>
+                </div>
+                <div class="p-8 text-center bg-secondary rounded-xl card-hover">
+                     <div class="inline-block p-4 bg-accent rounded-full mb-5">
+                        <i class="fas fa-building text-3xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-primary">Commercial Painting</h3>
+                    <p class="text-gray-600">Tailored solutions for offices, retail, and industrial spaces.</p>
+                </div>
+                <div class="p-8 text-center bg-secondary rounded-xl card-hover">
+                     <div class="inline-block p-4 bg-accent rounded-full mb-5">
+                        <i class="fas fa-paint-roller text-3xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-primary">Specialty Finishes</h3>
+                    <p class="text-gray-600">From textured walls to decorative effects, we create unique finishes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Designs Section -->
+    <section id="designs" class="py-20 md:py-28 bg-secondary">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Design Styles</h2>
+                <p class="text-gray-600 mt-3 max-w-2xl mx-auto">Explore a variety of design options to find the perfect look for your space.</p>
+                <button id="add-design-btn" class="admin-control mt-4 bg-accent text-primary font-semibold px-6 py-2 rounded-full hover:bg-yellow-600 transition">Add New Design</button>
+            </div>
+            <div id="design-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Designs will be loaded here -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Recent Work</h2>
+                <p class="text-gray-600 mt-3">A showcase of our craftsmanship and quality.</p>
+                <button id="add-project-btn" class="admin-control mt-4 bg-accent text-primary font-semibold px-6 py-2 rounded-full hover:bg-yellow-600 transition">Add New Project</button>
+            </div>
+            <div id="project-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 md:py-28 bg-primary">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Let's Create Something Beautiful</h2>
+                <p class="text-gray-400 mt-3 max-w-2xl mx-auto">Contact us today for a free, no-obligation consultation and quote.</p>
+            </div>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-xl shadow-2xl">
+                <div class="text-left">
+                    <h3 class="text-2xl font-semibold mb-6 text-primary">Contact Information</h3>
+                    <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-map-marker-alt w-6 text-accent mt-1"></i><span>Patna, Bihar, India</span></p>
+                    <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-phone w-6 text-accent mt-1"></i><span>+91 12345 67890</span></p>
+                    <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-envelope w-6 text-accent mt-1"></i><span>contact@ggcontractor.com</span></p>
+                </div>
+                <form id="contact-form" class="space-y-5">
+                    <input type="text" placeholder="Your Name" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition">
+                    <input type="email" placeholder="Your Email" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition">
+                    <textarea placeholder="Tell us about your project..." rows="4" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition"></textarea>
+                    <button type="submit" class="w-full bg-primary text-white font-bold p-3 rounded-lg hover:bg-gray-800 transition duration-300">Send Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Gupta Group Contractor (GGC). All Rights Reserved.</p>
         </div>
     </footer>
+    
+    <!-- Image Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <img id="modal-main-image" src="" alt="Main Image" class="w-full h-auto max-h-[70vh] object-contain rounded-lg mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold text-primary mb-2"></h3>
+                <p id="modal-description" class="text-gray-600 mb-4"></p>
+                <div id="modal-thumbnails" class="flex space-x-2 overflow-x-auto"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Item Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg overflow-y-auto max-h-screen">
+            <h3 id="edit-modal-title" class="text-2xl font-bold text-primary mb-6"></h3>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-type">
+                <div class="mb-4">
+                    <label for="edit-title" class="block text-gray-700 mb-2">Title</label>
+                    <input type="text" id="edit-title" class="w-full p-3 border rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit-description" class="block text-gray-700 mb-2">Description</label>
+                    <textarea id="edit-description" rows="3" class="w-full p-3 border rounded-lg" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Images (select one or more)</label>
+                    <input type="file" id="edit-images" class="w-full p-2 border rounded-lg" multiple accept="image/*">
+                    <p class="text-sm text-gray-500 mt-1">If you don't select new images, the old ones will be kept.</p>
+                </div>
+                <div id="current-images-container" class="mb-4"></div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-300 px-6 py-2 rounded-lg">Cancel</button>
+                    <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <script>
-        // Function to change tabs
-        function changeTab(tabNumber) {
-            // Get all tab buttons and content divs
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
 
-            // Remove active classes from all tabs and content
-            tabs.forEach(tab => tab.classList.remove('tab-active'));
-            tabContents.forEach(content => {
-                content.classList.remove('tab-content-active');
-                // A little trick to reset animation
-                void content.offsetWidth; 
-            });
+    <!-- Notification -->
+    <div id="notification" class="notification text-white px-6 py-3 rounded-lg shadow-lg">
+        <p id="notification-message"></p>
+    </div>
 
-            // Add active classes to the selected tab and content
-            const selectedTab = document.querySelector(`.tab:nth-child(${tabNumber})`);
-            const selectedTabContent = document.getElementById(`tab-content-${tabNumber}`);
-            
-            tabs.forEach((tab, index) => {
-                if (index + 1 === tabNumber) {
-                    tab.classList.add('tab-active');
-                } else {
-                    tab.classList.remove('tab-active');
-                }
-            });
-            selectedTabContent.classList.add('tab-content-active');
 
-            // Also update the content for other tabs to keep the HTML up-to-date
-            // This is a simplified approach. For a real app, you might fetch content dynamically.
-            const allContent = {
-                1: `<h4 class="text-3xl font-bold text-blue-700 mb-6">Module 1: Social Media Marketing ka Parichay</h4><div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8"><h5 class="font-semibold text-lg text-blue-800">Is Module Me Aap Seekhenge:</h5><ul class="list-disc list-inside text-blue-700 mt-2"><li>Marketing ke vikas ko samjhna.</li><li>Social Media Marketing (SMM) kya hai aur yeh kaise kaam karta hai.</li><li>Traditional aur Digital Marketing me antar.</li><li>Business ke liye SMM ke mukhya fayde.</li><li>SMM Funnel ke har stage ko detail mein.</li><li>Zaroori SMM शब्दावली (terminology).</li></ul></div><h5 class="text-2xl font-semibold text-gray-800 mb-3">1.1 Marketing ka Vikas: Print se Pixels tak</h5><p class="text-gray-700 mb-6">Marketing hamesha se ek jaisi nahi thi. Pehle businesses newspapers, radio, aur TV ads par nirbhar the. Yeh 'one-way' communication tha, jahan company bolti thi aur customer sunta tha. Internet ke aane se sab kuch badal gaya. Websites aayi, fir search engines, aur fir social media. Aaj marketing 'two-way' conversation hai, jahan customer bhi brand se seedhe baat kar sakta hai.</p><div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x300/E9F5FF/3B82F6?text=Image:+Timeline+of+Marketing+Evolution" alt="Marketing Evolution Timeline" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Image: Marketing ke vikas ko dikhata ek timeline (Newspaper -> Radio -> TV -> Website -> Social Media).</p></div><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">1.2 Traditional Marketing vs. Social Media Marketing</h5><div class="grid md:grid-cols-2 gap-8 items-start"><div class="bg-red-50 p-4 rounded-lg border border-red-200"><h6 class="font-bold text-red-700">Traditional Marketing</h6><ul class="list-disc list-inside text-gray-600 mt-2"><li>Mahanga (Expensive)</li><li>Audience specific nahi</li><li>Results track karna mushkil</li><li>One-way communication</li><li>Example: Billboard, TV Ad</li></ul></div><div class="bg-green-50 p-4 rounded-lg border border-green-200"><h6 class="font-bold text-green-700">Social Media Marketing</h6><ul class="list-disc list-inside text-gray-600 mt-2"><li>Cost-effective</li><li>Highly targeted audience</li><li>Sab kuch trackable (measurable)</li><li>Two-way conversation</li><li>Example: Facebook Ad, Instagram Story</li></ul></div></div><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">1.3 The SMM Funnel: Customer Journey ko Samjhein</h5><p class="text-gray-700 mb-6">SMM Funnel ek model hai jo dikhata hai ki kaise ek anjaan vyakti aapka loyal customer banta hai. Iske 5 mukhya stages hote hain:</p><div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x400/E9F5FF/3B82F6?text=Diagram:+Detailed+5-Stage+SMM+Funnel" alt="Detailed SMM Funnel Diagram" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Diagram: 5-Stage SMM Funnel (Awareness, Engagement, Conversion, Loyalty, Advocacy).</p></div>`,
-                2: `<h4 class="text-3xl font-bold text-blue-700 mb-6">Module 2: Sahi Social Media Platform Chunna</h4><div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8"><h5 class="font-semibold text-lg text-blue-800">Is Module Me Aap Seekhenge:</h5><ul class="list-disc list-inside text-blue-700 mt-2"><li>Aapke business ke liye sahi platform chunna kyu zaroori hai.</li><li>Major platforms (Facebook, Instagram, LinkedIn, Twitter, YouTube) ka deep-dive.</li><li>Har platform ke audience, content style, aur business use-case ko samjhna.</li><li>Ek aisi strategy banana jisse aap kam samay me sahi logo tak pahunch sakein.</li></ul></div><h5 class="text-2xl font-semibold text-gray-800 mb-3">2.1 Ek Platform Sabke Liye Nahi Hai</h5><p class="text-gray-700 mb-6">Yeh sabse badi galatfehmi hai ki aapko har social media platform par active hona chahiye. Har platform ka ek alag character aur audience hai. Ek kapde ki dukaan ke liye Instagram best ho sakta hai, jabki ek software company ke liye LinkedIn zyada faydemand hoga.</p><div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x350/E9F5FF/3B82F6?text=Diagram:+Matching+Business+to+Platform" alt="Matching Business to Platform Diagram" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Diagram: Alag-alag business types ko unke ideal platform se match karna.</p></div><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">2.2 Platform Deep Dive: Instagram - The Visual Showcase</h5><p class="text-gray-700 mb-6">Instagram poori tarah se visuals par chalta hai - high-quality photos, videos, Reels, aur Stories. Yahan younger audience (18-35 saal) sabse zyada active hai. Agar aapka product ya service dekhne me accha lagta hai, to Instagram aapke liye sona hai.</p><div class="bg-gray-100 p-6 rounded-lg text-center mt-6"><img src="https://placehold.co/800x250/E9F5FF/3B82F6?text=Image:+Example+of+a+Great+Instagram+Feed" alt="Example Instagram Feed" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Image: Ek visually appealing Instagram feed ka example.</p></div>`,
-                3: `<h4 class="text-3xl font-bold text-blue-700 mb-6">Module 3: Content Strategy aur Content Creation</h4><div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8"><h5 class="font-semibold text-lg text-blue-800">Is Module Me Aap Seekhenge:</h5><ul class="list-disc list-inside text-blue-700 mt-2"><li>Ek safal content strategy ke mool tatva.</li><li>Content Pillars kya hote hain aur unhe kaise banayein.</li><li>Akarshak content ke 3 'E's (Educate, Entertain, Engage).</li><li>Ek practical Content Calendar banana.</li><li>Alag-alag content formats (Image, Video, Stories) me maharat haasil karna.</li><li>Ek acchi 'Hook' aur 'Call-to-Action' (CTA) likhne ki kala.</li></ul></div><h5 class="text-2xl font-semibold text-gray-800 mb-3">3.1 Content hi King Kyun Hai?</h5><p class="text-gray-700 mb-6">Social media par log aapse judne aate hain, na ki sirf aapke ads dekhne. 'Content' woh zariya hai jisse aap unse rishta banate hain. Accha content aapki audience ko value deta hai, unka vishwas jeetta hai, aur unhe aakhir me customer banata hai. Bina acchi content strategy ke, social media par hona, andhere me teer chalane jaisa hai.</p><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">3.2 Content Pillars: Apni Strategy ko Structure Dein</h5><p class="text-gray-700 mb-6">Content Pillars 3-5 mukhya vishay (topics) hote hain jinke aas-paas aapka saara content ghumta hai. Yeh aapke brand aur audience ke interests se jude hone chahiye. Isse aapke content me consistency rehti hai aur aapko hamesha pata hota hai ki aage kya post karna hai.</p><div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x400/E9F5FF/3B82F6?text=Diagram:+Content+Pillars+Example" alt="Content Pillars Example Diagram" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Diagram: Ek Fitness Coach ke Content Pillars (e.g., Workout Tips, Healthy Recipes, Motivation, Q&A).</p></div><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">3.3 Content ke 3 'E's: Formula for Great Content</h5><p class="text-gray-700 mb-6">Har post inme se kam se kam ek category me fit hona chahiye:</p><div class="grid md:grid-cols-3 gap-6 text-center"><div class="bg-white p-6 border rounded-lg"><h6 class="font-bold text-lg text-green-600">Educate (Shikshit Karein)</h6><p class="text-gray-600 mt-2">Apni audience ko kuch naya sikhayein. 'How-to' guides, tips, tutorials, industry news.</p></div><div class="bg-white p-6 border rounded-lg"><h6 class="font-bold text-lg text-yellow-600">Entertain (Manoranjan Karein)</h6><p class="text-gray-600 mt-2">Apni audience ko hasayein ya khush karein. Memes, funny videos, quizzes, contests.</p></div><div class="bg-white p-6 border rounded-lg"><h6 class="font-bold text-lg text-purple-600">Engage/Emote (Jodein)</h6><p class="text-gray-600 mt-2">Unse sawal poochein, unki rai lein, ya unse emotional connection banayein. Behind-the-scenes, success stories, polls.</p></div></div><h5 class="text-2xl font-semibold text-gray-800 mt-8 mb-3">3.4 Content Calendar: Planning is Everything</h5><p class="text-gray-700 mb-6">Content Calendar ek schedule hota hai ki aap kab, kya, aur kis platform par post karenge. Isse aap organized rehte hain aur consistency bani rehti hai. Aap ise simple spreadsheet ya Trello jaise tools me bana sakte hain.</p><div class="bg-gray-100 p-6 rounded-lg text-center"><img src="https://placehold.co/800x450/E9F5FF/3B82F6?text=Image:+Sample+Weekly+Content+Calendar" alt="Sample Content Calendar" class="rounded-lg mx-auto shadow-md"><p class="text-sm text-gray-500 mt-2">Image: Ek sample content calendar ka screenshot (Date, Platform, Content Pillar, Post Idea, Status).</p></div>`,
-                4: document.getElementById('tab-content-4').innerHTML, // This is the newly added content
-                5: `<h4 class="text-3xl font-bold text-gray-500 mb-6">Module 5: Social Media Advertising (Jald hi aa raha hai)</h4><p class="text-gray-500">Organic reach ke alawa, paid ads se aap tezi se grow kar sakte hain. Hum Facebook aur Instagram par ads chalane ke basics seekhenge.</p>`
-            };
-            
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`tab-content-${i}`).innerHTML = allContent[i];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+        // --- CONFIGURATION ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ggc-website';
+        const ADMIN_PASSWORD = "GGC@2024";
+
+        // --- FIREBASE INITIALIZATION ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- UI ELEMENTS ---
+        const adminLoginModal = document.getElementById('admin-login-modal');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const adminControls = document.querySelectorAll('.admin-control');
+        const logoutBtns = [document.getElementById('logout-btn'), document.getElementById('mobile-logout-btn')];
+        
+        const designGallery = document.getElementById('design-gallery');
+        const projectGallery = document.getElementById('project-gallery');
+        const addDesignBtn = document.getElementById('add-design-btn');
+        const addProjectBtn = document.getElementById('add-project-btn');
+
+        const galleryModal = document.getElementById('gallery-modal');
+        const modalCloseBtn = galleryModal.querySelector('.close');
+        const modalMainImage = document.getElementById('modal-main-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalThumbnails = document.getElementById('modal-thumbnails');
+
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-form');
+        const editModalTitle = document.getElementById('edit-modal-title');
+        const editId = document.getElementById('edit-id');
+        const editType = document.getElementById('edit-type');
+        const editTitle = document.getElementById('edit-title');
+        const editDescription = document.getElementById('edit-description');
+        const editImagesInput = document.getElementById('edit-images');
+        const currentImagesContainer = document.getElementById('current-images-container');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+        // --- AUTH & ADMIN LOGIC ---
+        function checkAdminStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isTryingToLogin = urlParams.get('admin') === 'true';
+
+            if (sessionStorage.getItem('isAdmin') === 'true') {
+                adminLoginModal.style.display = 'none';
+                adminControls.forEach(el => el.style.display = 'block');
+            } else if (isTryingToLogin) {
+                adminLoginModal.style.display = 'flex';
+                adminControls.forEach(el => el.style.display = 'none');
+            } else {
+                 adminLoginModal.style.display = 'none';
+                 adminControls.forEach(el => el.style.display = 'none');
             }
-            
-            // Ensure the correct tab content is active
-            document.getElementById(`tab-content-${tabNumber}`).classList.add('tab-content-active');
         }
 
-        // Initialize the first tab
-        document.addEventListener('DOMContentLoaded', () => {
-            changeTab(1);
-            // Pre-load the content for the newly added module to make it available
-            changeTab(4);
-            // Set the initial active tab back to 1
-            changeTab(1);
+        adminLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('isAdmin', 'true');
+                // Remove ?admin=true from URL and reload to hide it from address bar
+                window.history.replaceState({}, document.title, window.location.pathname);
+                checkAdminStatus();
+            } else {
+                loginError.textContent = 'Incorrect password.';
+            }
         });
-    </script>
 
+        logoutBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sessionStorage.removeItem('isAdmin');
+                checkAdminStatus();
+                window.location.reload();
+            });
+        });
+
+        // --- DATA LOADING ---
+        function loadCollection(collectionName, galleryElement, cardType) {
+            const q = collection(db, collectionName);
+            onSnapshot(q, (snapshot) => {
+                galleryElement.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const item = doc.data();
+                    const card = createCatalogCard(doc.id, item, collectionName, cardType);
+                    galleryElement.appendChild(card);
+                });
+                checkAdminStatus(); // Re-apply admin controls after re-render
+            });
+        }
+
+        function createCatalogCard(id, item, collectionName, cardType) {
+            const card = document.createElement('div');
+            card.className = `bg-${cardType === 'design' ? 'white' : 'secondary'} rounded-lg overflow-hidden shadow-lg card-hover relative`;
+            
+            const adminPanel = `
+                <div class="admin-control absolute top-2 right-2 flex space-x-2" style="z-index: 10;">
+                    <button data-id="${id}" class="edit-item-btn bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-pencil-alt"></i></button>
+                    <button data-id="${id}" class="delete-item-btn bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            
+            card.innerHTML = `
+                ${adminPanel}
+                <div class="catalog-item-content cursor-pointer">
+                    <img src="${item.images[0]}" alt="${item.title}" class="w-full h-${cardType === 'design' ? '52' : '60'} object-cover">
+                    <div class="p-5">
+                        <h4 class="text-lg font-bold text-primary">${item.title}</h4>
+                    </div>
+                </div>
+            `;
+            
+            card.querySelector('.catalog-item-content').addEventListener('click', () => {
+                openGalleryModal(item.title, item.description, item.images);
+            });
+
+            // Admin button event listeners
+            const editBtn = card.querySelector('.edit-item-btn');
+            if(editBtn) {
+                editBtn.addEventListener('click', () => openEditModal(collectionName, id, item));
+            }
+            const deleteBtn = card.querySelector('.delete-item-btn');
+            if(deleteBtn) {
+                deleteBtn.addEventListener('click', () => deleteItem(collectionName, id));
+            }
+            
+            return card;
+        }
+
+        // --- GALLERY MODAL LOGIC ---
+        function openGalleryModal(title, description, images) {
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            modalMainImage.src = images[0];
+            modalThumbnails.innerHTML = '';
+            images.forEach((src, index) => {
+                const thumb = document.createElement('img');
+                thumb.src = src;
+                thumb.className = 'thumbnail w-20 h-20 object-cover rounded-md';
+                if (index === 0) thumb.classList.add('active');
+                thumb.addEventListener('click', () => {
+                    modalMainImage.src = src;
+                    modalThumbnails.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                });
+                modalThumbnails.appendChild(thumb);
+            });
+            galleryModal.style.display = 'flex';
+        }
+        modalCloseBtn.addEventListener('click', () => galleryModal.style.display = 'none');
+        window.addEventListener('click', (event) => {
+            if (event.target == galleryModal) galleryModal.style.display = 'none';
+        });
+
+        // --- EDIT/ADD MODAL LOGIC ---
+        function openEditModal(type, id = null, item = null) {
+            editForm.reset();
+            editType.value = type;
+            currentImagesContainer.innerHTML = '';
+
+            if (id && item) { // Editing existing item
+                editModalTitle.textContent = `Edit ${type.slice(0, -1)}`;
+                editId.value = id;
+                editTitle.value = item.title;
+                editDescription.value = item.description;
+                
+                // Display current images
+                item.images.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.className = 'w-16 h-16 object-cover rounded-md inline-block mr-2';
+                    currentImagesContainer.appendChild(img);
+                });
+            } else { // Adding new item
+                editModalTitle.textContent = `Add New ${type.slice(0, -1)}`;
+                editId.value = '';
+            }
+            editModal.style.display = 'flex';
+        }
+
+        addDesignBtn.addEventListener('click', () => openEditModal('designs'));
+        addProjectBtn.addEventListener('click', () => openEditModal('projects'));
+        cancelEditBtn.addEventListener('click', () => editModal.style.display = 'none');
+
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = editId.value;
+            const type = editType.value;
+            const files = editImagesInput.files;
+            
+            let imageUrls = [];
+            // Handle image uploads
+            if (files.length > 0) {
+                for(const file of files) {
+                    const storageRef = ref(storage, `${type}/${Date.now()}-${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(storageRef);
+                    imageUrls.push(url);
+                }
+            }
+            
+            const data = {
+                title: editTitle.value,
+                description: editDescription.value,
+            };
+
+            if (id) { // Update
+                const docRef = doc(db, type, id);
+                if (imageUrls.length > 0) { // If new images were uploaded
+                    data.images = imageUrls;
+                }
+                await updateDoc(docRef, data);
+                showNotification('Item updated successfully!', 'success');
+            } else { // Add
+                if (imageUrls.length === 0) {
+                    showNotification('Please upload at least one image for a new item.', 'error');
+                    return;
+                }
+                data.images = imageUrls;
+                await addDoc(collection(db, type), data);
+                showNotification('Item added successfully!', 'success');
+            }
+
+            editModal.style.display = 'none';
+        });
+
+        // --- DELETE LOGIC ---
+        async function deleteItem(collectionName, id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                await deleteDoc(doc(db, collectionName, id));
+                showNotification('Item deleted successfully.', 'success');
+            }
+        }
+
+        // --- UTILITY ---
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            notificationMessage.textContent = message;
+            notification.className = `notification text-white px-6 py-3 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // --- INITIAL LOAD ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadCollection('designs', designGallery, 'design');
+                loadCollection('projects', projectGallery, 'project');
+            } else {
+                signInAnonymously(auth).catch(error => console.error("Anonymous sign-in failed:", error));
+            }
+        });
+        
+        checkAdminStatus();
+
+    </script>
 </body>
 </html>
