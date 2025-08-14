@@ -270,6 +270,52 @@
         import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
+        /*
+        =============================================================================
+        === ZAROORI: FIREBASE SECURITY RULES ===
+        =============================================================================
+        Aapka app 'Role set karne mein samasya aayi' error de raha hai kyunki aapne
+        security rules set nahi kiye hain.
+        
+        Ise theek karne ke liye:
+        1. Apne Firebase project mein Firestore Database par jaayein.
+        2. 'Rules' tab par click karein.
+        3. Wahan jo bhi likha hai, use delete karein.
+        4. Niche diye gaye poore code ko copy karke wahan paste karein aur 'Publish' karein.
+        
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+        
+            // Koi bhi user apna role (user document) bana sakta hai aur dekh sakta hai
+            match /users/{userId} {
+              allow read, write: if request.auth != null && request.auth.uid == userId;
+            }
+        
+            // Koi bhi logged-in user tests ko dekh sakta hai
+            match /tests/{testId} {
+              allow read: if request.auth != null;
+              // Sirf teacher hi test bana/edit/delete kar sakta hai
+              allow create, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+            }
+        
+            // Koi bhi logged-in user questions dekh sakta hai
+            match /questions/{questionId} {
+               allow read: if request.auth != null;
+               // Sirf teacher hi questions bana/edit/delete kar sakta hai
+               allow create, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+            }
+        
+            // Student apna result save kar sakta hai aur dekh sakta hai
+            match /results/{resultId} {
+              allow create: if request.auth != null && request.resource.data.studentId == request.auth.uid;
+              allow read: if request.auth != null && resource.data.studentId == request.auth.uid;
+            }
+          }
+        }
+        =============================================================================
+        */
+        
         const GOOGLE_SHEET_WEB_APP_URL = ""; // <-- YAHAN APNA GOOGLE APPS SCRIPT URL PASTE KAREIN
 
         // Your web app's Firebase configuration - Provided by you
@@ -386,14 +432,26 @@
             if (!currentUser) return;
             showLoader(true);
             try {
-                await setDoc(doc(db, "users", currentUser.uid), {
+                const userDocData = {
                     email: currentUser.email,
                     role: role,
                     createdAt: serverTimestamp()
-                });
-                onAuthStateChanged(auth, auth.currentUser);
+                };
+                await setDoc(doc(db, "users", currentUser.uid), userDocData);
+                
+                // Role set ho gaya, ab seedhe dashboard par le jaayein
+                currentUserData = { role: role };
+                if (role === 'teacher') {
+                    showView('teacher-dashboard');
+                    await loadTeacherDashboard();
+                } else {
+                    showView('student-dashboard');
+                    await loadStudentDashboard();
+                }
             } catch (error) {
-                showCustomAlert("Role set karne mein samasya aayi.");
+                console.error("Role set karne mein error:", error);
+                showCustomAlert("Role set karne mein samasya aayi. Kripya upar diye gaye Security Rules ko apne Firebase project mein set karein.");
+            } finally {
                 showLoader(false);
             }
         }
