@@ -588,6 +588,7 @@
             loginBtn.className = `flex-1 text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg ${themeClass}`;
 
             authTitle.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Portal`;
+            isLoginMode = false; // Set to false to trigger the login mode text correctly
             toggleAuthMode(); // Reset to login mode with new role
         };
 
@@ -1457,6 +1458,3 @@
     </script>
 </body>
 </html>
-"
-I'm asking a question about the code I've selected. I'd like to understand what it does.
-Explain the code to 
