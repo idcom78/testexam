@@ -1,597 +1,923 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GGC - Professional Painting Contractor</title>
+    <title>CSC Campus - Online Test Platform</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom Styles -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            scroll-behavior: smooth;
+            background-color: #f0f4f8;
         }
-        :root {
-            --primary-color: #1a202c; /* Charcoal */
-            --secondary-color: #f7fafc; /* Off-white */
-            --accent-color: #d69e2e; /* Gold/Amber */
-        }
-        .bg-primary { background-color: var(--primary-color); }
-        .bg-secondary { background-color: var(--secondary-color); }
-        .text-accent { color: var(--accent-color); }
-        .border-accent { border-color: var(--accent-color); }
-        .hover\:bg-accent:hover { background-color: var(--accent-color); }
-
-        .hero-section {
-            background: linear-gradient(rgba(26, 32, 44, 0.8), rgba(26, 32, 44, 0.8)), url('https://placehold.co/1920x1080/1a202c/d69e2e?text=Luxury+Interior+Finish') no-repeat center center/cover;
-        }
-        .notification {
+        .view {
             display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
+            animation: fadeIn 0.5s ease-in-out;
         }
-        .nav-link {
-            position: relative;
-            transition: color 0.3s;
+        .active-view {
+            display: block;
         }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--accent-color);
-            transition: width 0.3s;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .nav-link:hover::after {
-            width: 100%;
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .marksheet {
+            border: 10px solid transparent;
+            border-image: linear-gradient(135deg, #667eea, #764ba2);
+            border-image-slice: 1;
+            background: white;
+            transition: all 0.3s ease;
         }
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        .marksheet:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            position: relative;
-            margin: auto;
-            padding: 0;
-            width: 90%;
-            max-width: 800px;
-        }
-        .modal-body {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-        }
-        .close {
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            color: white;
-            font-size: 35px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
-            background-color: #1a202c;
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1;
         }
-        .thumbnail {
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.3s;
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
-        .thumbnail:hover, .thumbnail.active {
-            border-color: var(--accent-color);
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
-        .admin-control { display: none; }
     </style>
 </head>
-<body class="bg-secondary text-gray-800">
+<body class="text-gray-700">
 
-    <!-- Admin Login Modal -->
-    <div id="admin-login-modal" class="modal" style="display: none;">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
-            <h3 class="text-2xl font-bold text-center text-primary mb-6">Admin Login</h3>
-            <form id="admin-login-form">
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700 mb-2">Password</label>
-                    <input type="password" id="password" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent" required>
-                </div>
-                <button type="submit" class="w-full bg-primary text-white font-bold p-3 rounded-lg hover:bg-gray-800">Login</button>
-                <p id="login-error" class="text-red-500 text-sm mt-2 text-center"></p>
-            </form>
+    <!-- Main Container -->
+    <div id="app" class="container mx-auto p-4 max-w-7xl">
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="loader"></div>
         </div>
-    </div>
-
-    <!-- Navbar -->
-    <header class="bg-white shadow-lg sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="flex items-center space-x-2">
-                <span class="bg-primary text-white text-2xl font-bold p-2 rounded-md">GGC</span>
-                <span class="text-xl font-semibold text-primary hidden sm:block">Gupta Group Contractor</span>
-            </a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#services" class="nav-link text-gray-700 font-medium">Services</a>
-                <a href="#designs" class="nav-link text-gray-700 font-medium">Designs</a>
-                <a href="#projects" class="nav-link text-gray-700 font-medium">Projects</a>
-                <a href="#contact" class="nav-link text-gray-700 font-medium">Contact</a>
-            </div>
-            <a href="#contact" class="hidden md:block bg-primary text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md">Get a Free Quote</a>
-            <button id="mobile-menu-button" class="md:hidden text-primary">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </nav>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-6 pb-4 border-t border-gray-200">
-            <a href="#services" class="block py-2 text-gray-700 hover:text-accent">Services</a>
-            <a href="#designs" class="block py-2 text-gray-700 hover:text-accent">Designs</a>
-            <a href="#projects" class="block py-2 text-gray-700 hover:text-accent">Projects</a>
-            <a href="#contact" class="block py-2 text-gray-700 hover:text-accent">Contact</a>
-            <a href="#contact" class="block mt-2 bg-primary text-white text-center px-4 py-2 rounded-full hover:bg-gray-800 transition duration-300">Get a Free Quote</a>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section -->
-        <section class="hero-section text-white h-[80vh] flex items-center">
-            <div class="container mx-auto px-6 text-center">
-                <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Painting Perfection, <span class="text-accent">Guaranteed.</span></h1>
-                <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto text-gray-300">GGC delivers flawless painting solutions for residential and commercial properties, crafting spaces that inspire.</p>
-                <a href="#projects" class="bg-accent text-primary font-bold px-8 py-3 rounded-full hover:bg-yellow-600 transition duration-300 transform hover:scale-105 shadow-lg">Explore Our Portfolio</a>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="py-20 md:py-28 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Expertise</h2>
-                    <p class="text-gray-600 mt-3 max-w-2xl mx-auto">We offer a complete range of professional painting services.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <div class="p-8 text-center bg-secondary rounded-xl card-hover">
-                        <div class="inline-block p-4 bg-accent rounded-full mb-5">
-                            <i class="fas fa-home text-3xl text-primary"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-primary">Residential Painting</h3>
-                        <p class="text-gray-600">Expert interior and exterior services to bring new life to your home.</p>
-                    </div>
-                    <div class="p-8 text-center bg-secondary rounded-xl card-hover">
-                         <div class="inline-block p-4 bg-accent rounded-full mb-5">
-                            <i class="fas fa-building text-3xl text-primary"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-primary">Commercial Painting</h3>
-                        <p class="text-gray-600">Tailored solutions for offices, retail, and industrial spaces.</p>
-                    </div>
-                    <div class="p-8 text-center bg-secondary rounded-xl card-hover">
-                         <div class="inline-block p-4 bg-accent rounded-full mb-5">
-                            <i class="fas fa-paint-roller text-3xl text-primary"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-primary">Specialty Finishes</h3>
-                        <p class="text-gray-600">From textured walls to decorative effects, we create unique finishes.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Designs Section -->
-        <section id="designs" class="py-20 md:py-28 bg-secondary">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Design Styles</h2>
-                    <p class="text-gray-600 mt-3 max-w-2xl mx-auto">Explore a variety of design options to find the perfect look for your space.</p>
-                </div>
-                <div id="design-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Designs will be loaded here -->
-                </div>
-            </div>
-        </section>
         
-        <!-- Projects Section -->
-        <section id="projects" class="py-20 md:py-28 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-primary">Our Recent Work</h2>
-                    <p class="text-gray-600 mt-3">A showcase of our craftsmanship and quality.</p>
+        <!-- Custom Modal -->
+        <div id="custom-modal" class="modal-backdrop hidden">
+            <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center transform transition-all scale-95 opacity-0" id="modal-content">
+                <p id="modal-message" class="mb-6 text-lg font-medium"></p>
+                <div id="modal-buttons" class="flex gap-4 justify-center"></div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="bg-white shadow-lg rounded-2xl p-4 mb-8 flex justify-between items-center sticky top-4 z-40">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg">CSC Campus Portal</h1>
+            <div id="user-info" class="hidden items-center gap-4">
+                <span id="user-email" class="font-semibold text-gray-600 hidden md:block"></span>
+                <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition-all shadow-md hover:shadow-lg"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
+            </div>
+        </header>
+
+        <!-- Auth View -->
+        <div id="auth-view" class="view active-view bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-2">Welcome Back!</h2>
+            <p class="text-center text-gray-500 mb-8">Login ya naya account banayein.</p>
+            <div class="mb-4">
+                <label for="email" class="block mb-2 font-semibold text-gray-600">Email Address</label>
+                <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="aapka@email.com">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block mb-2 font-semibold text-gray-600">Password</label>
+                <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="••••••••">
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button id="login-btn" class="flex-1 gradient-bg text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg">Login</button>
+                <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Signup</button>
+            </div>
+            <p class="text-center text-red-500 mt-4" id="auth-error"></p>
+        </div>
+
+        <!-- Role Selection View -->
+        <div id="role-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6">Aapka Role Chunein</h2>
+            <p class="mb-8">Ek baar chunne ke baad, aap ise badal nahi payenge.</p>
+            <div class="flex flex-col sm:flex-row gap-6">
+                 <button onclick="selectRole('teacher')" class="flex-1 bg-blue-500 text-white p-4 rounded-xl font-semibold text-lg hover:bg-blue-600 transition-all hover:scale-105 shadow-lg"><i class="fa-solid fa-chalkboard-user mr-2"></i>Main Teacher Hoon</button>
+                 <button onclick="selectRole('student')" class="flex-1 bg-purple-500 text-white p-4 rounded-xl font-semibold text-lg hover:bg-purple-600 transition-all hover:scale-105 shadow-lg"><i class="fa-solid fa-user-graduate mr-2"></i>Main Student Hoon</button>
+            </div>
+        </div>
+
+        <!-- Teacher Dashboard -->
+        <div id="teacher-dashboard" class="view">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-4xl font-bold">Teacher Dashboard</h2>
+                <button id="create-test-btn" class="gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Naya Test Banayein</button>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl">
+                <h3 class="text-2xl font-bold mb-6">Aapke Dwara Banaye Gaye Tests</h3>
+                <div id="teacher-test-list" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- Create/Edit Test View -->
+        <div id="create-test-view" class="view bg-white p-8 rounded-2xl shadow-xl">
+            <h2 id="test-form-title" class="text-3xl font-bold mb-8">Naya Test Banayein</h2>
+            <input type="hidden" id="test-id-input">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="test-title" class="block mb-2 font-semibold">Test ka Title:</label>
+                    <input type="text" id="test-title" class="w-full p-3 border-2 rounded-xl" placeholder="Jaise: Physics - Chapter 1">
                 </div>
-                <div id="project-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Projects will be loaded here -->
+                <div>
+                    <label for="test-schedule-time" class="block mb-2 font-semibold">Test Live Karne ka Samay (Optional):</label>
+                    <input type="datetime-local" id="test-schedule-time" class="w-full p-3 border-2 rounded-xl">
                 </div>
             </div>
-        </section>
+            <hr class="my-8">
+            <h3 class="text-2xl font-bold mb-6">Questions Jodein</h3>
+            <div id="questions-container" class="space-y-6"></div>
+            <button id="add-question-btn" class="mt-6 bg-green-500 text-white px-5 py-2 rounded-xl hover:bg-green-600 transition-all font-semibold"><i class="fa-solid fa-plus mr-2"></i>Question Jodein</button>
+            <div class="mt-8 flex gap-4">
+                <button id="save-test-btn" class="gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Test Save Karein</button>
+                <button id="cancel-test-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
+            </div>
+        </div>
 
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 md:py-28 bg-primary">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white">Let's Create Something Beautiful</h2>
-                    <p class="text-gray-400 mt-3 max-w-2xl mx-auto">Contact us today for a free, no-obligation consultation and quote.</p>
-                </div>
-                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-xl shadow-2xl">
-                    <div class="text-left">
-                        <h3 class="text-2xl font-semibold mb-6 text-primary">Contact Information</h3>
-                        <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-map-marker-alt w-6 text-accent mt-1"></i><span>Patna, Bihar, India</span></p>
-                        <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-phone w-6 text-accent mt-1"></i><span>+91 12345 67890</span></p>
-                        <p class="flex items-start mb-4 text-gray-700"><i class="fas fa-envelope w-6 text-accent mt-1"></i><span>contact@ggcontractor.com</span></p>
+        <!-- Student Dashboard -->
+        <div id="student-dashboard" class="view">
+            <h2 class="text-4xl font-bold mb-8">Student Dashboard</h2>
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-blue-100 rounded-full"><i class="fa-solid fa-file-alt text-2xl text-blue-500"></i></div>
+                        <div>
+                            <p class="text-gray-500">Kul Test Diye</p>
+                            <p id="stat-total-tests" class="text-3xl font-bold">0</p>
+                        </div>
                     </div>
-                    <form id="contact-form" class="space-y-5">
-                        <input type="text" placeholder="Your Name" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition">
-                        <input type="email" placeholder="Your Email" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition">
-                        <textarea placeholder="Tell us about your project..." rows="4" class="w-full p-3 bg-secondary border-2 border-transparent rounded-lg focus:outline-none focus:border-accent transition"></textarea>
-                        <button type="submit" class="w-full bg-primary text-white font-bold p-3 rounded-lg hover:bg-gray-800 transition duration-300">Send Inquiry</button>
-                    </form>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-green-100 rounded-full"><i class="fa-solid fa-bullseye text-2xl text-green-500"></i></div>
+                        <div>
+                            <p class="text-gray-500">Average Score</p>
+                            <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-yellow-100 rounded-full"><i class="fa-solid fa-crown text-2xl text-yellow-500"></i></div>
+                        <div>
+                            <p class="text-gray-500">Highest Score</p>
+                            <p id="stat-high-score" class="text-3xl font-bold">0%</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="stat-card">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 bg-red-100 rounded-full"><i class="fa-solid fa-arrow-trend-down text-2xl text-red-500"></i></div>
+                        <div>
+                            <p class="text-gray-500">Lowest Score</p>
+                            <p id="stat-low-score" class="text-3xl font-bold">0%</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-8">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 Gupta Group Contractor (GGC). All Rights Reserved.</p>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Available Tests -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
+                    <div id="student-test-list" class="space-y-4"></div>
+                </div>
+                <!-- Progress Chart -->
+                <div class="bg-white p-6 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-4">Performance Graph</h3>
+                    <canvas id="progress-chart"></canvas>
+                </div>
+            </div>
+             <div class="mt-8 bg-white p-6 rounded-2xl shadow-xl">
+                <h3 class="text-2xl font-bold mb-6">Aapki Test History</h3>
+                <div id="student-history-list" class="space-y-4"></div>
+            </div>
         </div>
-    </footer>
-    
-    <!-- Admin Control Bar -->
-    <div id="admin-bar" class="admin-control fixed bottom-0 left-0 w-full bg-primary text-white p-4 shadow-lg z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <span class="font-bold">Admin Dashboard</span>
-            <div class="space-x-4">
-                <button id="add-design-btn" class="bg-accent text-primary font-semibold px-4 py-2 rounded-full hover:bg-yellow-600 transition">Add Design</button>
-                <button id="add-project-btn" class="bg-accent text-primary font-semibold px-4 py-2 rounded-full hover:bg-yellow-600 transition">Add Project</button>
-                <button id="logout-btn" class="bg-red-500 text-white font-semibold px-4 py-2 rounded-full hover:bg-red-600 transition">Logout</button>
+
+        <!-- Test Taking View -->
+        <div id="test-taking-view" class="view bg-white p-8 rounded-2xl shadow-xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="active-test-title" class="text-3xl font-bold">Test Title</h2>
+            </div>
+            <div id="test-questions-container" class="space-y-8 mt-6"></div>
+            <button id="submit-test-btn" class="mt-8 w-full gradient-bg text-white p-4 rounded-xl font-bold text-xl hover:scale-105 transition-transform shadow-lg">Test Submit Karein</button>
+        </div>
+
+        <!-- Marksheet View -->
+        <div id="marksheet-view" class="view flex items-center justify-center p-4">
+            <div class="marksheet p-8 md:p-12 rounded-2xl shadow-2xl max-w-2xl w-full text-center relative">
+                <h2 class="text-5xl font-extrabold text-transparent bg-clip-text gradient-bg mb-4">Parinaam Patra</h2>
+                <div class="my-6 text-7xl text-indigo-200">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <h3 id="marksheet-student-name" class="text-3xl font-bold">Student ka Naam</h3>
+                <p id="marksheet-test-title" class="text-xl text-gray-600 mt-2 mb-8">Test ka Title</p>
+                
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <p class="text-lg text-gray-500">Kul Praptank</p>
+                    <p id="marksheet-score" class="text-7xl font-extrabold my-2 text-green-500">-- / --</p>
+                    <p id="marksheet-percentage" class="text-3xl font-bold text-transparent bg-clip-text gradient-bg"></p>
+                </div>
+
+                <p id="marksheet-date" class="text-gray-500 mt-8">Test Diya Gaya: DD/MM/YYYY</p>
+                <button onclick="showView('student-dashboard')" class="mt-8 gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Dashboard par Wapas Jayein</button>
             </div>
         </div>
     </div>
 
-    <!-- Image Gallery Modal -->
-    <div id="gallery-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="modal-body">
-                <img id="modal-main-image" src="" alt="Main Image" class="w-full h-auto max-h-[70vh] object-contain rounded-lg mb-4">
-                <h3 id="modal-title" class="text-2xl font-bold text-primary mb-2"></h3>
-                <p id="modal-description" class="text-gray-600 mb-4"></p>
-                <div id="modal-thumbnails" class="flex space-x-2 overflow-x-auto"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add/Edit Item Modal -->
-    <div id="edit-modal" class="modal">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg overflow-y-auto max-h-screen">
-            <h3 id="edit-modal-title" class="text-2xl font-bold text-primary mb-6"></h3>
-            <form id="edit-form">
-                <input type="hidden" id="edit-id">
-                <input type="hidden" id="edit-type">
-                <div class="mb-4">
-                    <label for="edit-title" class="block text-gray-700 mb-2">Title</label>
-                    <input type="text" id="edit-title" class="w-full p-3 border rounded-lg" required>
-                </div>
-                <div class="mb-4">
-                    <label for="edit-description" class="block text-gray-700 mb-2">Description</label>
-                    <textarea id="edit-description" rows="3" class="w-full p-3 border rounded-lg" required></textarea>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Images (select one or more)</label>
-                    <input type="file" id="edit-images" class="w-full p-2 border rounded-lg" multiple accept="image/*">
-                    <p class="text-sm text-gray-500 mt-1">If you don't select new images, the old ones will be kept.</p>
-                </div>
-                <div id="current-images-container" class="mb-4"></div>
-                <div class="flex justify-end space-x-4">
-                    <button type="button" id="cancel-edit-btn" class="bg-gray-300 px-6 py-2 rounded-lg">Cancel</button>
-                    <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- Notification -->
-    <div id="notification" class="notification text-white px-6 py-3 rounded-lg shadow-lg">
-        <p id="notification-message"></p>
-    </div>
-
-
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
-
-        // --- CONFIGURATION ---
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ggc-website';
-        const ADMIN_PASSWORD = "GGC@2024";
-
-        // --- FIREBASE INITIALIZATION ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // --- UI ELEMENTS ---
-        const adminLoginModal = document.getElementById('admin-login-modal');
-        const adminLoginForm = document.getElementById('admin-login-form');
-        const passwordInput = document.getElementById('password');
-        const loginError = document.getElementById('login-error');
-        const adminBar = document.getElementById('admin-bar');
-        const adminCardControls = '.admin-control-on-card'; // Class for edit/delete on cards
-        const logoutBtn = document.getElementById('logout-btn');
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        const designGallery = document.getElementById('design-gallery');
-        const projectGallery = document.getElementById('project-gallery');
-        const addDesignBtn = document.getElementById('add-design-btn');
-        const addProjectBtn = document.getElementById('add-project-btn');
+        const GOOGLE_SHEET_WEB_APP_URL = ""; // <-- YAHAN APNA GOOGLE APPS SCRIPT URL PASTE KAREIN
 
-        const galleryModal = document.getElementById('gallery-modal');
-        const modalCloseBtn = galleryModal.querySelector('.close');
-        const modalMainImage = document.getElementById('modal-main-image');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDescription = document.getElementById('modal-description');
-        const modalThumbnails = document.getElementById('modal-thumbnails');
+        // Your web app's Firebase configuration - Provided by you
+        const firebaseConfig = {
+          apiKey: "AIzaSyCTywtZz-kOZH1RJKXiEsO8SK4YlLyR3ck",
+          authDomain: "csc-campus-test-app.firebaseapp.com",
+          projectId: "csc-campus-test-app",
+          storageBucket: "csc-campus-test-app.appspot.com",
+          messagingSenderId: "798918081054",
+          appId: "1:798918081054:web:7587d7e6f83890d13fcc0f"
+        };
 
-        const editModal = document.getElementById('edit-modal');
-        const editForm = document.getElementById('edit-form');
-        const editModalTitle = document.getElementById('edit-modal-title');
-        const editId = document.getElementById('edit-id');
-        const editType = document.getElementById('edit-type');
-        const editTitle = document.getElementById('edit-title');
-        const editDescription = document.getElementById('edit-description');
-        const editImagesInput = document.getElementById('edit-images');
-        const currentImagesContainer = document.getElementById('current-images-container');
-        const cancelEditBtn = document.getElementById('cancel-edit-btn');
-
-        // --- AUTH & ADMIN LOGIC ---
-        function checkAdminStatus() {
-            const isTryingToLogin = window.location.hash === '#/admin';
-
-            if (sessionStorage.getItem('isAdmin') === 'true') {
-                adminLoginModal.style.display = 'none';
-                adminBar.style.display = 'block';
-                document.querySelectorAll(adminCardControls).forEach(el => el.style.display = 'flex');
-            } else if (isTryingToLogin) {
-                adminLoginModal.style.display = 'flex';
-                adminBar.style.display = 'none';
-                document.querySelectorAll(adminCardControls).forEach(el => el.style.display = 'none');
-            } else {
-                 adminLoginModal.style.display = 'none';
-                 adminBar.style.display = 'none';
-                 document.querySelectorAll(adminCardControls).forEach(el => el.style.display = 'none');
-            }
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            setLogLevel('debug');
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            document.body.innerHTML = `<div class="p-8 bg-red-100 text-red-800 text-center">Firebase configuration is invalid. The app cannot start.</div>`;
         }
 
-        adminLoginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (passwordInput.value === ADMIN_PASSWORD) {
-                sessionStorage.setItem('isAdmin', 'true');
-                window.location.hash = ''; // Remove hash from URL
-                checkAdminStatus();
-            } else {
-                loginError.textContent = 'Incorrect password.';
-            }
-        });
+        let currentUser = null;
+        let currentUserData = null;
+        let progressChart = null;
+        let countdownIntervals = {};
 
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('isAdmin');
-            window.location.hash = '';
-            window.location.reload();
-        });
+        const views = document.querySelectorAll('.view');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const modal = document.getElementById('custom-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalMessage = document.getElementById('modal-message');
+        const modalButtons = document.getElementById('modal-buttons');
 
-        // --- DATA LOADING ---
-        function loadCollection(collectionName, galleryElement, cardType) {
-            const q = collection(db, collectionName);
-            onSnapshot(q, (snapshot) => {
-                galleryElement.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const item = doc.data();
-                    const card = createCatalogCard(doc.id, item, collectionName, cardType);
-                    galleryElement.appendChild(card);
-                });
-                checkAdminStatus(); // Re-apply admin controls after re-render
+        const showView = (viewId) => {
+            views.forEach(view => view.classList.remove('active-view'));
+            const viewToShow = document.getElementById(viewId);
+            if(viewToShow) viewToShow.classList.add('active-view');
+        };
+
+        const showLoader = (show) => {
+            loadingSpinner.style.display = show ? 'flex' : 'none';
+        }
+
+        const showModal = (message, buttons) => {
+            modalMessage.textContent = message;
+            modalButtons.innerHTML = '';
+            buttons.forEach(btn => {
+                const buttonEl = document.createElement('button');
+                buttonEl.textContent = btn.text;
+                buttonEl.className = btn.classes;
+                buttonEl.onclick = () => {
+                    modal.style.display = 'none';
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                    if (btn.onClick) btn.onClick();
+                };
+                modalButtons.appendChild(buttonEl);
+            });
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        };
+
+        const showCustomAlert = (message) => {
+            showModal(message, [{ text: 'OK', classes: 'gradient-bg text-white px-6 py-2 rounded-xl font-semibold' }]);
+        };
+        
+        const showCustomConfirm = (message, onConfirm) => {
+            showModal(message, [
+                { text: 'Cancel', classes: 'bg-gray-300 px-6 py-2 rounded-xl font-semibold', onClick: () => onConfirm(false) },
+                { text: 'Confirm', classes: 'bg-red-500 text-white px-6 py-2 rounded-xl font-semibold', onClick: () => onConfirm(true) }
+            ]);
+        };
+
+        if (auth) {
+            onAuthStateChanged(auth, async (user) => {
+                showLoader(true);
+                Object.values(countdownIntervals).forEach(clearInterval);
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('user-info').classList.add('flex');
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('user-email').textContent = user.email;
+                    
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+
+                    if (userDocSnap.exists()) {
+                        currentUserData = userDocSnap.data();
+                        if (currentUserData.role === 'teacher') {
+                            showView('teacher-dashboard');
+                            loadTeacherDashboard();
+                        } else {
+                            showView('student-dashboard');
+                            loadStudentDashboard();
+                        }
+                    } else {
+                        showView('role-view');
+                    }
+                } else {
+                    currentUser = null;
+                    currentUserData = null;
+                    document.getElementById('user-info').classList.add('hidden');
+                    document.getElementById('user-info').classList.remove('flex');
+                    showView('auth-view');
+                }
+                showLoader(false);
             });
         }
 
-        function createCatalogCard(id, item, collectionName, cardType) {
-            const card = document.createElement('div');
-            card.className = `bg-${cardType === 'design' ? 'white' : 'secondary'} rounded-lg overflow-hidden shadow-lg card-hover relative`;
+        window.selectRole = async (role) => {
+            if (!currentUser) return;
+            showLoader(true);
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    email: currentUser.email,
+                    role: role,
+                    createdAt: serverTimestamp()
+                });
+                onAuthStateChanged(auth, auth.currentUser);
+            } catch (error) {
+                showCustomAlert("Role set karne mein samasya aayi.");
+                showLoader(false);
+            }
+        }
+        
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            document.getElementById('auth-error').textContent = '';
+            if(!email || !password) {
+                document.getElementById('auth-error').textContent = "Email aur password zaroori hai.";
+                return;
+            }
+            showLoader(true);
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                document.getElementById('auth-error').textContent = "Login fail ho gaya: " + error.message;
+                showLoader(false);
+            }
+        });
+
+        document.getElementById('signup-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            document.getElementById('auth-error').textContent = '';
+            if(!email || !password) {
+                document.getElementById('auth-error').textContent = "Email aur password zaroori hai.";
+                return;
+            }
+            showLoader(true);
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                document.getElementById('auth-error').textContent = "Signup fail ho gaya: " + error.message;
+                showLoader(false);
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+        // --- TEACHER DASHBOARD ---
+        const loadTeacherDashboard = async () => {
+            const testListContainer = document.getElementById('teacher-test-list');
+            testListContainer.innerHTML = '<p>Loading tests...</p>';
+            const q = query(collection(db, "tests"), where("createdBy", "==", currentUser.uid));
+            const querySnapshot = await getDocs(q);
             
-            const adminPanel = `
-                <div class="admin-control-on-card admin-control absolute top-2 right-2 flex space-x-2" style="z-index: 10;">
-                    <button data-id="${id}" class="edit-item-btn bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-pencil-alt"></i></button>
-                    <button data-id="${id}" class="delete-item-btn bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-trash"></i></button>
-                </div>
-            `;
-            
-            card.innerHTML = `
-                ${adminPanel}
-                <div class="catalog-item-content cursor-pointer">
-                    <img src="${item.images[0]}" alt="${item.title}" class="w-full h-${cardType === 'design' ? '52' : '60'} object-cover">
-                    <div class="p-5">
-                        <h4 class="text-lg font-bold text-primary">${item.title}</h4>
+            if(querySnapshot.empty) {
+                testListContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi banaya hai.</p>';
+                return;
+            }
+
+            testListContainer.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const test = doc.data();
+                let statusBadge = '';
+                const now = new Date();
+                const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
+
+                if (scheduledTime) {
+                    if (now < scheduledTime) {
+                        statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Scheduled</span>`;
+                    } else {
+                        statusBadge = `<span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Live</span>`;
+                    }
+                } else {
+                    statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Draft</span>`;
+                }
+
+                const testEl = document.createElement('div');
+                testEl.className = 'p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg flex justify-between items-center';
+                testEl.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-lg text-indigo-800">${test.title}</h4>
+                        <div class="mt-1">${statusBadge}</div>
                     </div>
-                </div>
-            `;
-            
-            card.querySelector('.catalog-item-content').addEventListener('click', () => {
-                openGalleryModal(item.title, item.description, item.images);
+                    <div>
+                        <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2" onclick="editTest('${doc.id}')"><i class="fa-solid fa-pencil"></i></button>
+                        <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteTest('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                testListContainer.appendChild(testEl);
             });
+        };
 
-            // Admin button event listeners
-            const editBtn = card.querySelector('.edit-item-btn');
-            if(editBtn) {
-                editBtn.addEventListener('click', () => openEditModal(collectionName, id, item));
-            }
-            const deleteBtn = card.querySelector('.delete-item-btn');
-if(deleteBtn) {
-                deleteBtn.addEventListener('click', () => deleteItem(collectionName, id));
-            }
-            
-            return card;
-        }
-
-        // --- GALLERY MODAL LOGIC ---
-        function openGalleryModal(title, description, images) {
-            modalTitle.textContent = title;
-            modalDescription.textContent = description;
-            modalMainImage.src = images[0];
-            modalThumbnails.innerHTML = '';
-            images.forEach((src, index) => {
-                const thumb = document.createElement('img');
-                thumb.src = src;
-                thumb.className = 'thumbnail w-20 h-20 object-cover rounded-md';
-                if (index === 0) thumb.classList.add('active');
-                thumb.addEventListener('click', () => {
-                    modalMainImage.src = src;
-                    modalThumbnails.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                    thumb.classList.add('active');
-                });
-                modalThumbnails.appendChild(thumb);
-            });
-            galleryModal.style.display = 'flex';
-        }
-        modalCloseBtn.addEventListener('click', () => galleryModal.style.display = 'none');
-        window.addEventListener('click', (event) => {
-            if (event.target == galleryModal) galleryModal.style.display = 'none';
+        // --- CREATE/EDIT TEST LOGIC ---
+        let questionCount = 0;
+        document.getElementById('create-test-btn').addEventListener('click', () => {
+            document.getElementById('test-form-title').textContent = 'Naya Test Banayein';
+            document.getElementById('test-id-input').value = '';
+            document.getElementById('test-title').value = '';
+            document.getElementById('test-schedule-time').value = '';
+            document.getElementById('questions-container').innerHTML = '';
+            questionCount = 0;
+            addQuestionForm();
+            showView('create-test-view');
         });
 
-        // --- EDIT/ADD MODAL LOGIC ---
-        function openEditModal(type, id = null, item = null) {
-            editForm.reset();
-            editType.value = type;
-            currentImagesContainer.innerHTML = '';
+        document.getElementById('cancel-test-btn').addEventListener('click', () => showView('teacher-dashboard'));
 
-            if (id && item) { // Editing existing item
-                editModalTitle.textContent = `Edit ${type.slice(0, -1)}`;
-                editId.value = id;
-                editTitle.value = item.title;
-                editDescription.value = item.description;
-                
-                // Display current images
-                currentImagesContainer.innerHTML = '<p class="text-sm font-medium text-gray-700 mb-2">Current Images:</p>';
-                item.images.forEach(url => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.className = 'w-16 h-16 object-cover rounded-md inline-block mr-2';
-                    currentImagesContainer.appendChild(img);
-                });
-            } else { // Adding new item
-                editModalTitle.textContent = `Add New ${type.slice(0, -1)}`;
-                editId.value = '';
+        const addQuestionForm = (questionData = {}) => {
+            questionCount++;
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'p-4 border rounded-xl bg-gray-50 relative';
+            questionDiv.id = `question-${questionCount}`;
+            questionDiv.innerHTML = `
+                <label class="block mb-2 font-semibold">Question ${questionCount}:</label>
+                <textarea class="w-full p-2 border rounded-lg question-text" rows="2" placeholder="Yahan question likhein">${questionData.questionText || ''}</textarea>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    ${[0, 1, 2, 3].map(i => `
+                        <div class="flex items-center bg-white p-2 rounded-lg border">
+                            <input type="radio" name="correct-answer-${questionCount}" value="${i}" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded correct-answer" ${questionData.correctAnswerIndex == i ? 'checked' : ''}>
+                            <input type="text" class="w-full ml-3 p-1 border-0 focus:ring-0 option-text" placeholder="Option ${i + 1}" value="${questionData.options ? questionData.options[i] : ''}">
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('questions-container').appendChild(questionDiv);
+        };
+
+        document.getElementById('add-question-btn').addEventListener('click', () => addQuestionForm());
+
+        document.getElementById('save-test-btn').addEventListener('click', async () => {
+            const testId = document.getElementById('test-id-input').value;
+            const title = document.getElementById('test-title').value;
+            const scheduleTime = document.getElementById('test-schedule-time').value;
+
+            if (!title) {
+                showCustomAlert('Test ka title zaroori hai.');
+                return;
             }
-            editModal.style.display = 'flex';
-        }
 
-        addDesignBtn.addEventListener('click', () => openEditModal('designs'));
-        addProjectBtn.addEventListener('click', () => openEditModal('projects'));
-        cancelEditBtn.addEventListener('click', () => editModal.style.display = 'none');
-
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = editId.value;
-            const type = editType.value;
-            const files = editImagesInput.files;
-            
-            let imageUrls = [];
-            // Handle image uploads
-            if (files.length > 0) {
-                for(const file of files) {
-                    const storageRef = ref(storage, `${type}/${Date.now()}-${file.name}`);
-                    await uploadBytes(storageRef, file);
-                    const url = await getDownloadURL(storageRef);
-                    imageUrls.push(url);
-                }
+            const questions = [];
+            const questionForms = document.querySelectorAll('#questions-container > div');
+            if (questionForms.length === 0) {
+                showCustomAlert('Kam se kam ek question jodein.');
+                return;
             }
-            
-            const data = {
-                title: editTitle.value,
-                description: editDescription.value,
-            };
+            for (const form of questionForms) {
+                const questionText = form.querySelector('.question-text').value;
+                const options = Array.from(form.querySelectorAll('.option-text')).map(input => input.value);
+                const correctAnswerInput = form.querySelector('.correct-answer:checked');
 
-            if (id) { // Update
-                const docRef = doc(db, type, id);
-                if (imageUrls.length > 0) { // If new images were uploaded
-                    data.images = imageUrls;
-                }
-                await updateDoc(docRef, data);
-                showNotification('Item updated successfully!', 'success');
-            } else { // Add
-                if (imageUrls.length === 0) {
-                    showNotification('Please upload at least one image for a new item.', 'error');
+                if (!questionText || options.some(opt => !opt) || !correctAnswerInput) {
+                    showCustomAlert('Har question aur uske options ko bharein, aur sahi jawab chunein.');
                     return;
                 }
-                data.images = imageUrls;
-                await addDoc(collection(db, type), data);
-                showNotification('Item added successfully!', 'success');
+                questions.push({
+                    questionText,
+                    options,
+                    correctAnswerIndex: parseInt(correctAnswerInput.value)
+                });
             }
 
-            editModal.style.display = 'none';
-        });
+            showLoader(true);
+            const testData = {
+                title,
+                createdBy: currentUser.uid,
+                createdAt: serverTimestamp(),
+                scheduledAt: scheduleTime ? new Date(scheduleTime) : null
+            };
 
-        // --- DELETE LOGIC ---
-        async function deleteItem(collectionName, id) {
-            if (confirm('Are you sure you want to delete this item?')) {
-                await deleteDoc(doc(db, collectionName, id));
-                showNotification('Item deleted successfully.', 'success');
-            }
-        }
+            try {
+                let currentTestId = testId;
+                if (testId) {
+                    const testRef = doc(db, "tests", testId);
+                    await updateDoc(testRef, testData);
+                } else {
+                    const testDocRef = await addDoc(collection(db, "tests"), testData);
+                    currentTestId = testDocRef.id;
+                }
+                
+                const q = query(collection(db, "questions"), where("testId", "==", currentTestId));
+                const oldQuestionsSnap = await getDocs(q);
+                for (const docSnap of oldQuestionsSnap.docs) {
+                    await deleteDoc(doc(db, "questions", docSnap.id));
+                }
+                for (const qData of questions) {
+                    await addDoc(collection(db, "questions"), { testId: currentTestId, ...qData });
+                }
 
-        // --- UTILITY ---
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            const notificationMessage = document.getElementById('notification-message');
-            notificationMessage.textContent = message;
-            notification.className = `notification text-white px-6 py-3 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // --- INITIAL LOAD ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadCollection('designs', designGallery, 'design');
-                loadCollection('projects', projectGallery, 'project');
-            } else {
-                signInAnonymously(auth).catch(error => console.error("Anonymous sign-in failed:", error));
+                showCustomAlert('Test successfully save ho gaya!');
+                showView('teacher-dashboard');
+                loadTeacherDashboard();
+            } catch (error) {
+                console.error("Test save karne mein error: ", error);
+                showCustomAlert("Test save karne mein samasya aayi.");
+            } finally {
+                showLoader(false);
             }
         });
         
-        checkAdminStatus();
-        window.addEventListener('hashchange', checkAdminStatus);
+        window.editTest = async (testId) => {
+            showLoader(true);
+            const testDoc = await getDoc(doc(db, "tests", testId));
+            if (!testDoc.exists()) {
+                showCustomAlert('Test nahi mila!');
+                showLoader(false);
+                return;
+            }
+            
+            const testData = testDoc.data();
+            document.getElementById('test-form-title').textContent = 'Test Edit Karein';
+            document.getElementById('test-id-input').value = testId;
+            document.getElementById('test-title').value = testData.title;
+            if (testData.scheduledAt) {
+                const d = testData.scheduledAt.toDate();
+                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                document.getElementById('test-schedule-time').value = d.toISOString().slice(0,16);
+            } else {
+                 document.getElementById('test-schedule-time').value = '';
+            }
+
+            const questionsContainer = document.getElementById('questions-container');
+            questionsContainer.innerHTML = '';
+            questionCount = 0;
+            
+            const q = query(collection(db, "questions"), where("testId", "==", testId));
+            const questionsSnap = await getDocs(q);
+            questionsSnap.forEach(doc => addQuestionForm(doc.data()));
+
+            showView('create-test-view');
+            showLoader(false);
+        };
+        
+        window.deleteTest = (testId) => {
+            showCustomConfirm('Kya aap sach mein is test ko delete karna chahte hain?', async (confirmed) => {
+                if (!confirmed) return;
+                
+                showLoader(true);
+                try {
+                    const q = query(collection(db, "questions"), where("testId", "==", testId));
+                    const questionsSnap = await getDocs(q);
+                    for (const docSnap of questionsSnap.docs) {
+                        await deleteDoc(doc(db, "questions", docSnap.id));
+                    }
+                    await deleteDoc(doc(db, "tests", testId));
+                    showCustomAlert('Test delete ho gaya.');
+                    loadTeacherDashboard();
+                } catch (error) {
+                    showCustomAlert("Test delete karne mein samasya aayi.");
+                } finally {
+                    showLoader(false);
+                }
+            });
+        };
+
+        // --- STUDENT DASHBOARD ---
+        const loadStudentDashboard = async () => {
+            const testListContainer = document.getElementById('student-test-list');
+            testListContainer.innerHTML = '<p>Loading tests...</p>';
+            const testsSnapshot = await getDocs(collection(db, "tests"));
+            testListContainer.innerHTML = '';
+            
+            Object.values(countdownIntervals).forEach(clearInterval);
+
+            testsSnapshot.forEach((doc) => {
+                const test = doc.data();
+                const testEl = document.createElement('div');
+                testEl.className = 'p-4 border rounded-xl flex justify-between items-center transition-all hover:shadow-md hover:border-indigo-300';
+                
+                const now = new Date();
+                const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
+                let actionButton = '';
+
+                if (scheduledTime && now < scheduledTime) {
+                    const timerId = `timer-${doc.id}`;
+                    actionButton = `<div id="${timerId}" class="text-lg font-bold text-red-500">Loading...</div>`;
+                    
+                    countdownIntervals[doc.id] = setInterval(() => {
+                        const timeLeft = scheduledTime - new Date();
+                        const timerEl = document.getElementById(timerId);
+                        if(!timerEl) {
+                            clearInterval(countdownIntervals[doc.id]);
+                            return;
+                        }
+
+                        if (timeLeft <= 0) {
+                            clearInterval(countdownIntervals[doc.id]);
+                            timerEl.parentElement.innerHTML = `<button class="gradient-bg text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
+                        } else {
+                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                            timerEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                        }
+                    }, 1000);
+
+                } else {
+                    actionButton = `<button class="gradient-bg text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
+                }
+
+                testEl.innerHTML = `
+                    <h4 class="font-bold text-lg">${test.title}</h4>
+                    ${actionButton}
+                `;
+                testListContainer.appendChild(testEl);
+            });
+
+            loadStudentHistory();
+        };
+        
+        const loadStudentHistory = async () => {
+            const historyContainer = document.getElementById('student-history-list');
+            historyContainer.innerHTML = '<p>Loading history...</p>';
+            const q = query(collection(db, "results"), where("studentId", "==", currentUser.uid));
+            const resultsSnap = await getDocs(q);
+            
+            if(resultsSnap.empty) {
+                historyContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi diya hai.</p>';
+                if(progressChart) progressChart.destroy();
+                document.getElementById('stat-total-tests').textContent = 0;
+                document.getElementById('stat-avg-score').textContent = `0%`;
+                document.getElementById('stat-high-score').textContent = `0%`;
+                document.getElementById('stat-low-score').textContent = `0%`;
+                return;
+            }
+            
+            let totalTests = resultsSnap.size;
+            let totalPercentage = 0;
+            let high_score = 0;
+            let low_score = 100;
+
+            historyContainer.innerHTML = '';
+            const chartData = { labels: [], scores: [] };
+            const resultsWithTitles = [];
+
+            for(const resultDoc of resultsSnap.docs) {
+                const result = resultDoc.data();
+                const testDoc = await getDoc(doc(db, "tests", result.testId));
+                const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
+                resultsWithTitles.push({ ...result, testTitle });
+            }
+            
+            resultsWithTitles.sort((a, b) => a.submittedAt.seconds - b.submittedAt.seconds);
+
+            resultsWithTitles.forEach(result => {
+                const percentage = (result.score / result.totalMarks) * 100;
+                totalPercentage += percentage;
+                if(percentage > high_score) high_score = percentage;
+                if(percentage < low_score) low_score = percentage;
+
+                const resultEl = document.createElement('div');
+                resultEl.className = 'p-4 border rounded-xl';
+                resultEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${result.testTitle}</p>
+                            <p class="text-sm text-gray-500">Diya gaya: ${new Date(result.submittedAt.seconds * 1000).toLocaleString()}</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="font-bold text-lg text-green-600">${result.score} / ${result.totalMarks}</p>
+                             <p class="font-bold text-indigo-600">${percentage.toFixed(1)}%</p>
+                        </div>
+                    </div>
+                `;
+                historyContainer.appendChild(resultEl);
+                chartData.labels.push(result.testTitle);
+                chartData.scores.push(percentage);
+            });
+            
+            document.getElementById('stat-total-tests').textContent = totalTests;
+            document.getElementById('stat-avg-score').textContent = `${(totalPercentage / totalTests).toFixed(1)}%`;
+            document.getElementById('stat-high-score').textContent = `${high_score.toFixed(1)}%`;
+            document.getElementById('stat-low-score').textContent = `${low_score.toFixed(1)}%`;
+
+            renderProgressChart(chartData.labels, chartData.scores);
+        };
+
+        const renderProgressChart = (labels, scores) => {
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            if (progressChart) progressChart.destroy();
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Performance (%)',
+                        data: scores,
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true, max: 100 } }, responsive: true }
+            });
+        };
+
+        // --- TEST TAKING LOGIC ---
+        let activeTestId = null;
+        window.startTest = async (testId, testTitle) => {
+            activeTestId = testId;
+            document.getElementById('active-test-title').textContent = testTitle;
+            const questionsContainer = document.getElementById('test-questions-container');
+            questionsContainer.innerHTML = '<p>Loading questions...</p>';
+            showView('test-taking-view');
+            showLoader(true);
+
+            const q = query(collection(db, "questions"), where("testId", "==", testId));
+            const questionsSnap = await getDocs(q);
+            questionsContainer.innerHTML = '';
+            let qIndex = 0;
+            questionsSnap.forEach(doc => {
+                const question = doc.data();
+                const questionEl = document.createElement('div');
+                questionEl.dataset.questionId = doc.id;
+                questionEl.innerHTML = `
+                    <p class="font-semibold text-xl mb-4">${qIndex + 1}. ${question.questionText}</p>
+                    <div class="space-y-3">
+                        ${question.options.map((opt, i) => `
+                            <label class="block p-4 border-2 rounded-xl hover:bg-indigo-50 hover:border-indigo-400 cursor-pointer transition">
+                                <input type="radio" name="question-${doc.id}" value="${i}" class="mr-3 h-5 w-5">
+                                <span class="text-lg">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionEl);
+                qIndex++;
+            });
+            showLoader(false);
+        };
+
+        document.getElementById('submit-test-btn').addEventListener('click', () => {
+            showCustomConfirm('Kya aap test submit karna chahte hain? Iske baad aap badlav nahi kar payenge.', async (confirmed) => {
+                if(!confirmed) return;
+
+                showLoader(true);
+                const answers = [];
+                const questionElements = document.querySelectorAll('#test-questions-container > div');
+                questionElements.forEach(el => {
+                    const questionId = el.dataset.questionId;
+                    const selectedInput = el.querySelector(`input[name="question-${questionId}"]:checked`);
+                    answers.push({
+                        questionId,
+                        selectedAnswer: selectedInput ? parseInt(selectedInput.value) : -1
+                    });
+                });
+
+                let score = 0;
+                const questionDocs = await getDocs(query(collection(db, "questions"), where("testId", "==", activeTestId)));
+                const correctAnswers = {};
+                questionDocs.forEach(doc => {
+                    correctAnswers[doc.id] = doc.data().correctAnswerIndex;
+                });
+
+                answers.forEach(ans => {
+                    if (ans.selectedAnswer === correctAnswers[ans.questionId]) {
+                        score++;
+                    }
+                });
+                
+                const resultRef = await addDoc(collection(db, "results"), {
+                    studentId: currentUser.uid,
+                    studentEmail: currentUser.email,
+                    testId: activeTestId,
+                    score: score,
+                    totalMarks: questionElements.length,
+                    submittedAt: serverTimestamp()
+                });
+                
+                const resultData = (await getDoc(resultRef)).data();
+                sendDataToGoogleSheet(resultData);
+                showMarksheet(resultData);
+                showLoader(false);
+            });
+        });
+        
+        const sendDataToGoogleSheet = async (resultData) => {
+            if (!GOOGLE_SHEET_WEB_APP_URL) {
+                console.log("Google Sheet URL not configured. Skipping data upload.");
+                return;
+            }
+
+            const testDoc = await getDoc(doc(db, "tests", resultData.testId));
+            const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
+
+            const dataToSend = {
+                timestamp: new Date(resultData.submittedAt.seconds * 1000).toLocaleString(),
+                studentEmail: resultData.studentEmail,
+                testTitle: testTitle,
+                score: resultData.score,
+                totalMarks: resultData.totalMarks,
+                percentage: ((resultData.score / resultData.totalMarks) * 100).toFixed(2)
+            };
+
+            try {
+                await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+                console.log("Result successfully sent to Google Sheet.");
+            } catch (error) {
+                console.error("Error sending data to Google Sheet:", error);
+            }
+        };
+
+        // --- MARKSHEET ---
+        const showMarksheet = async (resultData) => {
+            const testDoc = await getDoc(doc(db, "tests", resultData.testId));
+            
+            document.getElementById('marksheet-student-name').textContent = currentUser.email;
+            document.getElementById('marksheet-test-title').textContent = testDoc.exists() ? testDoc.data().title : 'Test';
+            document.getElementById('marksheet-score').textContent = `${resultData.score} / ${resultData.totalMarks}`;
+            const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(2) : 0;
+            document.getElementById('marksheet-percentage').textContent = `${percentage}%`;
+            document.getElementById('marksheet-date').textContent = `Test Diya Gaya: ${new Date(resultData.submittedAt.seconds * 1000).toLocaleString()}`;
+            
+            showView('marksheet-view');
+        };
 
     </script>
 </body>
 </html>
-
