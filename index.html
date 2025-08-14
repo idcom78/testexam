@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSC Campus - Online Test Platform</title>
+    <title>CSC Campus - Professional Test Platform</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for diagrams -->
@@ -20,7 +20,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #e0e7ff; /* Light indigo background */
         }
         .view {
             display: none;
@@ -33,31 +33,22 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+        .gradient-bg-student { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); }
+        .gradient-bg-teacher { background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%); }
         .marksheet-container {
             background-color: #e9eaf7;
-            padding: 2rem;
+            padding: 1rem;
             border-radius: 1rem;
         }
         .marksheet {
             background: white;
             border: 1px solid #ddd;
-            padding: 2.5rem;
+            padding: 2rem;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .marksheet::before, .marksheet::after {
-            content: '';
-            position: absolute;
-            width: 95%;
-            height: 95%;
-            border: 3px double #a8b2e4;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
+            width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            margin: auto;
         }
         .certificate-title {
             font-family: 'Lora', serif;
@@ -104,12 +95,79 @@
             background: #9ca3af;
             cursor: not-allowed;
         }
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            z-index: 50;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+        .nav-item.active {
+            color: #667eea;
+        }
+        .nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        /* Role Toggle Switch */
+        .role-toggle {
+            display: flex;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            padding: 0.25rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .role-toggle button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            color: #4b5563;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+        .role-toggle .glider {
+            position: absolute;
+            top: 0.25rem;
+            bottom: 0.25rem;
+            width: calc(50% - 0.25rem);
+            border-radius: 9999px;
+            transition: transform 0.3s ease-in-out;
+            z-index: 5;
+        }
+        .role-toggle .glider.student {
+            transform: translateX(0%);
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+        }
+        .role-toggle .glider.teacher {
+            transform: translateX(100%);
+            background: linear-gradient(135deg, #7dd3fc, #0ea5e9);
+        }
+        .role-toggle button.active {
+            color: white;
+        }
     </style>
 </head>
 <body class="text-gray-700">
 
     <!-- Main Container -->
-    <div id="app" class="container mx-auto p-4 max-w-7xl">
+    <div id="app" class="container mx-auto p-4 max-w-7xl pb-24">
 
         <!-- Loading Spinner -->
         <div id="loading-spinner" class="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
@@ -125,57 +183,60 @@
         </div>
 
         <!-- Header -->
-        <header class="bg-white shadow-lg rounded-2xl p-4 mb-8 flex justify-between items-center sticky top-4 z-40">
-            <a href="#" id="home-link" class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg">CSC Campus Portal</a>
-            <nav id="main-nav" class="hidden sm:flex items-center gap-6">
-                <a href="#" class="font-semibold text-gray-600 hover:text-indigo-600" onclick="showLoginPortal('student')">Student Portal</a>
-                <a href="#" class="font-semibold text-gray-600 hover:text-indigo-600" onclick="showLoginPortal('teacher')">Teacher Portal</a>
-            </nav>
+        <header id="main-header" class="bg-white shadow-lg rounded-2xl p-4 mb-8 flex justify-between items-center sticky top-4 z-40 hidden">
+            <a href="#" id="home-link" class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg-student">CSC Campus Portal</a>
             <div id="user-info" class="hidden items-center gap-4">
                 <span id="user-name-display" class="font-semibold text-gray-600 hidden md:block"></span>
                 <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition-all shadow-md hover:shadow-lg"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
             </div>
         </header>
 
-        <!-- Landing View -->
-        <div id="landing-view" class="view active-view text-center">
-            <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-4xl mx-auto">
-                <h2 class="text-5xl font-extrabold mb-4">Online Test Platform mein Aapka Swagat Hai</h2>
-                <p class="text-xl text-gray-500 mb-12">Apna role chunein aur shuru karein.</p>
-                <div class="flex flex-col md:flex-row gap-8 justify-center">
-                    <button onclick="showLoginPortal('student')" class="flex-1 bg-purple-500 text-white p-8 rounded-2xl font-bold text-2xl hover:bg-purple-600 transition-all hover:scale-105 shadow-lg">
-                        <i class="fa-solid fa-user-graduate text-4xl mb-4"></i><br>Student Portal
-                    </button>
-                    <button onclick="showLoginPortal('teacher')" class="flex-1 bg-blue-500 text-white p-8 rounded-2xl font-bold text-2xl hover:bg-blue-600 transition-all hover:scale-105 shadow-lg">
-                        <i class="fa-solid fa-chalkboard-user text-4xl mb-4"></i><br>Teacher Portal
-                    </button>
+        <!-- Auth View -->
+        <div id="auth-view" class="view active-view flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl w-full max-w-lg mx-auto">
+                <div class="role-toggle">
+                    <div id="role-glider" class="glider student"></div>
+                    <button id="role-student-btn" class="active">Student</button>
+                    <button id="role-teacher-btn">Teacher</button>
                 </div>
+                <h2 id="auth-title" class="text-3xl font-bold text-center mb-2"></h2>
+                <p id="auth-subtitle" class="text-center text-gray-500 mb-8"></p>
+                <div id="name-field" class="mb-4">
+                    <label for="name" class="block mb-2 font-semibold text-gray-600">Aapka Poora Naam</label>
+                    <input type="text" id="name" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Jaise: Kumar Sanu">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block mb-2 font-semibold text-gray-600">Email Address</label>
+                    <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="aapka@email.com">
+                </div>
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <label for="password" class="block mb-2 font-semibold text-gray-600">Password</label>
+                        <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline">Password Bhool Gaye?</a>
+                    </div>
+                    <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Kam se kam 6 characters">
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="login-btn" class="flex-1 text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg">Login</button>
+                    <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Naya Account Banayein</button>
+                </div>
+                <p class="text-center text-red-500 mt-4" id="auth-error"></p>
+                <p class="text-center mt-4"><a href="#" id="auth-mode-switch" class="text-indigo-600 hover:underline">Signup karna hai?</a></p>
             </div>
+        </div>
+        
+        <!-- Forgot Password View -->
+        <div id="forgot-password-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
+            <i class="fa-solid fa-key text-6xl text-yellow-500 mb-6"></i>
+            <h2 class="text-3xl font-bold mb-4">Password Reset Karein</h2>
+            <p class="mb-6 text-lg">Apna email address daalein. Hum aapko password reset karne ke liye ek link bhejenge.</p>
+            <div class="mb-4">
+                <input type="email" id="reset-email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Aapka registered email">
+            </div>
+            <button id="send-reset-link-btn" class="w-full mt-2 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Reset Link Bhejein</button>
+            <p class="text-center mt-6"><a href="#" id="back-to-login-link" class="text-indigo-600 hover:underline">Login par wapas jaayein</a></p>
         </div>
 
-        <!-- Auth View -->
-        <div id="auth-view" class="view bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
-            <h2 id="auth-title" class="text-3xl font-bold text-center mb-2"></h2>
-            <p id="auth-subtitle" class="text-center text-gray-500 mb-8"></p>
-            <div id="name-field" class="mb-4">
-                <label for="name" class="block mb-2 font-semibold text-gray-600">Aapka Poora Naam</label>
-                <input type="text" id="name" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Jaise: Kumar Sanu">
-            </div>
-            <div class="mb-4">
-                <label for="email" class="block mb-2 font-semibold text-gray-600">Email Address</label>
-                <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="aapka@email.com">
-            </div>
-            <div class="mb-6">
-                <label for="password" class="block mb-2 font-semibold text-gray-600">Password</label>
-                <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Kam se kam 6 characters">
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button id="login-btn" class="flex-1 gradient-bg text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg">Login</button>
-                <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Naya Account Banayein</button>
-            </div>
-            <p class="text-center text-red-500 mt-4" id="auth-error"></p>
-            <p class="text-center mt-4"><a href="#" id="auth-mode-switch" class="text-indigo-600 hover:underline">Signup karna hai?</a></p>
-        </div>
 
         <!-- Email Verification View -->
         <div id="email-verify-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
@@ -183,7 +244,7 @@
             <h2 class="text-3xl font-bold mb-4">Apna Email Verify Karein</h2>
             <p class="mb-6 text-lg">Humne aapke email address par ek verification link bheja hai. Kripya apna inbox check karein aur link par click karke apna account activate karein.</p>
             <p class="text-gray-500">Agar email nahi mila, to spam folder check karein.</p>
-            <button id="resend-verification-btn" class="mt-6 gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Verification Email Dobara Bhejein</button>
+            <button id="resend-verification-btn" class="mt-6 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Verification Email Dobara Bhejein</button>
         </div>
         
         <!-- Forbidden View -->
@@ -191,107 +252,151 @@
             <i class="fa-solid fa-hand text-7xl text-red-500 mb-6"></i>
             <h2 class="text-3xl font-bold mb-4">Access Denied</h2>
             <p class="mb-6 text-lg">Aapke paas is page ko dekhne ki anumati nahi hai.</p>
-            <button id="back-to-dashboard-btn" class="mt-6 gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Apne Dashboard par Wapas Jayein</button>
+            <button id="back-to-dashboard-btn" class="mt-6 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Apne Dashboard par Wapas Jayein</button>
         </div>
 
-        <!-- Teacher Dashboard -->
-        <div id="teacher-dashboard" class="view">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-4xl font-bold">Teacher Dashboard</h2>
-                <button id="create-test-btn" class="gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Naya Test Banayein</button>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-xl">
-                <h3 class="text-2xl font-bold mb-6">Aapke Dwara Banaye Gaye Tests</h3>
-                <div id="teacher-test-list" class="space-y-4"></div>
-            </div>
-        </div>
-
-        <!-- Create/Edit Test View -->
-        <div id="create-test-view" class="view bg-white p-8 rounded-2xl shadow-xl">
-            <h2 id="test-form-title" class="text-3xl font-bold mb-8">Naya Test Banayein</h2>
-            <input type="hidden" id="test-id-input">
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <label for="test-title" class="block mb-2 font-semibold">Test ka Title:</label>
-                    <input type="text" id="test-title" class="w-full p-3 border-2 rounded-xl" placeholder="Jaise: Physics - Chapter 1">
-                </div>
-                <div>
-                    <label for="test-schedule-time" class="block mb-2 font-semibold">Test Live Karne ka Samay (Optional):</label>
-                    <input type="datetime-local" id="test-schedule-time" class="w-full p-3 border-2 rounded-xl">
-                </div>
-            </div>
-            <hr class="my-8">
-            <h3 class="text-2xl font-bold mb-6">Questions Jodein</h3>
-            <div id="questions-container" class="space-y-6"></div>
-            <button id="add-question-btn" class="mt-6 bg-green-500 text-white px-5 py-2 rounded-xl hover:bg-green-600 transition-all font-semibold"><i class="fa-solid fa-plus mr-2"></i>Question Jodein</button>
-            <div class="mt-8 flex gap-4">
-                <button id="save-test-btn" class="gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Test Save Karein</button>
-                <button id="cancel-test-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
-            </div>
-        </div>
-
-        <!-- Student Dashboard -->
-        <div id="student-dashboard" class="view">
-            <h2 class="text-4xl font-bold mb-8">Student Dashboard</h2>
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card">
-                    <div class="flex items-center gap-4">
-                        <div class="p-4 bg-blue-100 rounded-full"><i class="fa-solid fa-file-alt text-2xl text-blue-500"></i></div>
-                        <div>
-                            <p class="text-gray-500">Kul Test Diye</p>
-                            <p id="stat-total-tests" class="text-3xl font-bold">0</p>
-                        </div>
+        <!-- Teacher Views Wrapper -->
+        <div id="teacher-wrapper" class="view">
+             <!-- Teacher Dashboard -->
+            <div id="teacher-dashboard-view">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-4xl font-bold">Teacher Dashboard</h2>
+                    <div class="flex gap-4">
+                        <button id="send-notice-btn" class="bg-yellow-500 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-bullhorn mr-2"></i>Notice Bhejein</button>
+                        <button id="create-test-btn" class="gradient-bg-teacher text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Naya Test Banayein</button>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="flex items-center gap-4">
-                        <div class="p-4 bg-green-100 rounded-full"><i class="fa-solid fa-bullseye text-2xl text-green-500"></i></div>
-                        <div>
-                            <p class="text-gray-500">Average Score</p>
-                            <div class="flex items-center gap-2">
-                                <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
-                                <span id="stat-trend" class="text-lg"></span>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-2xl font-bold mb-6">Aapke Dwara Banaye Gaye Tests</h3>
+                        <div id="teacher-test-list" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-2xl font-bold mb-6">Registered Students</h3>
+                        <div id="student-list-container" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Create/Edit Test View -->
+            <div id="create-test-view" class="hidden bg-white p-8 rounded-2xl shadow-xl">
+                <h2 id="test-form-title" class="text-3xl font-bold mb-8">Naya Test Banayein</h2>
+                <input type="hidden" id="test-id-input">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="test-title" class="block mb-2 font-semibold">Test ka Title:</label>
+                        <input type="text" id="test-title" class="w-full p-3 border-2 rounded-xl" placeholder="Jaise: Physics - Chapter 1">
+                    </div>
+                    <div>
+                        <label for="test-schedule-time" class="block mb-2 font-semibold">Test Live Karne ka Samay (Optional):</label>
+                        <input type="datetime-local" id="test-schedule-time" class="w-full p-3 border-2 rounded-xl">
+                    </div>
+                </div>
+                <hr class="my-8">
+                <h3 class="text-2xl font-bold mb-6">Questions Jodein</h3>
+                <div id="questions-container" class="space-y-6"></div>
+                <button id="add-question-btn" class="mt-6 bg-green-500 text-white px-5 py-2 rounded-xl hover:bg-green-600 transition-all font-semibold"><i class="fa-solid fa-plus mr-2"></i>Question Jodein</button>
+                <div class="mt-8 flex gap-4">
+                    <button id="save-test-btn" class="gradient-bg-teacher text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Test Save Karein</button>
+                    <button id="cancel-test-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
+                </div>
+            </div>
+             <!-- Send Notice View -->
+            <div id="send-notice-view" class="hidden bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold mb-6">Sabhi Students ko Notice Bhejein</h2>
+                <textarea id="notice-text" class="w-full p-3 border-2 rounded-xl h-40" placeholder="Yahan apna notice likhein..."></textarea>
+                <div class="mt-6 flex gap-4">
+                    <button id="post-notice-btn" class="gradient-bg-teacher text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Notice Post Karein</button>
+                    <button id="cancel-notice-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Views Wrapper -->
+        <div id="student-wrapper" class="view">
+            <!-- Student Home View -->
+            <div id="student-home-view" class="student-main-view">
+                <h2 class="text-4xl font-bold mb-8">Home</h2>
+                <div class="bg-white p-6 rounded-2xl shadow-xl mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Notice Board</h3>
+                    <div id="notice-board" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <p id="notice-content" class="text-yellow-800">Loading notice...</p>
+                        <p id="notice-date" class="text-sm text-yellow-600 mt-2 text-right"></p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
+                    <div id="student-test-list" class="space-y-4"></div>
+                </div>
+            </div>
+            <!-- Student Progress View -->
+            <div id="student-progress-view" class="student-main-view hidden">
+                <h2 class="text-4xl font-bold mb-8">Progress</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card">
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-blue-100 rounded-full"><i class="fa-solid fa-file-alt text-2xl text-blue-500"></i></div>
+                            <div>
+                                <p class="text-gray-500">Kul Test Diye</p>
+                                <p id="stat-total-tests" class="text-3xl font-bold">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-green-100 rounded-full"><i class="fa-solid fa-bullseye text-2xl text-green-500"></i></div>
+                            <div>
+                                <p class="text-gray-500">Average Score</p>
+                                <div class="flex items-center gap-2">
+                                    <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
+                                    <span id="stat-trend" class="text-lg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-yellow-100 rounded-full"><i class="fa-solid fa-crown text-2xl text-yellow-500"></i></div>
+                            <div>
+                                <p class="text-gray-500">Highest Score</p>
+                                <p id="stat-high-score" class="text-3xl font-bold">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="stat-card">
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-red-100 rounded-full"><i class="fa-solid fa-arrow-trend-down text-2xl text-red-500"></i></div>
+                            <div>
+                                <p class="text-gray-500">Lowest Score</p>
+                                <p id="stat-low-score" class="text-3xl font-bold">0%</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="flex items-center gap-4">
-                        <div class="p-4 bg-yellow-100 rounded-full"><i class="fa-solid fa-crown text-2xl text-yellow-500"></i></div>
-                        <div>
-                            <p class="text-gray-500">Highest Score</p>
-                            <p id="stat-high-score" class="text-3xl font-bold">0%</p>
-                        </div>
-                    </div>
-                </div>
-                 <div class="stat-card">
-                    <div class="flex items-center gap-4">
-                        <div class="p-4 bg-red-100 rounded-full"><i class="fa-solid fa-arrow-trend-down text-2xl text-red-500"></i></div>
-                        <div>
-                            <p class="text-gray-500">Lowest Score</p>
-                            <p id="stat-low-score" class="text-3xl font-bold">0%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="grid lg:grid-cols-2 gap-8">
-                <!-- Available & Recent Tests -->
-                <div class="space-y-8">
+                <div class="grid lg:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-2xl shadow-xl">
-                        <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
-                        <div id="student-test-list" class="space-y-4"></div>
+                        <h3 class="text-2xl font-bold mb-4">Performance Graph</h3>
+                        <canvas id="progress-chart"></canvas>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-xl">
                         <h3 class="text-2xl font-bold mb-6">Recent Activity</h3>
                         <div id="recent-activity-list" class="space-y-4"></div>
                     </div>
                 </div>
-                <!-- Progress Chart -->
-                <div class="bg-white p-6 rounded-2xl shadow-xl">
-                    <h3 class="text-2xl font-bold mb-4">Performance Graph</h3>
-                    <canvas id="progress-chart"></canvas>
+            </div>
+            <!-- Student Certificates View -->
+            <div id="student-certificates-view" class="student-main-view hidden">
+                <h2 class="text-4xl font-bold mb-8">Aapke Certificates</h2>
+                <div id="certificate-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+            <!-- Student Account View -->
+            <div id="student-account-view" class="student-main-view hidden">
+                <h2 class="text-4xl font-bold mb-8">Account Details</h2>
+                <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md mx-auto">
+                    <div class="text-center mb-6">
+                        <i class="fa-solid fa-user-circle text-7xl text-indigo-500"></i>
+                    </div>
+                    <p class="text-lg"><strong class="font-semibold">Naam:</strong> <span id="account-name"></span></p>
+                    <p class="text-lg mt-2"><strong class="font-semibold">Email:</strong> <span id="account-email"></span></p>
                 </div>
             </div>
         </div>
@@ -302,7 +407,7 @@
                 <h2 id="active-test-title" class="text-3xl font-bold">Test Title</h2>
             </div>
             <div id="test-questions-container" class="space-y-8 mt-6"></div>
-            <button id="submit-test-btn" class="mt-8 w-full gradient-bg text-white p-4 rounded-xl font-bold text-xl hover:scale-105 transition-transform shadow-lg">Test Submit Karein</button>
+            <button id="submit-test-btn" class="mt-8 w-full gradient-bg-student text-white p-4 rounded-xl font-bold text-xl hover:scale-105 transition-transform shadow-lg">Test Submit Karein</button>
         </div>
 
         <!-- Marksheet View -->
@@ -342,17 +447,38 @@
                 </div>
             </div>
             <div class="mt-8 flex gap-4">
-                <button onclick="showView('student-dashboard')" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Dashboard par Jayein</button>
-                <button id="download-cert-btn" class="gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-download mr-2"></i>Certificate Download Karein</button>
+                <button onclick="showStudentView('certificates')" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Sabhi Certificates Dekhein</button>
+                <button id="download-cert-btn" class="gradient-bg-student text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-download mr-2"></i>Certificate Download Karein</button>
             </div>
         </div>
     </div>
+    
+    <!-- Student Bottom Nav Bar -->
+    <div id="student-bottom-nav" class="bottom-nav hidden">
+        <button class="nav-item active" data-view="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-view="progress">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Progress</span>
+        </button>
+        <button class="nav-item" data-view="certificates">
+            <i class="fa-solid fa-certificate"></i>
+            <span>Certificates</span>
+        </button>
+        <button class="nav-item" data-view="account">
+            <i class="fa-solid fa-user"></i>
+            <span>Account</span>
+        </button>
+    </div>
+
 
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         const GOOGLE_SHEET_WEB_APP_URL = ""; // <-- YAHAN APNA GOOGLE APPS SCRIPT URL PASTE KAREIN
 
@@ -398,9 +524,16 @@
         const authError = document.getElementById('auth-error');
         const resendBtn = document.getElementById('resend-verification-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const mainNav = document.getElementById('main-nav');
+        const mainHeader = document.getElementById('main-header');
         const homeLink = document.getElementById('home-link');
         const downloadCertBtn = document.getElementById('download-cert-btn');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const backToLoginLink = document.getElementById('back-to-login-link');
+        const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
+        const studentBottomNav = document.getElementById('student-bottom-nav');
+        const roleStudentBtn = document.getElementById('role-student-btn');
+        const roleTeacherBtn = document.getElementById('role-teacher-btn');
+        const roleGlider = document.getElementById('role-glider');
 
         const showView = (viewId) => {
             views.forEach(view => view.classList.remove('active-view'));
@@ -433,7 +566,7 @@
         };
 
         const showCustomAlert = (message) => {
-            showModal(message, [{ text: 'OK', classes: 'gradient-bg text-white px-6 py-2 rounded-xl font-semibold' }]);
+            showModal(message, [{ text: 'OK', classes: 'gradient-bg-student text-white px-6 py-2 rounded-xl font-semibold' }]);
         };
         
         const showCustomConfirm = (message, onConfirm) => {
@@ -443,20 +576,23 @@
             ]);
         };
         
-        window.showLoginPortal = (role) => {
+        const setAuthTheme = (role) => {
             loginTargetRole = role;
-            isLoginMode = true; // Default to login mode
             authError.textContent = '';
             
-            authTitle.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Portal`;
-            authSubtitle.textContent = `Apne ${role} account mein login karein.`;
-            nameField.style.display = 'none';
-            loginBtn.style.display = 'block';
-            signupBtn.textContent = 'Naya Account Banayein';
-            authModeSwitch.textContent = 'Naya account banana hai? Signup karein.';
+            roleGlider.className = `glider ${role}`;
+            roleStudentBtn.classList.toggle('active', role === 'student');
+            roleTeacherBtn.classList.toggle('active', role === 'teacher');
             
-            showView('auth-view');
+            const themeClass = role === 'student' ? 'gradient-bg-student' : 'gradient-bg-teacher';
+            loginBtn.className = `flex-1 text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg ${themeClass}`;
+
+            authTitle.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Portal`;
+            toggleAuthMode(); // Reset to login mode with new role
         };
+
+        roleStudentBtn.addEventListener('click', () => setAuthTheme('student'));
+        roleTeacherBtn.addEventListener('click', () => setAuthTheme('teacher'));
         
         const toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
@@ -467,12 +603,14 @@
                 loginBtn.style.display = 'block';
                 signupBtn.textContent = 'Naya Account Banayein';
                 authModeSwitch.textContent = 'Naya account banana hai? Signup karein.';
+                forgotPasswordLink.style.display = 'block';
             } else {
                 authSubtitle.textContent = `Naya ${loginTargetRole} account banayein.`;
                 nameField.style.display = 'block';
                 loginBtn.style.display = 'none';
                 signupBtn.textContent = 'Signup';
                 authModeSwitch.textContent = 'Pehle se account hai? Login karein.';
+                forgotPasswordLink.style.display = 'none';
             }
         };
         authModeSwitch.addEventListener('click', (e) => {
@@ -483,8 +621,18 @@
         homeLink.addEventListener('click', (e) => {
             e.preventDefault();
             if(!currentUser) {
-                showView('landing-view');
+                showView('auth-view');
             }
+        });
+        
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('forgot-password-view');
+        });
+
+        backToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('auth-view');
         });
 
         if (auth) {
@@ -494,7 +642,8 @@
                 if (user) {
                     await user.reload();
                     if (!user.emailVerified) {
-                        mainNav.style.display = 'none';
+                        mainHeader.classList.add('hidden');
+                        studentBottomNav.classList.add('hidden');
                         document.getElementById('user-info').classList.add('hidden');
                         document.getElementById('user-info').classList.remove('flex');
                         showView('email-verify-view');
@@ -502,7 +651,7 @@
                         return;
                     }
                     currentUser = user;
-                    mainNav.style.display = 'none';
+                    mainHeader.classList.remove('hidden');
                     document.getElementById('user-info').classList.add('flex');
                     document.getElementById('user-info').classList.remove('hidden');
                     document.getElementById('user-name-display').textContent = user.displayName || user.email;
@@ -513,11 +662,13 @@
                     if (userDocSnap.exists()) {
                         currentUserData = userDocSnap.data();
                         if (currentUserData.role === 'teacher') {
-                            showView('teacher-dashboard');
+                            studentBottomNav.classList.add('hidden');
+                            showView('teacher-wrapper');
                             loadTeacherDashboard();
                         } else {
-                            showView('student-dashboard');
-                            loadStudentDashboard();
+                            studentBottomNav.classList.remove('hidden');
+                            showView('student-wrapper');
+                            showStudentView('home');
                         }
                     } else {
                         showView('forbidden-view'); 
@@ -525,10 +676,12 @@
                 } else {
                     currentUser = null;
                     currentUserData = null;
-                    mainNav.style.display = 'flex';
+                    mainHeader.classList.add('hidden');
+                    studentBottomNav.classList.add('hidden');
                     document.getElementById('user-info').classList.add('hidden');
                     document.getElementById('user-info').classList.remove('flex');
-                    showView('landing-view');
+                    setAuthTheme('student'); // Default to student on logout
+                    showView('auth-view');
                 }
                 showLoader(false);
             });
@@ -536,13 +689,14 @@
         
         backToDashboardBtn.addEventListener('click', () => {
             if (!currentUserData) {
-                showView('landing-view');
+                showView('auth-view');
                 return;
             }
             if (currentUserData.role === 'teacher') {
-                showView('teacher-dashboard');
+                showView('teacher-wrapper');
             } else {
-                showView('student-dashboard');
+                showView('student-wrapper');
+                showStudentView('home');
             }
         });
         
@@ -566,14 +720,13 @@
                 if (userDocSnap.exists()) {
                     const userRole = userDocSnap.data().role;
                     if (userRole !== loginTargetRole) {
-                        const portalName = loginTargetRole.charAt(0).toUpperCase() + loginTargetRole.slice(1);
+                        const portalName = loginTargetRole === 'student' ? 'Teacher' : 'Student';
                         authError.textContent = `Yeh ek ${userRole} account hai. Kripya ${portalName} Portal se login karein.`;
                         await signOut(auth);
                         showLoader(false);
                         return;
                     }
                 }
-                // onAuthStateChanged will handle successful login
             } catch (error) {
                 authError.textContent = "Login fail ho gaya: " + error.message;
                 showLoader(false);
@@ -623,6 +776,24 @@
             }
         });
 
+        sendResetLinkBtn.addEventListener('click', async () => {
+            const email = document.getElementById('reset-email').value;
+            if (!email) {
+                showCustomAlert("Kripya apna email address daalein.");
+                return;
+            }
+            showLoader(true);
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showCustomAlert("Password reset link aapke email par bhej diya gaya hai. Kripya apna inbox check karein.");
+                showView('auth-view');
+            } catch (error) {
+                showCustomAlert("Link bhejne mein samasya aayi: " + error.message);
+            } finally {
+                showLoader(false);
+            }
+        });
+
         resendBtn.addEventListener('click', async () => {
             resendBtn.disabled = true;
             const originalText = resendBtn.textContent;
@@ -645,12 +816,51 @@
 
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-        // --- TEACHER DASHBOARD ---
+        // --- TEACHER VIEWS & LOGIC ---
+        const teacherDashboardView = document.getElementById('teacher-dashboard-view');
+        const createTestView = document.getElementById('create-test-view');
+        const sendNoticeView = document.getElementById('send-notice-view');
+        
+        const showTeacherSubView = (view) => {
+            [teacherDashboardView, createTestView, sendNoticeView].forEach(v => v.style.display = 'none');
+            view.style.display = 'block';
+        }
+
+        document.getElementById('create-test-btn').addEventListener('click', () => showTeacherSubView(createTestView));
+        document.getElementById('cancel-test-btn').addEventListener('click', () => showTeacherSubView(teacherDashboardView));
+        document.getElementById('send-notice-btn').addEventListener('click', () => showTeacherSubView(sendNoticeView));
+        document.getElementById('cancel-notice-btn').addEventListener('click', () => showTeacherSubView(teacherDashboardView));
+
+        document.getElementById('post-notice-btn').addEventListener('click', async () => {
+            const text = document.getElementById('notice-text').value;
+            if (!text) {
+                showCustomAlert("Kripya notice mein kuch likhein.");
+                return;
+            }
+            showLoader(true);
+            try {
+                await setDoc(doc(db, "notices", "latest"), {
+                    text: text,
+                    postedAt: serverTimestamp(),
+                    postedBy: currentUser.displayName
+                });
+                showCustomAlert("Notice safaltapoorvak bhej diya gaya hai.");
+                document.getElementById('notice-text').value = '';
+                showTeacherSubView(teacherDashboardView);
+            } catch (error) {
+                showCustomAlert("Notice bhejne mein samasya aayi.");
+            } finally {
+                showLoader(false);
+            }
+        });
+
         const loadTeacherDashboard = async () => {
             if (currentUserData?.role !== 'teacher') {
                 showView('forbidden-view');
                 return;
             }
+            showTeacherSubView(teacherDashboardView);
+            
             const testListContainer = document.getElementById('teacher-test-list');
             testListContainer.innerHTML = '<p>Loading tests...</p>';
             const q = query(collection(db, "tests"), where("createdBy", "==", currentUser.uid));
@@ -658,80 +868,67 @@
             
             if(querySnapshot.empty) {
                 testListContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi banaya hai.</p>';
-                return;
+            } else {
+                testListContainer.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const test = doc.data();
+                    let statusBadge = '';
+                    const now = new Date();
+                    const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
+
+                    if (scheduledTime) {
+                        if (now < scheduledTime) {
+                            statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Scheduled</span>`;
+                        } else {
+                            statusBadge = `<span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Live</span>`;
+                        }
+                    } else {
+                        statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Draft</span>`;
+                    }
+
+                    const testEl = document.createElement('div');
+                    testEl.className = 'p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg flex justify-between items-center';
+                    testEl.innerHTML = `
+                        <div>
+                            <h4 class="font-bold text-lg text-indigo-800">${test.title}</h4>
+                            <div class="mt-1">${statusBadge}</div>
+                        </div>
+                        <div>
+                            <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2" onclick="editTest('${doc.id}')"><i class="fa-solid fa-pencil"></i></button>
+                            <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteTest('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    testListContainer.appendChild(testEl);
+                });
             }
 
-            testListContainer.innerHTML = '';
-            querySnapshot.forEach((doc) => {
-                const test = doc.data();
-                let statusBadge = '';
-                const now = new Date();
-                const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
+            // Load students list
+            const studentListContainer = document.getElementById('student-list-container');
+            studentListContainer.innerHTML = '<p>Loading students...</p>';
+            const studentsQuery = query(collection(db, "users"), where("role", "==", "student"));
+            const studentsSnapshot = await getDocs(studentsQuery);
 
-                if (scheduledTime) {
-                    if (now < scheduledTime) {
-                        statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Scheduled</span>`;
-                    } else {
-                        statusBadge = `<span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Live</span>`;
-                    }
-                } else {
-                    statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Draft</span>`;
-                }
-
-                const testEl = document.createElement('div');
-                testEl.className = 'p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg flex justify-between items-center';
-                testEl.innerHTML = `
-                    <div>
-                        <h4 class="font-bold text-lg text-indigo-800">${test.title}</h4>
-                        <div class="mt-1">${statusBadge}</div>
-                    </div>
-                    <div>
-                        <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2" onclick="editTest('${doc.id}')"><i class="fa-solid fa-pencil"></i></button>
-                        <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteTest('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                testListContainer.appendChild(testEl);
-            });
+            if (studentsSnapshot.empty) {
+                studentListContainer.innerHTML = '<p class="text-gray-500">Abhi tak koi student register nahi hua hai.</p>';
+            } else {
+                studentListContainer.innerHTML = '';
+                studentsSnapshot.forEach(doc => {
+                    const student = doc.data();
+                    const studentEl = document.createElement('div');
+                    studentEl.className = 'p-3 border rounded-lg flex items-center gap-3';
+                    studentEl.innerHTML = `
+                        <i class="fa-solid fa-user-graduate text-indigo-500"></i>
+                        <div>
+                            <p class="font-semibold">${student.name}</p>
+                            <p class="text-sm text-gray-500">${student.email}</p>
+                        </div>
+                    `;
+                    studentListContainer.appendChild(studentEl);
+                });
+            }
         };
 
         // --- CREATE/EDIT TEST LOGIC ---
-        document.getElementById('create-test-btn').addEventListener('click', () => {
-            if (currentUserData?.role !== 'teacher') {
-                showView('forbidden-view');
-                return;
-            }
-            document.getElementById('test-form-title').textContent = 'Naya Test Banayein';
-            document.getElementById('test-id-input').value = '';
-            document.getElementById('test-title').value = '';
-            document.getElementById('test-schedule-time').value = '';
-            document.getElementById('questions-container').innerHTML = '';
-            questionCount = 0;
-            addQuestionForm();
-            showView('create-test-view');
-        });
-
-        document.getElementById('cancel-test-btn').addEventListener('click', () => showView('teacher-dashboard'));
-
-        const addQuestionForm = (questionData = {}) => {
-            questionCount++;
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'p-4 border rounded-xl bg-gray-50 relative';
-            questionDiv.id = `question-${questionCount}`;
-            questionDiv.innerHTML = `
-                <label class="block mb-2 font-semibold">Question ${questionCount}:</label>
-                <textarea class="w-full p-2 border rounded-lg question-text" rows="2" placeholder="Yahan question likhein">${questionData.questionText || ''}</textarea>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    ${[0, 1, 2, 3].map(i => `
-                        <div class="flex items-center bg-white p-2 rounded-lg border">
-                            <input type="radio" name="correct-answer-${questionCount}" value="${i}" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded correct-answer" ${questionData.correctAnswerIndex == i ? 'checked' : ''}>
-                            <input type="text" class="w-full ml-3 p-1 border-0 focus:ring-0 option-text" placeholder="Option ${i + 1}" value="${questionData.options ? questionData.options[i] : ''}">
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            document.getElementById('questions-container').appendChild(questionDiv);
-        };
-
         document.getElementById('add-question-btn').addEventListener('click', () => addQuestionForm());
 
         document.getElementById('save-test-btn').addEventListener('click', async () => {
@@ -798,7 +995,6 @@
                 }
 
                 showCustomAlert('Test successfully save ho gaya!');
-                showView('teacher-dashboard');
                 loadTeacherDashboard();
             } catch (error) {
                 console.error("Test save karne mein error: ", error);
@@ -841,7 +1037,7 @@
             const questionsSnap = await getDocs(q);
             questionsSnap.forEach(doc => addQuestionForm(doc.data()));
 
-            showView('create-test-view');
+            showTeacherSubView(createTestView);
             showLoader(false);
         };
         
@@ -871,11 +1067,47 @@
             });
         };
 
-        // --- STUDENT DASHBOARD ---
-        const loadStudentDashboard = async () => {
-             if (currentUserData?.role !== 'student') {
-                showView('forbidden-view');
-                return;
+        // --- STUDENT VIEWS & LOGIC ---
+        const studentViews = document.querySelectorAll('.student-main-view');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const showStudentView = (viewName) => {
+            studentViews.forEach(v => v.classList.add('hidden'));
+            document.getElementById(`student-${viewName}-view`).classList.remove('hidden');
+
+            navItems.forEach(item => {
+                if (item.dataset.view === viewName) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            if (viewName === 'home') loadStudentHome();
+            if (viewName === 'progress') loadStudentProgress();
+            if (viewName === 'certificates') loadStudentCertificates();
+            if (viewName === 'account') loadStudentAccount();
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => showStudentView(item.dataset.view));
+        });
+
+        const loadStudentHome = async () => {
+            const noticeContent = document.getElementById('notice-content');
+            const noticeDate = document.getElementById('notice-date');
+            try {
+                const noticeDoc = await getDoc(doc(db, "notices", "latest"));
+                if (noticeDoc.exists()) {
+                    const notice = noticeDoc.data();
+                    noticeContent.textContent = notice.text;
+                    noticeDate.textContent = new Date(notice.postedAt.seconds * 1000).toLocaleString();
+                } else {
+                    noticeContent.textContent = "Abhi koi nayi soochana nahi hai.";
+                    noticeDate.textContent = '';
+                }
+            } catch (e) {
+                noticeContent.textContent = "Soochana load karne mein samasya aayi.";
             }
             const testListContainer = document.getElementById('student-test-list');
             testListContainer.innerHTML = '<p>Loading tests...</p>';
@@ -907,7 +1139,7 @@
 
                         if (timeLeft <= 0) {
                             clearInterval(countdownIntervals[doc.id]);
-                            timerEl.parentElement.innerHTML = `<button class="gradient-bg text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
+                            timerEl.parentElement.innerHTML = `<button class="gradient-bg-student text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
                         } else {
                             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -918,7 +1150,7 @@
                     }, 1000);
 
                 } else {
-                    actionButton = `<button class="gradient-bg text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
+                    actionButton = `<button class="gradient-bg-student text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
                 }
 
                 testEl.innerHTML = `
@@ -927,10 +1159,49 @@
                 `;
                 testListContainer.appendChild(testEl);
             });
+        };
 
-            loadStudentHistory();
+        const loadStudentProgress = async () => {
+            loadStudentHistory(); // This function loads all stats and chart
         };
         
+        const loadStudentCertificates = async () => {
+             const certListContainer = document.getElementById('certificate-list');
+             certListContainer.innerHTML = '<p>Loading certificates...</p>';
+             const q = query(collection(db, "results"), where("studentId", "==", currentUser.uid), orderBy("submittedAt", "desc"));
+             const resultsSnap = await getDocs(q);
+
+             if (resultsSnap.empty) {
+                 certListContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi diya hai.</p>';
+                 return;
+             }
+             
+             certListContainer.innerHTML = '';
+             for (const resultDoc of resultsSnap.docs) {
+                 const result = resultDoc.data();
+                 const testDoc = await getDoc(doc(db, "tests", result.testId));
+                 const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
+                 const percentage = (result.score / result.totalMarks) * 100;
+
+                 const certEl = document.createElement('div');
+                 certEl.className = 'p-4 border rounded-xl flex justify-between items-center cursor-pointer hover:bg-indigo-50';
+                 certEl.innerHTML = `
+                    <div>
+                        <p class="font-bold text-lg">${testTitle}</p>
+                        <p class="text-sm text-gray-500">Diya gaya: ${new Date(result.submittedAt.seconds * 1000).toLocaleDateString()}</p>
+                    </div>
+                    <p class="font-bold text-xl ${percentage >= 50 ? 'text-green-600' : 'text-red-600'}">${percentage.toFixed(0)}%</p>
+                 `;
+                 certEl.onclick = () => showMarksheet({ ...result, id: resultDoc.id });
+                 certListContainer.appendChild(certEl);
+             }
+        };
+
+        const loadStudentAccount = () => {
+            document.getElementById('account-name').textContent = currentUser.displayName;
+            document.getElementById('account-email').textContent = currentUser.email;
+        };
+
         const loadStudentHistory = async () => {
             const historyContainer = document.getElementById('recent-activity-list');
             historyContainer.innerHTML = '<p>Loading history...</p>';
@@ -1186,3 +1457,6 @@
     </script>
 </body>
 </html>
+"
+I'm asking a question about the code I've selected. I'd like to understand what it does.
+Explain the code to 
