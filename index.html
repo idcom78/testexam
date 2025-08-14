@@ -8,10 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for diagrams -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts: Poppins -->
+    <!-- html2canvas for certificate download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Google Fonts: Poppins & Lora for certificate -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:wght@700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom Styles -->
@@ -34,16 +36,33 @@
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .marksheet {
-            border: 10px solid transparent;
-            border-image: linear-gradient(135deg, #667eea, #764ba2);
-            border-image-slice: 1;
-            background: white;
-            transition: all 0.3s ease;
+        .marksheet-container {
+            background-color: #e9eaf7;
+            padding: 2rem;
+            border-radius: 1rem;
         }
-        .marksheet:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        .marksheet {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .marksheet::before, .marksheet::after {
+            content: '';
+            position: absolute;
+            width: 95%;
+            height: 95%;
+            border: 3px double #a8b2e4;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        .certificate-title {
+            font-family: 'Lora', serif;
+            font-size: 2.5rem;
+            color: #3f51b5;
         }
         .loader {
             border: 5px solid #f3f3f3;
@@ -78,6 +97,13 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
+        #name-field {
+            display: none;
+        }
+        #resend-verification-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="text-gray-700">
@@ -100,40 +126,72 @@
 
         <!-- Header -->
         <header class="bg-white shadow-lg rounded-2xl p-4 mb-8 flex justify-between items-center sticky top-4 z-40">
-            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg">CSC Campus Portal</h1>
+            <a href="#" id="home-link" class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg">CSC Campus Portal</a>
+            <nav id="main-nav" class="hidden sm:flex items-center gap-6">
+                <a href="#" class="font-semibold text-gray-600 hover:text-indigo-600" onclick="showLoginPortal('student')">Student Portal</a>
+                <a href="#" class="font-semibold text-gray-600 hover:text-indigo-600" onclick="showLoginPortal('teacher')">Teacher Portal</a>
+            </nav>
             <div id="user-info" class="hidden items-center gap-4">
-                <span id="user-email" class="font-semibold text-gray-600 hidden md:block"></span>
+                <span id="user-name-display" class="font-semibold text-gray-600 hidden md:block"></span>
                 <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition-all shadow-md hover:shadow-lg"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
             </div>
         </header>
 
+        <!-- Landing View -->
+        <div id="landing-view" class="view active-view text-center">
+            <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-4xl mx-auto">
+                <h2 class="text-5xl font-extrabold mb-4">Online Test Platform mein Aapka Swagat Hai</h2>
+                <p class="text-xl text-gray-500 mb-12">Apna role chunein aur shuru karein.</p>
+                <div class="flex flex-col md:flex-row gap-8 justify-center">
+                    <button onclick="showLoginPortal('student')" class="flex-1 bg-purple-500 text-white p-8 rounded-2xl font-bold text-2xl hover:bg-purple-600 transition-all hover:scale-105 shadow-lg">
+                        <i class="fa-solid fa-user-graduate text-4xl mb-4"></i><br>Student Portal
+                    </button>
+                    <button onclick="showLoginPortal('teacher')" class="flex-1 bg-blue-500 text-white p-8 rounded-2xl font-bold text-2xl hover:bg-blue-600 transition-all hover:scale-105 shadow-lg">
+                        <i class="fa-solid fa-chalkboard-user text-4xl mb-4"></i><br>Teacher Portal
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Auth View -->
-        <div id="auth-view" class="view active-view bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-2">Welcome Back!</h2>
-            <p class="text-center text-gray-500 mb-8">Login ya naya account banayein.</p>
+        <div id="auth-view" class="view bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
+            <h2 id="auth-title" class="text-3xl font-bold text-center mb-2"></h2>
+            <p id="auth-subtitle" class="text-center text-gray-500 mb-8"></p>
+            <div id="name-field" class="mb-4">
+                <label for="name" class="block mb-2 font-semibold text-gray-600">Aapka Poora Naam</label>
+                <input type="text" id="name" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Jaise: Kumar Sanu">
+            </div>
             <div class="mb-4">
                 <label for="email" class="block mb-2 font-semibold text-gray-600">Email Address</label>
                 <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="aapka@email.com">
             </div>
             <div class="mb-6">
                 <label for="password" class="block mb-2 font-semibold text-gray-600">Password</label>
-                <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="••••••••">
+                <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Kam se kam 6 characters">
             </div>
             <div class="flex flex-col sm:flex-row gap-4">
                 <button id="login-btn" class="flex-1 gradient-bg text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg">Login</button>
-                <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Signup</button>
+                <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Naya Account Banayein</button>
             </div>
             <p class="text-center text-red-500 mt-4" id="auth-error"></p>
+            <p class="text-center mt-4"><a href="#" id="auth-mode-switch" class="text-indigo-600 hover:underline">Signup karna hai?</a></p>
         </div>
 
-        <!-- Role Selection View -->
-        <div id="role-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-6">Aapka Role Chunein</h2>
-            <p class="mb-8">Ek baar chunne ke baad, aap ise badal nahi payenge.</p>
-            <div class="flex flex-col sm:flex-row gap-6">
-                 <button onclick="selectRole('teacher')" class="flex-1 bg-blue-500 text-white p-4 rounded-xl font-semibold text-lg hover:bg-blue-600 transition-all hover:scale-105 shadow-lg"><i class="fa-solid fa-chalkboard-user mr-2"></i>Main Teacher Hoon</button>
-                 <button onclick="selectRole('student')" class="flex-1 bg-purple-500 text-white p-4 rounded-xl font-semibold text-lg hover:bg-purple-600 transition-all hover:scale-105 shadow-lg"><i class="fa-solid fa-user-graduate mr-2"></i>Main Student Hoon</button>
-            </div>
+        <!-- Email Verification View -->
+        <div id="email-verify-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
+            <i class="fa-solid fa-envelope-circle-check text-7xl text-green-500 mb-6"></i>
+            <h2 class="text-3xl font-bold mb-4">Apna Email Verify Karein</h2>
+            <p class="mb-6 text-lg">Humne aapke email address par ek verification link bheja hai. Kripya apna inbox check karein aur link par click karke apna account activate karein.</p>
+            <p class="text-gray-500">Agar email nahi mila, to spam folder check karein.</p>
+            <button id="resend-verification-btn" class="mt-6 gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Verification Email Dobara Bhejein</button>
+        </div>
+        
+        <!-- Forbidden View -->
+        <div id="forbidden-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
+            <i class="fa-solid fa-hand text-7xl text-red-500 mb-6"></i>
+            <h2 class="text-3xl font-bold mb-4">Access Denied</h2>
+            <p class="mb-6 text-lg">Aapke paas is page ko dekhne ki anumati nahi hai.</p>
+            <button id="back-to-dashboard-btn" class="mt-6 gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Apne Dashboard par Wapas Jayein</button>
         </div>
 
         <!-- Teacher Dashboard -->
@@ -191,7 +249,10 @@
                         <div class="p-4 bg-green-100 rounded-full"><i class="fa-solid fa-bullseye text-2xl text-green-500"></i></div>
                         <div>
                             <p class="text-gray-500">Average Score</p>
-                            <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
+                            <div class="flex items-center gap-2">
+                                <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
+                                <span id="stat-trend" class="text-lg"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,21 +276,23 @@
                 </div>
             </div>
             
-            <div class="grid lg:grid-cols-3 gap-8">
-                <!-- Available Tests -->
-                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-xl">
-                    <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
-                    <div id="student-test-list" class="space-y-4"></div>
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Available & Recent Tests -->
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
+                        <div id="student-test-list" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-2xl font-bold mb-6">Recent Activity</h3>
+                        <div id="recent-activity-list" class="space-y-4"></div>
+                    </div>
                 </div>
                 <!-- Progress Chart -->
                 <div class="bg-white p-6 rounded-2xl shadow-xl">
                     <h3 class="text-2xl font-bold mb-4">Performance Graph</h3>
                     <canvas id="progress-chart"></canvas>
                 </div>
-            </div>
-             <div class="mt-8 bg-white p-6 rounded-2xl shadow-xl">
-                <h3 class="text-2xl font-bold mb-6">Aapki Test History</h3>
-                <div id="student-history-list" class="space-y-4"></div>
             </div>
         </div>
 
@@ -243,23 +306,44 @@
         </div>
 
         <!-- Marksheet View -->
-        <div id="marksheet-view" class="view flex items-center justify-center p-4">
-            <div class="marksheet p-8 md:p-12 rounded-2xl shadow-2xl max-w-2xl w-full text-center relative">
-                <h2 class="text-5xl font-extrabold text-transparent bg-clip-text gradient-bg mb-4">Parinaam Patra</h2>
-                <div class="my-6 text-7xl text-indigo-200">
-                    <i class="fa-solid fa-user-graduate"></i>
+        <div id="marksheet-view" class="view flex flex-col items-center justify-center p-4">
+            <div class="marksheet-container">
+                <div class="marksheet" id="certificate-to-download">
+                    <div class="text-center mb-8">
+                        <h1 class="certificate-title">CSC CAMPUS</h1>
+                        <p class="text-gray-500 text-lg">Certificate of Achievement</p>
+                    </div>
+                    
+                    <p class="text-center text-lg mb-4">This certificate is proudly presented to</p>
+                    <h2 id="marksheet-student-name" class="text-4xl font-bold text-center text-gray-800 mb-6">Student ka Naam</h2>
+                    
+                    <p class="text-center text-lg mb-4">for successfully completing the test</p>
+                    <h3 id="marksheet-test-title" class="text-2xl font-semibold text-center text-indigo-700 mb-8">Test ka Title</h3>
+                    
+                    <div class="flex justify-around items-center text-center my-8">
+                        <div>
+                            <p class="text-gray-500">Score</p>
+                            <p id="marksheet-score" class="text-4xl font-bold text-green-600">-- / --</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Percentage</p>
+                            <p id="marksheet-percentage" class="text-4xl font-bold text-indigo-600">0%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 flex justify-between text-sm text-gray-500">
+                        <div>
+                            <p><strong>Date of Issue:</strong> <span id="marksheet-date">DD/MM/YYYY</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Certificate ID:</strong> <span id="marksheet-cert-id"></span></p>
+                        </div>
+                    </div>
                 </div>
-                <h3 id="marksheet-student-name" class="text-3xl font-bold">Student ka Naam</h3>
-                <p id="marksheet-test-title" class="text-xl text-gray-600 mt-2 mb-8">Test ka Title</p>
-                
-                <div class="bg-gray-50 p-6 rounded-xl">
-                    <p class="text-lg text-gray-500">Kul Praptank</p>
-                    <p id="marksheet-score" class="text-7xl font-extrabold my-2 text-green-500">-- / --</p>
-                    <p id="marksheet-percentage" class="text-3xl font-bold text-transparent bg-clip-text gradient-bg"></p>
-                </div>
-
-                <p id="marksheet-date" class="text-gray-500 mt-8">Test Diya Gaya: DD/MM/YYYY</p>
-                <button onclick="showView('student-dashboard')" class="mt-8 gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Dashboard par Wapas Jayein</button>
+            </div>
+            <div class="mt-8 flex gap-4">
+                <button onclick="showView('student-dashboard')" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Dashboard par Jayein</button>
+                <button id="download-cert-btn" class="gradient-bg text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-download mr-2"></i>Certificate Download Karein</button>
             </div>
         </div>
     </div>
@@ -267,58 +351,11 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        /*
-        =============================================================================
-        === ZAROORI: FIREBASE SECURITY RULES ===
-        =============================================================================
-        Aapka app 'Role set karne mein samasya aayi' error de raha hai kyunki aapne
-        security rules set nahi kiye hain.
-        
-        Ise theek karne ke liye:
-        1. Apne Firebase project mein Firestore Database par jaayein.
-        2. 'Rules' tab par click karein.
-        3. Wahan jo bhi likha hai, use delete karein.
-        4. Niche diye gaye poore code ko copy karke wahan paste karein aur 'Publish' karein.
-        
-        rules_version = '2';
-        service cloud.firestore {
-          match /databases/{database}/documents {
-        
-            // Koi bhi user apna role (user document) bana sakta hai aur dekh sakta hai
-            match /users/{userId} {
-              allow read, write: if request.auth != null && request.auth.uid == userId;
-            }
-        
-            // Koi bhi logged-in user tests ko dekh sakta hai
-            match /tests/{testId} {
-              allow read: if request.auth != null;
-              // Sirf teacher hi test bana/edit/delete kar sakta hai
-              allow create, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
-            }
-        
-            // Koi bhi logged-in user questions dekh sakta hai
-            match /questions/{questionId} {
-               allow read: if request.auth != null;
-               // Sirf teacher hi questions bana/edit/delete kar sakta hai
-               allow create, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
-            }
-        
-            // Student apna result save kar sakta hai aur dekh sakta hai
-            match /results/{resultId} {
-              allow create: if request.auth != null && request.resource.data.studentId == request.auth.uid;
-              allow read: if request.auth != null && resource.data.studentId == request.auth.uid;
-            }
-          }
-        }
-        =============================================================================
-        */
         
         const GOOGLE_SHEET_WEB_APP_URL = ""; // <-- YAHAN APNA GOOGLE APPS SCRIPT URL PASTE KAREIN
 
-        // Your web app's Firebase configuration - Provided by you
         const firebaseConfig = {
           apiKey: "AIzaSyCTywtZz-kOZH1RJKXiEsO8SK4YlLyR3ck",
           authDomain: "csc-campus-test-app.firebaseapp.com",
@@ -343,6 +380,8 @@
         let currentUserData = null;
         let progressChart = null;
         let countdownIntervals = {};
+        let isLoginMode = true;
+        let loginTargetRole = 'student';
 
         const views = document.querySelectorAll('.view');
         const loadingSpinner = document.getElementById('loading-spinner');
@@ -350,6 +389,18 @@
         const modalContent = document.getElementById('modal-content');
         const modalMessage = document.getElementById('modal-message');
         const modalButtons = document.getElementById('modal-buttons');
+        const nameField = document.getElementById('name-field');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const authModeSwitch = document.getElementById('auth-mode-switch');
+        const authError = document.getElementById('auth-error');
+        const resendBtn = document.getElementById('resend-verification-btn');
+        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const mainNav = document.getElementById('main-nav');
+        const homeLink = document.getElementById('home-link');
+        const downloadCertBtn = document.getElementById('download-cert-btn');
 
         const showView = (viewId) => {
             views.forEach(view => view.classList.remove('active-view'));
@@ -391,16 +442,70 @@
                 { text: 'Confirm', classes: 'bg-red-500 text-white px-6 py-2 rounded-xl font-semibold', onClick: () => onConfirm(true) }
             ]);
         };
+        
+        window.showLoginPortal = (role) => {
+            loginTargetRole = role;
+            isLoginMode = true; // Default to login mode
+            authError.textContent = '';
+            
+            authTitle.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Portal`;
+            authSubtitle.textContent = `Apne ${role} account mein login karein.`;
+            nameField.style.display = 'none';
+            loginBtn.style.display = 'block';
+            signupBtn.textContent = 'Naya Account Banayein';
+            authModeSwitch.textContent = 'Naya account banana hai? Signup karein.';
+            
+            showView('auth-view');
+        };
+        
+        const toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            authError.textContent = '';
+            if (isLoginMode) {
+                authSubtitle.textContent = `Apne ${loginTargetRole} account mein login karein.`;
+                nameField.style.display = 'none';
+                loginBtn.style.display = 'block';
+                signupBtn.textContent = 'Naya Account Banayein';
+                authModeSwitch.textContent = 'Naya account banana hai? Signup karein.';
+            } else {
+                authSubtitle.textContent = `Naya ${loginTargetRole} account banayein.`;
+                nameField.style.display = 'block';
+                loginBtn.style.display = 'none';
+                signupBtn.textContent = 'Signup';
+                authModeSwitch.textContent = 'Pehle se account hai? Login karein.';
+            }
+        };
+        authModeSwitch.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAuthMode();
+        });
+
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if(!currentUser) {
+                showView('landing-view');
+            }
+        });
 
         if (auth) {
             onAuthStateChanged(auth, async (user) => {
                 showLoader(true);
                 Object.values(countdownIntervals).forEach(clearInterval);
                 if (user) {
+                    await user.reload();
+                    if (!user.emailVerified) {
+                        mainNav.style.display = 'none';
+                        document.getElementById('user-info').classList.add('hidden');
+                        document.getElementById('user-info').classList.remove('flex');
+                        showView('email-verify-view');
+                        showLoader(false);
+                        return;
+                    }
                     currentUser = user;
+                    mainNav.style.display = 'none';
                     document.getElementById('user-info').classList.add('flex');
                     document.getElementById('user-info').classList.remove('hidden');
-                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-name-display').textContent = user.displayName || user.email;
                     
                     const userDocRef = doc(db, "users", user.uid);
                     const userDocSnap = await getDoc(userDocRef);
@@ -415,86 +520,137 @@
                             loadStudentDashboard();
                         }
                     } else {
-                        showView('role-view');
+                        showView('forbidden-view'); 
                     }
                 } else {
                     currentUser = null;
                     currentUserData = null;
+                    mainNav.style.display = 'flex';
                     document.getElementById('user-info').classList.add('hidden');
                     document.getElementById('user-info').classList.remove('flex');
-                    showView('auth-view');
+                    showView('landing-view');
                 }
                 showLoader(false);
             });
         }
-
-        window.selectRole = async (role) => {
-            if (!currentUser) return;
-            showLoader(true);
-            try {
-                const userDocData = {
-                    email: currentUser.email,
-                    role: role,
-                    createdAt: serverTimestamp()
-                };
-                await setDoc(doc(db, "users", currentUser.uid), userDocData);
-                
-                // Role set ho gaya, ab seedhe dashboard par le jaayein
-                currentUserData = { role: role };
-                if (role === 'teacher') {
-                    showView('teacher-dashboard');
-                    await loadTeacherDashboard();
-                } else {
-                    showView('student-dashboard');
-                    await loadStudentDashboard();
-                }
-            } catch (error) {
-                console.error("Role set karne mein error:", error);
-                showCustomAlert("Role set karne mein samasya aayi. Kripya upar diye gaye Security Rules ko apne Firebase project mein set karein.");
-            } finally {
-                showLoader(false);
-            }
-        }
         
-        document.getElementById('login-btn').addEventListener('click', async () => {
+        backToDashboardBtn.addEventListener('click', () => {
+            if (!currentUserData) {
+                showView('landing-view');
+                return;
+            }
+            if (currentUserData.role === 'teacher') {
+                showView('teacher-dashboard');
+            } else {
+                showView('student-dashboard');
+            }
+        });
+        
+        loginBtn.addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            document.getElementById('auth-error').textContent = '';
+            authError.textContent = '';
             if(!email || !password) {
-                document.getElementById('auth-error').textContent = "Email aur password zaroori hai.";
+                authError.textContent = "Email aur password zaroori hai.";
                 return;
             }
             showLoader(true);
             try {
                 await setPersistence(auth, browserLocalPersistence);
-                await signInWithEmailAndPassword(auth, email, password);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userRole = userDocSnap.data().role;
+                    if (userRole !== loginTargetRole) {
+                        const portalName = loginTargetRole.charAt(0).toUpperCase() + loginTargetRole.slice(1);
+                        authError.textContent = `Yeh ek ${userRole} account hai. Kripya ${portalName} Portal se login karein.`;
+                        await signOut(auth);
+                        showLoader(false);
+                        return;
+                    }
+                }
+                // onAuthStateChanged will handle successful login
             } catch (error) {
-                document.getElementById('auth-error').textContent = "Login fail ho gaya: " + error.message;
+                authError.textContent = "Login fail ho gaya: " + error.message;
                 showLoader(false);
             }
         });
 
-        document.getElementById('signup-btn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            document.getElementById('auth-error').textContent = '';
-            if(!email || !password) {
-                document.getElementById('auth-error').textContent = "Email aur password zaroori hai.";
+        signupBtn.addEventListener('click', async () => {
+            if (isLoginMode) {
+                toggleAuthMode();
                 return;
             }
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            authError.textContent = '';
+
+            if(!name || !email || !password) {
+                authError.textContent = "Naam, email, aur password zaroori hai.";
+                return;
+            }
+            if(password.length < 6) {
+                authError.textContent = "Password kam se kam 6 characters ka hona chahiye.";
+                return;
+            }
+            
             showLoader(true);
             try {
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+                
+                await setDoc(doc(db, "users", userCredential.user.uid), {
+                    email: email,
+                    name: name,
+                    role: loginTargetRole,
+                    createdAt: serverTimestamp()
+                });
+
+                await sendEmailVerification(userCredential.user);
+                await signOut(auth);
+                showCustomAlert("Registration safal! Aapke email par ek verification link bheja gaya hai. Verify karne ke baad login karein.");
+                showView('email-verify-view');
             } catch (error) {
-                document.getElementById('auth-error').textContent = "Signup fail ho gaya: " + error.message;
+                authError.textContent = "Signup fail ho gaya: " + error.message;
+            } finally {
                 showLoader(false);
             }
+        });
+
+        resendBtn.addEventListener('click', async () => {
+            resendBtn.disabled = true;
+            const originalText = resendBtn.textContent;
+            
+            showCustomAlert("Email dobara bhejne ke liye, kripya login karne ki koshish karein. Agar aapka account unverified hai, to system aapko verification screen par le aayega.");
+            showView('auth-view');
+            
+            let seconds = 60;
+            resendBtn.textContent = `Dobara Bhejein (${seconds}s)`;
+            const interval = setInterval(() => {
+                seconds--;
+                resendBtn.textContent = `Dobara Bhejein (${seconds}s)`;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = originalText;
+                }
+            }, 1000);
         });
 
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
         // --- TEACHER DASHBOARD ---
         const loadTeacherDashboard = async () => {
+            if (currentUserData?.role !== 'teacher') {
+                showView('forbidden-view');
+                return;
+            }
             const testListContainer = document.getElementById('teacher-test-list');
             testListContainer.innerHTML = '<p>Loading tests...</p>';
             const q = query(collection(db, "tests"), where("createdBy", "==", currentUser.uid));
@@ -539,8 +695,11 @@
         };
 
         // --- CREATE/EDIT TEST LOGIC ---
-        let questionCount = 0;
         document.getElementById('create-test-btn').addEventListener('click', () => {
+            if (currentUserData?.role !== 'teacher') {
+                showView('forbidden-view');
+                return;
+            }
             document.getElementById('test-form-title').textContent = 'Naya Test Banayein';
             document.getElementById('test-id-input').value = '';
             document.getElementById('test-title').value = '';
@@ -576,6 +735,10 @@
         document.getElementById('add-question-btn').addEventListener('click', () => addQuestionForm());
 
         document.getElementById('save-test-btn').addEventListener('click', async () => {
+            if (currentUserData?.role !== 'teacher') {
+                showView('forbidden-view');
+                return;
+            }
             const testId = document.getElementById('test-id-input').value;
             const title = document.getElementById('test-title').value;
             const scheduleTime = document.getElementById('test-schedule-time').value;
@@ -639,13 +802,17 @@
                 loadTeacherDashboard();
             } catch (error) {
                 console.error("Test save karne mein error: ", error);
-                showCustomAlert("Test save karne mein samasya aayi.");
+                showCustomAlert("Test save karne mein samasya aayi. Kripya Firebase Rules check karein.");
             } finally {
                 showLoader(false);
             }
         });
         
         window.editTest = async (testId) => {
+             if (currentUserData?.role !== 'teacher') {
+                showView('forbidden-view');
+                return;
+            }
             showLoader(true);
             const testDoc = await getDoc(doc(db, "tests", testId));
             if (!testDoc.exists()) {
@@ -679,6 +846,10 @@
         };
         
         window.deleteTest = (testId) => {
+             if (currentUserData?.role !== 'teacher') {
+                showView('forbidden-view');
+                return;
+            }
             showCustomConfirm('Kya aap sach mein is test ko delete karna chahte hain?', async (confirmed) => {
                 if (!confirmed) return;
                 
@@ -702,6 +873,10 @@
 
         // --- STUDENT DASHBOARD ---
         const loadStudentDashboard = async () => {
+             if (currentUserData?.role !== 'student') {
+                showView('forbidden-view');
+                return;
+            }
             const testListContainer = document.getElementById('student-test-list');
             testListContainer.innerHTML = '<p>Loading tests...</p>';
             const testsSnapshot = await getDocs(collection(db, "tests"));
@@ -757,7 +932,7 @@
         };
         
         const loadStudentHistory = async () => {
-            const historyContainer = document.getElementById('student-history-list');
+            const historyContainer = document.getElementById('recent-activity-list');
             historyContainer.innerHTML = '<p>Loading history...</p>';
             const q = query(collection(db, "results"), where("studentId", "==", currentUser.uid));
             const resultsSnap = await getDocs(q);
@@ -769,6 +944,7 @@
                 document.getElementById('stat-avg-score').textContent = `0%`;
                 document.getElementById('stat-high-score').textContent = `0%`;
                 document.getElementById('stat-low-score').textContent = `0%`;
+                document.getElementById('stat-trend').innerHTML = '';
                 return;
             }
             
@@ -777,7 +953,6 @@
             let high_score = 0;
             let low_score = 100;
 
-            historyContainer.innerHTML = '';
             const chartData = { labels: [], scores: [] };
             const resultsWithTitles = [];
 
@@ -785,40 +960,53 @@
                 const result = resultDoc.data();
                 const testDoc = await getDoc(doc(db, "tests", result.testId));
                 const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
-                resultsWithTitles.push({ ...result, testTitle });
+                resultsWithTitles.push({ ...result, testTitle, id: resultDoc.id });
             }
             
-            resultsWithTitles.sort((a, b) => a.submittedAt.seconds - b.submittedAt.seconds);
+            resultsWithTitles.sort((a, b) => b.submittedAt.seconds - a.submittedAt.seconds);
 
+            historyContainer.innerHTML = '';
+            resultsWithTitles.slice(0, 3).forEach(result => {
+                 const percentage = (result.score / result.totalMarks) * 100;
+                 const resultEl = document.createElement('div');
+                 resultEl.className = 'p-3 border rounded-xl flex justify-between items-center';
+                 resultEl.innerHTML = `
+                    <div>
+                        <p class="font-bold">${result.testTitle}</p>
+                        <p class="text-sm text-gray-500">${new Date(result.submittedAt.seconds * 1000).toLocaleDateString()}</p>
+                    </div>
+                    <p class="font-bold text-lg ${percentage >= 50 ? 'text-green-600' : 'text-red-600'}">${percentage.toFixed(0)}%</p>
+                 `;
+                 historyContainer.appendChild(resultEl);
+            });
+
+            resultsWithTitles.sort((a, b) => a.submittedAt.seconds - b.submittedAt.seconds);
             resultsWithTitles.forEach(result => {
                 const percentage = (result.score / result.totalMarks) * 100;
                 totalPercentage += percentage;
                 if(percentage > high_score) high_score = percentage;
                 if(percentage < low_score) low_score = percentage;
-
-                const resultEl = document.createElement('div');
-                resultEl.className = 'p-4 border rounded-xl';
-                resultEl.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-bold">${result.testTitle}</p>
-                            <p class="text-sm text-gray-500">Diya gaya: ${new Date(result.submittedAt.seconds * 1000).toLocaleString()}</p>
-                        </div>
-                        <div class="text-right">
-                             <p class="font-bold text-lg text-green-600">${result.score} / ${result.totalMarks}</p>
-                             <p class="font-bold text-indigo-600">${percentage.toFixed(1)}%</p>
-                        </div>
-                    </div>
-                `;
-                historyContainer.appendChild(resultEl);
                 chartData.labels.push(result.testTitle);
                 chartData.scores.push(percentage);
             });
+
+            if(resultsWithTitles.length > 1) {
+                const lastScore = chartData.scores[chartData.scores.length - 1];
+                const secondLastScore = chartData.scores[chartData.scores.length - 2];
+                const trendEl = document.getElementById('stat-trend');
+                if (lastScore > secondLastScore) {
+                    trendEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up text-green-500"></i>`;
+                } else if (lastScore < secondLastScore) {
+                    trendEl.innerHTML = `<i class="fa-solid fa-arrow-trend-down text-red-500"></i>`;
+                } else {
+                    trendEl.innerHTML = ``;
+                }
+            }
             
             document.getElementById('stat-total-tests').textContent = totalTests;
-            document.getElementById('stat-avg-score').textContent = `${(totalPercentage / totalTests).toFixed(1)}%`;
-            document.getElementById('stat-high-score').textContent = `${high_score.toFixed(1)}%`;
-            document.getElementById('stat-low-score').textContent = `${low_score.toFixed(1)}%`;
+            document.getElementById('stat-avg-score').textContent = `${(totalPercentage / totalTests).toFixed(0)}%`;
+            document.getElementById('stat-high-score').textContent = `${high_score.toFixed(0)}%`;
+            document.getElementById('stat-low-score').textContent = `${low_score.toFixed(0)}%`;
 
             renderProgressChart(chartData.labels, chartData.scores);
         };
@@ -916,6 +1104,7 @@
                 const resultRef = await addDoc(collection(db, "results"), {
                     studentId: currentUser.uid,
                     studentEmail: currentUser.email,
+                    studentName: currentUser.displayName,
                     testId: activeTestId,
                     score: score,
                     totalMarks: questionElements.length,
@@ -923,8 +1112,8 @@
                 });
                 
                 const resultData = (await getDoc(resultRef)).data();
-                sendDataToGoogleSheet(resultData);
-                showMarksheet(resultData);
+                sendDataToGoogleSheet({ ...resultData, id: resultRef.id });
+                showMarksheet({ ...resultData, id: resultRef.id });
                 showLoader(false);
             });
         });
@@ -940,6 +1129,7 @@
 
             const dataToSend = {
                 timestamp: new Date(resultData.submittedAt.seconds * 1000).toLocaleString(),
+                studentName: resultData.studentName,
                 studentEmail: resultData.studentEmail,
                 testTitle: testTitle,
                 score: resultData.score,
@@ -966,15 +1156,32 @@
         const showMarksheet = async (resultData) => {
             const testDoc = await getDoc(doc(db, "tests", resultData.testId));
             
-            document.getElementById('marksheet-student-name').textContent = currentUser.email;
+            document.getElementById('marksheet-student-name').textContent = resultData.studentName || currentUser.email;
             document.getElementById('marksheet-test-title').textContent = testDoc.exists() ? testDoc.data().title : 'Test';
             document.getElementById('marksheet-score').textContent = `${resultData.score} / ${resultData.totalMarks}`;
-            const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(2) : 0;
+            const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(1) : 0;
             document.getElementById('marksheet-percentage').textContent = `${percentage}%`;
-            document.getElementById('marksheet-date').textContent = `Test Diya Gaya: ${new Date(resultData.submittedAt.seconds * 1000).toLocaleString()}`;
-            
+            document.getElementById('marksheet-date').textContent = new Date(resultData.submittedAt.seconds * 1000).toLocaleDateString();
+            document.getElementById('marksheet-cert-id').textContent = resultData.id.substring(0, 10).toUpperCase();
+
             showView('marksheet-view');
         };
+        
+        downloadCertBtn.addEventListener('click', () => {
+            const certificate = document.getElementById('certificate-to-download');
+            showLoader(true);
+            html2canvas(certificate, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'CSC-Campus-Certificate.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showLoader(false);
+            }).catch(err => {
+                showLoader(false);
+                showCustomAlert("Certificate download karne mein samasya aayi.");
+                console.error(err);
+            });
+        });
 
     </script>
 </body>
