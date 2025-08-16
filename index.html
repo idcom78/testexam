@@ -3,1457 +3,488 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSC Campus - Professional Test Platform</title>
-    <!-- Tailwind CSS -->
+    <title>ऑनलाइन परीक्षा पोर्टल</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for diagrams -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2canvas for certificate download -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Google Fonts: Poppins & Lora for certificate -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:wght@700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom Styles -->
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f4f8; /* Softer background */
-        }
-        .view {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .active-view {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .gradient-bg-student { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); }
-        .gradient-bg-teacher { background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%); }
-        .marksheet-container {
-            background-color: #e9eaf7;
-            padding: 1rem;
-            border-radius: 1rem;
-        }
-        .marksheet {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 2rem;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 210mm; /* A4 width */
-            min-height: 297mm; /* A4 height */
-            margin: auto;
-        }
-        .certificate-title {
-            font-family: 'Lora', serif;
-            font-size: 2.5rem;
-            color: #3f51b5;
-        }
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-        }
-        #name-field {
-            display: none;
-        }
-        #resend-verification-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-        /* Bottom Nav Bar */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 0.5rem 0;
-            z-index: 50;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            padding: 0.5rem;
-            transition: color 0.2s;
-        }
-        .nav-item.active {
-            color: #667eea;
-        }
-        .nav-item i {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-        /* Role Toggle Switch */
-        .role-toggle {
-            display: flex;
-            background-color: #e5e7eb;
-            border-radius: 9999px;
-            padding: 0.25rem;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-        .role-toggle button {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            color: #4b5563;
-            transition: color 0.3s ease;
-            z-index: 10;
-        }
-        .role-toggle .glider {
-            position: absolute;
-            top: 0.25rem;
-            bottom: 0.25rem;
-            width: calc(50% - 0.25rem);
-            border-radius: 9999px;
-            transition: transform 0.3s ease-in-out;
-            z-index: 5;
-        }
-        .role-toggle .glider.student {
-            transform: translateX(0%);
-            background: linear-gradient(135deg, #a78bfa, #7c3aed);
-        }
-        .role-toggle .glider.teacher {
-            transform: translateX(100%);
-            background: linear-gradient(135deg, #7dd3fc, #0ea5e9);
-        }
-        .role-toggle button.active {
-            color: white;
-        }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .active-tab { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+        .bottom-nav-item.active svg, .bottom-nav-item.active span { color: #3b82f6; }
+        .modal-backdrop { background-color: rgba(0,0,0,0.5); }
+        .modal { transition: opacity 0.3s ease, transform 0.3s ease; }
+        .modal.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
     </style>
 </head>
-<body class="text-gray-700">
+<body class="bg-gray-100">
 
-    <!-- Main Container -->
-    <div id="app" class="container mx-auto p-4 max-w-7xl pb-24">
+    <div id="app-container" class="max-w-lg mx-auto bg-white min-h-screen shadow-2xl relative">
 
-        <!-- Loading Spinner -->
-        <div id="loading-spinner" class="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-            <div class="loader"></div>
+        <!-- ===== LOADING SPINNER ===== -->
+        <div id="loading-spinner" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+        </div>
+
+        <!-- ===== LOGIN PAGE ===== -->
+        <div id="login-page" class="hidden flex-col items-center justify-center h-screen bg-gradient-to-br from-blue-500 to-indigo-600 p-6">
+            <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8">
+                <div class="flex border-b mb-6">
+                    <button id="login-tab" class="flex-1 py-2 text-center font-semibold text-gray-600 focus:outline-none active-tab">Login</button>
+                    <button id="signup-tab" class="flex-1 py-2 text-center font-semibold text-gray-600 focus:outline-none">Sign Up</button>
+                </div>
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-4">
+                    <input id="login-email" type="email" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input id="login-password" type="password" placeholder="Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">Login</button>
+                    <p id="login-error" class="text-red-500 text-sm text-center h-4"></p>
+                </form>
+                <!-- Sign Up Form -->
+                <form id="signup-form" class="hidden space-y-4">
+                    <input id="signup-name" type="text" placeholder="Full Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input id="signup-email" type="email" placeholder="Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input id="signup-password" type="password" placeholder="Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <div class="flex justify-around">
+                        <label class="flex items-center"><input type="radio" name="role" value="student" class="mr-2" checked> Student</label>
+                        <label class="flex items-center"><input type="radio" name="role" value="teacher" class="mr-2"> Teacher</label>
+                    </div>
+                    <button type="submit" class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300">Sign Up</button>
+                    <p id="signup-error" class="text-red-500 text-sm text-center h-4"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== STUDENT DASHBOARD ===== -->
+        <div id="student-dashboard" class="hidden flex-col h-screen">
+            <header class="flex items-center justify-between p-4 bg-white shadow-md">
+                <h1 class="text-xl font-bold text-gray-800">Student Dashboard</h1>
+                <div class="relative cursor-pointer" id="notification-bell">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                    <span id="notification-dot" class="hidden absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
+                </div>
+            </header>
+            <main class="flex-grow p-4 overflow-y-auto">
+                <div id="student-home-content">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Aapki Progress</h2>
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-6"><canvas id="progressChart"></canvas></div>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Uplabdh Courses</h2>
+                    <div id="student-courses-list" class="space-y-4"></div>
+                </div>
+                <div id="student-notice-content" class="hidden">
+                     <h2 class="text-lg font-semibold text-gray-700 mb-4">Notice Board</h2>
+                     <div id="notice-board-list" class="space-y-3"></div>
+                </div>
+                <div id="student-account-content" class="hidden text-center">
+                    <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=User" class="mx-auto rounded-full mb-4" alt="User Avatar">
+                    <h2 id="student-name" class="text-xl font-bold"></h2>
+                    <p id="student-email" class="text-gray-500"></p>
+                    <button class="mt-8 w-full bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600" id="logout-btn-student">Logout</button>
+                </div>
+            </main>
+            <footer class="flex justify-around p-2 bg-white border-t">
+                <button class="bottom-nav-item flex flex-col items-center text-gray-500 w-1/4 p-2 active" onclick="showStudentContent('home')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8z"/></svg>
+                    <span class="text-xs mt-1">Home</span>
+                </button>
+                <button class="bottom-nav-item flex flex-col items-center text-gray-500 w-1/4 p-2" onclick="showStudentContent('notice')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-2 16H8v-2h4v2zm0-4H8v-2h4v2zm4-4H8V8h8v2z"/></svg>
+                    <span class="text-xs mt-1">Notice</span>
+                </button>
+                <button class="bottom-nav-item flex flex-col items-center text-gray-500 w-1/4 p-2" onclick="showStudentContent('account')">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3s-3-1.34-3-3s1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22c.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                    <span class="text-xs mt-1">Account</span>
+                </button>
+            </footer>
+        </div>
+
+        <!-- ===== TEACHER DASHBOARD ===== -->
+        <div id="teacher-dashboard" class="hidden flex-col h-screen">
+            <header class="flex items-center justify-between p-4 bg-indigo-600 text-white shadow-lg">
+                <h1 class="text-xl font-bold">Teacher Dashboard</h1>
+                <button class="focus:outline-none" id="logout-btn-teacher">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                </button>
+            </header>
+            <main class="flex-grow p-4 overflow-y-auto">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-gray-800">Send Notice</h3>
+                        <textarea id="notice-input" class="w-full mt-2 p-2 border rounded-lg h-24" placeholder="Notice yahan likhein..."></textarea>
+                        <button id="send-notice-btn" class="mt-2 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600">Bhejein</button>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                         <h3 class="font-bold text-gray-800">Send Notification</h3>
+                        <textarea id="notification-input" class="w-full mt-2 p-2 border rounded-lg h-24" placeholder="Notification yahan likhein..."></textarea>
+                        <button id="send-notification-btn" class="mt-2 w-full bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600">Bhejein</button>
+                    </div>
+                </div>
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Student Progress Tracking</h2>
+                <div id="student-progress-list" class="bg-white p-4 rounded-xl shadow-md space-y-4"></div>
+            </main>
         </div>
         
-        <!-- Custom Modal -->
-        <div id="custom-modal" class="modal-backdrop hidden">
-            <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center transform transition-all scale-95 opacity-0" id="modal-content">
-                <p id="modal-message" class="mb-6 text-lg font-medium"></p>
-                <div id="modal-buttons" class="flex gap-4 justify-center"></div>
-            </div>
-        </div>
-
-        <!-- Header -->
-        <header id="main-header" class="bg-white shadow-lg rounded-2xl p-4 mb-8 flex justify-between items-center sticky top-4 z-40 hidden">
-            <a href="#" id="home-link" class="text-3xl font-extrabold text-transparent bg-clip-text gradient-bg-student">CSC Campus Portal</a>
-            <div id="user-info" class="hidden items-center gap-4">
-                <span id="user-name-display" class="font-semibold text-gray-600 hidden md:block"></span>
-                <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition-all shadow-md hover:shadow-lg"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
-            </div>
-        </header>
-
-        <!-- Auth View -->
-        <div id="auth-view" class="view active-view flex items-center justify-center min-h-screen">
-            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl w-full max-w-lg mx-auto">
-                <div class="role-toggle">
-                    <div id="role-glider" class="glider student"></div>
-                    <button id="role-student-btn" class="active">Student</button>
-                    <button id="role-teacher-btn">Teacher</button>
-                </div>
-                <h2 id="auth-title" class="text-3xl font-bold text-center mb-2"></h2>
-                <p id="auth-subtitle" class="text-center text-gray-500 mb-8"></p>
-                <div id="name-field" class="mb-4">
-                    <label for="name" class="block mb-2 font-semibold text-gray-600">Aapka Poora Naam</label>
-                    <input type="text" id="name" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Jaise: Kumar Sanu">
-                </div>
-                <div class="mb-4">
-                    <label for="email" class="block mb-2 font-semibold text-gray-600">Email Address</label>
-                    <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="aapka@email.com">
-                </div>
-                <div class="mb-6">
-                    <div class="flex justify-between items-center">
-                        <label for="password" class="block mb-2 font-semibold text-gray-600">Password</label>
-                        <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:underline">Password Bhool Gaye?</a>
-                    </div>
-                    <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Kam se kam 6 characters">
-                </div>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="login-btn" class="flex-1 text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg">Login</button>
-                    <button id="signup-btn" class="flex-1 bg-gray-200 text-gray-700 p-3 rounded-xl font-bold text-lg hover:bg-gray-300 transition">Naya Account Banayein</button>
-                </div>
-                <p class="text-center text-red-500 mt-4" id="auth-error"></p>
-                <p class="text-center mt-4"><a href="#" id="auth-mode-switch" class="text-indigo-600 hover:underline">Signup karna hai?</a></p>
-            </div>
-        </div>
-        
-        <!-- Forgot Password View -->
-        <div id="forgot-password-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto">
-            <i class="fa-solid fa-key text-6xl text-yellow-500 mb-6"></i>
-            <h2 class="text-3xl font-bold mb-4">Password Reset Karein</h2>
-            <p class="mb-6 text-lg">Apna email address daalein. Hum aapko password reset karne ke liye ek link bhejenge.</p>
-            <div class="mb-4">
-                <input type="email" id="reset-email" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition" placeholder="Aapka registered email">
-            </div>
-            <button id="send-reset-link-btn" class="w-full mt-2 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Reset Link Bhejein</button>
-            <p class="text-center mt-6"><a href="#" id="back-to-login-link" class="text-indigo-600 hover:underline">Login par wapas jaayein</a></p>
-        </div>
-
-
-        <!-- Email Verification View -->
-        <div id="email-verify-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
-            <i class="fa-solid fa-envelope-circle-check text-7xl text-green-500 mb-6"></i>
-            <h2 class="text-3xl font-bold mb-4">Apna Email Verify Karein</h2>
-            <p class="mb-6 text-lg">Humne aapke email address par ek verification link bheja hai. Kripya apna inbox check karein aur link par click karke apna account activate karein.</p>
-            <p class="text-gray-500">Agar email nahi mila, to spam folder check karein.</p>
-            <button id="resend-verification-btn" class="mt-6 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Verification Email Dobara Bhejein</button>
-        </div>
-        
-        <!-- Forbidden View -->
-        <div id="forbidden-view" class="view bg-white p-12 rounded-2xl shadow-2xl max-w-lg mx-auto text-center">
-            <i class="fa-solid fa-hand text-7xl text-red-500 mb-6"></i>
-            <h2 class="text-3xl font-bold mb-4">Access Denied</h2>
-            <p class="mb-6 text-lg">Aapke paas is page ko dekhne ki anumati nahi hai.</p>
-            <button id="back-to-dashboard-btn" class="mt-6 gradient-bg-student text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">Apne Dashboard par Wapas Jayein</button>
-        </div>
-
-        <!-- Teacher Views Wrapper -->
-        <div id="teacher-wrapper" class="view">
-             <!-- Teacher Dashboard -->
-            <div id="teacher-dashboard-view">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-4xl font-bold">Teacher Dashboard</h2>
-                    <div class="flex gap-4">
-                        <button id="send-notice-btn" class="bg-yellow-500 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-bullhorn mr-2"></i>Notice Bhejein</button>
-                        <button id="create-test-btn" class="gradient-bg-teacher text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Naya Test Banayein</button>
-                    </div>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-xl">
-                        <h3 class="text-2xl font-bold mb-6">Aapke Dwara Banaye Gaye Tests</h3>
-                        <div id="teacher-test-list" class="space-y-4"></div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-xl">
-                        <h3 class="text-2xl font-bold mb-6">Registered Students</h3>
-                        <div id="student-list-container" class="space-y-3"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Create/Edit Test View -->
-            <div id="create-test-view" class="hidden bg-white p-8 rounded-2xl shadow-xl">
-                <h2 id="test-form-title" class="text-3xl font-bold mb-8">Naya Test Banayein</h2>
-                <input type="hidden" id="test-id-input">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="test-title" class="block mb-2 font-semibold">Test ka Title:</label>
-                        <input type="text" id="test-title" class="w-full p-3 border-2 rounded-xl" placeholder="Jaise: Physics - Chapter 1">
-                    </div>
-                    <div>
-                        <label for="test-schedule-time" class="block mb-2 font-semibold">Test Live Karne ka Samay (Optional):</label>
-                        <input type="datetime-local" id="test-schedule-time" class="w-full p-3 border-2 rounded-xl">
-                    </div>
-                </div>
-                <hr class="my-8">
-                <h3 class="text-2xl font-bold mb-6">Questions Jodein</h3>
-                <div id="questions-container" class="space-y-6"></div>
-                <button id="add-question-btn" class="mt-6 bg-green-500 text-white px-5 py-2 rounded-xl hover:bg-green-600 transition-all font-semibold"><i class="fa-solid fa-plus mr-2"></i>Question Jodein</button>
-                <div class="mt-8 flex gap-4">
-                    <button id="save-test-btn" class="gradient-bg-teacher text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Test Save Karein</button>
-                    <button id="cancel-test-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
-                </div>
-            </div>
-             <!-- Send Notice View -->
-            <div id="send-notice-view" class="hidden bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto">
-                <h2 class="text-3xl font-bold mb-6">Sabhi Students ko Notice Bhejein</h2>
-                <textarea id="notice-text" class="w-full p-3 border-2 rounded-xl h-40" placeholder="Yahan apna notice likhein..."></textarea>
-                <div class="mt-6 flex gap-4">
-                    <button id="post-notice-btn" class="gradient-bg-teacher text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">Notice Post Karein</button>
-                    <button id="cancel-notice-btn" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Cancel</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Student Views Wrapper -->
-        <div id="student-wrapper" class="view">
-            <!-- Student Home View -->
-            <div id="student-home-view" class="student-main-view">
-                <h2 class="text-4xl font-bold mb-8">Home</h2>
-                <div class="bg-white p-6 rounded-2xl shadow-xl mb-8">
-                    <h3 class="text-2xl font-bold mb-4">Notice Board</h3>
-                    <div id="notice-board" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                        <p id="notice-content" class="text-yellow-800">Loading notice...</p>
-                        <p id="notice-date" class="text-sm text-yellow-600 mt-2 text-right"></p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-xl">
-                    <h3 class="text-2xl font-bold mb-6">Uplabdh Tests</h3>
-                    <div id="student-test-list" class="space-y-4"></div>
-                </div>
-            </div>
-            <!-- Student Progress View -->
-            <div id="student-progress-view" class="student-main-view hidden">
-                <h2 class="text-4xl font-bold mb-8">Progress</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stat-card">
-                        <div class="flex items-center gap-4">
-                            <div class="p-4 bg-blue-100 rounded-full"><i class="fa-solid fa-file-alt text-2xl text-blue-500"></i></div>
-                            <div>
-                                <p class="text-gray-500">Kul Test Diye</p>
-                                <p id="stat-total-tests" class="text-3xl font-bold">0</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="flex items-center gap-4">
-                            <div class="p-4 bg-green-100 rounded-full"><i class="fa-solid fa-bullseye text-2xl text-green-500"></i></div>
-                            <div>
-                                <p class="text-gray-500">Average Score</p>
-                                <div class="flex items-center gap-2">
-                                    <p id="stat-avg-score" class="text-3xl font-bold">0%</p>
-                                    <span id="stat-trend" class="text-lg"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="flex items-center gap-4">
-                            <div class="p-4 bg-yellow-100 rounded-full"><i class="fa-solid fa-crown text-2xl text-yellow-500"></i></div>
-                            <div>
-                                <p class="text-gray-500">Highest Score</p>
-                                <p id="stat-high-score" class="text-3xl font-bold">0%</p>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="stat-card">
-                        <div class="flex items-center gap-4">
-                            <div class="p-4 bg-red-100 rounded-full"><i class="fa-solid fa-arrow-trend-down text-2xl text-red-500"></i></div>
-                            <div>
-                                <p class="text-gray-500">Lowest Score</p>
-                                <p id="stat-low-score" class="text-3xl font-bold">0%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-xl">
-                        <h3 class="text-2xl font-bold mb-4">Performance Graph</h3>
-                        <canvas id="progress-chart"></canvas>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-xl">
-                        <h3 class="text-2xl font-bold mb-6">Recent Activity</h3>
-                        <div id="recent-activity-list" class="space-y-4"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Student Certificates View -->
-            <div id="student-certificates-view" class="student-main-view hidden">
-                <h2 class="text-4xl font-bold mb-8">Aapke Certificates</h2>
-                <div id="certificate-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
-            <!-- Student Account View -->
-            <div id="student-account-view" class="student-main-view hidden">
-                <h2 class="text-4xl font-bold mb-8">Account Details</h2>
-                <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md mx-auto">
-                    <div class="text-center mb-6">
-                        <i class="fa-solid fa-user-circle text-7xl text-indigo-500"></i>
-                    </div>
-                    <p class="text-lg"><strong class="font-semibold">Naam:</strong> <span id="account-name"></span></p>
-                    <p class="text-lg mt-2"><strong class="font-semibold">Email:</strong> <span id="account-email"></span></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Test Taking View -->
-        <div id="test-taking-view" class="view bg-white p-8 rounded-2xl shadow-xl">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="active-test-title" class="text-3xl font-bold">Test Title</h2>
-            </div>
-            <div id="test-questions-container" class="space-y-8 mt-6"></div>
-            <button id="submit-test-btn" class="mt-8 w-full gradient-bg-student text-white p-4 rounded-xl font-bold text-xl hover:scale-105 transition-transform shadow-lg">Test Submit Karein</button>
-        </div>
-
-        <!-- Marksheet View -->
-        <div id="marksheet-view" class="view flex flex-col items-center justify-center p-4">
-            <div class="marksheet-container">
-                <div class="marksheet" id="certificate-to-download">
-                    <div class="text-center mb-8">
-                        <h1 class="certificate-title">CSC CAMPUS</h1>
-                        <p class="text-gray-500 text-lg">Certificate of Achievement</p>
-                    </div>
-                    
-                    <p class="text-center text-lg mb-4">This certificate is proudly presented to</p>
-                    <h2 id="marksheet-student-name" class="text-4xl font-bold text-center text-gray-800 mb-6">Student ka Naam</h2>
-                    
-                    <p class="text-center text-lg mb-4">for successfully completing the test</p>
-                    <h3 id="marksheet-test-title" class="text-2xl font-semibold text-center text-indigo-700 mb-8">Test ka Title</h3>
-                    
-                    <div class="flex justify-around items-center text-center my-8">
-                        <div>
-                            <p class="text-gray-500">Score</p>
-                            <p id="marksheet-score" class="text-4xl font-bold text-green-600">-- / --</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Percentage</p>
-                            <p id="marksheet-percentage" class="text-4xl font-bold text-indigo-600">0%</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-12 flex justify-between text-sm text-gray-500">
-                        <div>
-                            <p><strong>Date of Issue:</strong> <span id="marksheet-date">DD/MM/YYYY</span></p>
-                        </div>
-                        <div>
-                            <p><strong>Certificate ID:</strong> <span id="marksheet-cert-id"></span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-8 flex gap-4">
-                <button onclick="showStudentView('certificates')" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-600 transition">Sabhi Certificates Dekhein</button>
-                <button id="download-cert-btn" class="gradient-bg-student text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg"><i class="fa-solid fa-download mr-2"></i>Certificate Download Karein</button>
+        <!-- Notification Modal -->
+        <div id="notification-modal" class="modal hidden fixed inset-0 z-40 flex items-center justify-center p-4">
+            <div class="modal-backdrop fixed inset-0"></div>
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md z-50 p-6">
+                <h3 class="text-lg font-bold mb-4">Notifications</h3>
+                <div id="notification-list" class="space-y-3 max-h-64 overflow-y-auto"></div>
+                <button id="close-notification-modal" class="mt-4 w-full bg-gray-200 text-gray-700 font-bold py-2 rounded-lg hover:bg-gray-300">Close</button>
             </div>
         </div>
     </div>
-    
-    <!-- Student Bottom Nav Bar -->
-    <div id="student-bottom-nav" class="bottom-nav hidden">
-        <button class="nav-item active" data-view="home">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-        </button>
-        <button class="nav-item" data-view="progress">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Progress</span>
-        </button>
-        <button class="nav-item" data-view="certificates">
-            <i class="fa-solid fa-certificate"></i>
-            <span>Certificates</span>
-        </button>
-        <button class="nav-item" data-view="account">
-            <i class="fa-solid fa-user"></i>
-            <span>Account</span>
-        </button>
-    </div>
 
-
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script type="module">
+        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, setLogLevel, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, deleteDoc, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        const GOOGLE_SHEET_WEB_APP_URL = ""; // <-- YAHAN APNA GOOGLE APPS SCRIPT URL PASTE KAREIN
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            setPersistence,
+            browserLocalPersistence,
+            signInAnonymously,
+            signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            collection, 
+            addDoc, 
+            query, 
+            where, 
+            getDocs, 
+            onSnapshot,
+            serverTimestamp,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyCTywtZz-kOZH1RJKXiEsO8SK4YlLyR3ck",
-          authDomain: "csc-campus-test-app.firebaseapp.com",
-          projectId: "csc-campus-test-app",
-          storageBucket: "csc-campus-test-app.appspot.com",
-          messagingSenderId: "798918081054",
-          appId: "1:798918081054:web:7587d7e6f83890d13fcc0f"
-        };
-
+        // --- App Initialization ---
         let app, auth, db;
         try {
+            // This special variable is automatically provided in this environment.
+            const firebaseConfig = JSON.parse(__firebase_config);
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-            setLogLevel('debug');
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-            document.body.innerHTML = `<div class="p-8 bg-red-100 text-red-800 text-center">Firebase configuration is invalid. The app cannot start.</div>`;
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            document.getElementById('loading-spinner').innerHTML = '<p class="text-red-500">Firebase config error. App cannot start.</p>';
         }
 
-        let currentUser = null;
-        let currentUserData = null;
-        let progressChart = null;
-        let countdownIntervals = {};
-        let isLoginMode = true;
-        let loginTargetRole = 'student';
-
-        const views = document.querySelectorAll('.view');
+        // --- DOM Elements ---
         const loadingSpinner = document.getElementById('loading-spinner');
-        const modal = document.getElementById('custom-modal');
-        const modalContent = document.getElementById('modal-content');
-        const modalMessage = document.getElementById('modal-message');
-        const modalButtons = document.getElementById('modal-buttons');
-        const nameField = document.getElementById('name-field');
-        const authTitle = document.getElementById('auth-title');
-        const authSubtitle = document.getElementById('auth-subtitle');
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
-        const authModeSwitch = document.getElementById('auth-mode-switch');
-        const authError = document.getElementById('auth-error');
-        const resendBtn = document.getElementById('resend-verification-btn');
-        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const mainHeader = document.getElementById('main-header');
-        const homeLink = document.getElementById('home-link');
-        const downloadCertBtn = document.getElementById('download-cert-btn');
-        const forgotPasswordLink = document.getElementById('forgot-password-link');
-        const backToLoginLink = document.getElementById('back-to-login-link');
-        const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
-        const studentBottomNav = document.getElementById('student-bottom-nav');
-        const roleStudentBtn = document.getElementById('role-student-btn');
-        const roleTeacherBtn = document.getElementById('role-teacher-btn');
-        const roleGlider = document.getElementById('role-glider');
+        const loginPage = document.getElementById('login-page');
+        const studentDashboard = document.getElementById('student-dashboard');
+        const teacherDashboard = document.getElementById('teacher-dashboard');
 
-        const showView = (viewId) => {
-            views.forEach(view => view.classList.remove('active-view'));
-            const viewToShow = document.getElementById(viewId);
-            if(viewToShow) viewToShow.classList.add('active-view');
+        // --- UI State Management ---
+        const showLoading = (isLoading) => {
+            loadingSpinner.style.display = isLoading ? 'flex' : 'none';
         };
 
-        const showLoader = (show) => {
-            loadingSpinner.style.display = show ? 'flex' : 'none';
-        }
-
-        const showModal = (message, buttons) => {
-            modalMessage.textContent = message;
-            modalButtons.innerHTML = '';
-            buttons.forEach(btn => {
-                const buttonEl = document.createElement('button');
-                buttonEl.textContent = btn.text;
-                buttonEl.className = btn.classes;
-                buttonEl.onclick = () => {
-                    modal.style.display = 'none';
-                    modalContent.classList.add('scale-95', 'opacity-0');
-                    if (btn.onClick) btn.onClick();
-                };
-                modalButtons.appendChild(buttonEl);
-            });
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-            }, 50);
-        };
-
-        const showCustomAlert = (message) => {
-            showModal(message, [{ text: 'OK', classes: 'gradient-bg-student text-white px-6 py-2 rounded-xl font-semibold' }]);
-        };
-        
-        const showCustomConfirm = (message, onConfirm) => {
-            showModal(message, [
-                { text: 'Cancel', classes: 'bg-gray-300 px-6 py-2 rounded-xl font-semibold', onClick: () => onConfirm(false) },
-                { text: 'Confirm', classes: 'bg-red-500 text-white px-6 py-2 rounded-xl font-semibold', onClick: () => onConfirm(true) }
-            ]);
-        };
-        
-        const setAuthTheme = (role) => {
-            loginTargetRole = role;
-            authError.textContent = '';
-            
-            roleGlider.className = `glider ${role}`;
-            roleStudentBtn.classList.toggle('active', role === 'student');
-            roleTeacherBtn.classList.toggle('active', role === 'teacher');
-            
-            const themeClass = role === 'student' ? 'gradient-bg-student' : 'gradient-bg-teacher';
-            loginBtn.className = `flex-1 text-white p-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-lg ${themeClass}`;
-
-            authTitle.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Portal`;
-            isLoginMode = false; // Set to false to trigger the login mode text correctly
-            toggleAuthMode(); // Reset to login mode with new role
-        };
-
-        roleStudentBtn.addEventListener('click', () => setAuthTheme('student'));
-        roleTeacherBtn.addEventListener('click', () => setAuthTheme('teacher'));
-        
-        const toggleAuthMode = () => {
-            isLoginMode = !isLoginMode;
-            authError.textContent = '';
-            if (isLoginMode) {
-                authSubtitle.textContent = `Apne ${loginTargetRole} account mein login karein.`;
-                nameField.style.display = 'none';
-                loginBtn.style.display = 'block';
-                signupBtn.textContent = 'Naya Account Banayein';
-                authModeSwitch.textContent = 'Naya account banana hai? Signup karein.';
-                forgotPasswordLink.style.display = 'block';
-            } else {
-                authSubtitle.textContent = `Naya ${loginTargetRole} account banayein.`;
-                nameField.style.display = 'block';
-                loginBtn.style.display = 'none';
-                signupBtn.textContent = 'Signup';
-                authModeSwitch.textContent = 'Pehle se account hai? Login karein.';
-                forgotPasswordLink.style.display = 'none';
+        const showPage = (pageElement) => {
+            loginPage.classList.add('hidden');
+            studentDashboard.classList.add('hidden');
+            teacherDashboard.classList.add('hidden');
+            if (pageElement) {
+                pageElement.classList.remove('hidden');
+                pageElement.classList.add('flex');
             }
         };
-        authModeSwitch.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleAuthMode();
-        });
 
-        homeLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if(!currentUser) {
-                showView('auth-view');
-            }
-        });
-        
-        forgotPasswordLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showView('forgot-password-view');
-        });
-
-        backToLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showView('auth-view');
-        });
-
-        if (auth) {
-            onAuthStateChanged(auth, async (user) => {
-                showLoader(true);
-                Object.values(countdownIntervals).forEach(clearInterval);
-                if (user) {
-                    await user.reload();
-                    if (!user.emailVerified) {
-                        mainHeader.classList.add('hidden');
-                        studentBottomNav.classList.add('hidden');
-                        document.getElementById('user-info').classList.add('hidden');
-                        document.getElementById('user-info').classList.remove('flex');
-                        showView('email-verify-view');
-                        showLoader(false);
-                        return;
-                    }
-                    currentUser = user;
-                    mainHeader.classList.remove('hidden');
-                    document.getElementById('user-info').classList.add('flex');
-                    document.getElementById('user-info').classList.remove('hidden');
-                    document.getElementById('user-name-display').textContent = user.displayName || user.email;
-                    
-                    const userDocRef = doc(db, "users", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-
-                    if (userDocSnap.exists()) {
-                        currentUserData = userDocSnap.data();
-                        if (currentUserData.role === 'teacher') {
-                            studentBottomNav.classList.add('hidden');
-                            showView('teacher-wrapper');
-                            loadTeacherDashboard();
-                        } else {
-                            studentBottomNav.classList.remove('hidden');
-                            showView('student-wrapper');
-                            showStudentView('home');
-                        }
-                    } else {
-                        showView('forbidden-view'); 
+        // --- Authentication Logic ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // If user is authenticated, check their role from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    if (userData.role === 'student') {
+                        setupStudentDashboard(userData);
+                        showPage(studentDashboard);
+                    } else if (userData.role === 'teacher') {
+                        setupTeacherDashboard();
+                        showPage(teacherDashboard);
                     }
                 } else {
-                    currentUser = null;
-                    currentUserData = null;
-                    mainHeader.classList.add('hidden');
-                    studentBottomNav.classList.add('hidden');
-                    document.getElementById('user-info').classList.add('hidden');
-                    document.getElementById('user-info').classList.remove('flex');
-                    setAuthTheme('student'); // Default to student on logout
-                    showView('auth-view');
+                    // This case can happen if a user is authenticated but their doc is deleted.
+                    console.log("User document not found, signing out.");
+                    await signOut(auth);
                 }
-                showLoader(false);
-            });
-        }
-        
-        backToDashboardBtn.addEventListener('click', () => {
-            if (!currentUserData) {
-                showView('auth-view');
-                return;
-            }
-            if (currentUserData.role === 'teacher') {
-                showView('teacher-wrapper');
             } else {
-                showView('student-wrapper');
-                showStudentView('home');
+                // If no user, show the login page
+                showPage(loginPage);
             }
-        });
-        
-        loginBtn.addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            authError.textContent = '';
-            if(!email || !password) {
-                authError.textContent = "Email aur password zaroori hai.";
-                return;
-            }
-            showLoader(true);
-            try {
-                await setPersistence(auth, browserLocalPersistence);
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-
-                if (userDocSnap.exists()) {
-                    const userRole = userDocSnap.data().role;
-                    if (userRole !== loginTargetRole) {
-                        const portalName = loginTargetRole === 'student' ? 'Teacher' : 'Student';
-                        authError.textContent = `Yeh ek ${userRole} account hai. Kripya ${portalName} Portal se login karein.`;
-                        await signOut(auth);
-                        showLoader(false);
-                        return;
-                    }
-                }
-            } catch (error) {
-                authError.textContent = "Login fail ho gaya: " + error.message;
-                showLoader(false);
-            }
+            showLoading(false);
         });
 
-        signupBtn.addEventListener('click', async () => {
-            if (isLoginMode) {
-                toggleAuthMode();
-                return;
-            }
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            authError.textContent = '';
+        // Login/Signup Tabs
+        document.getElementById('login-tab').addEventListener('click', () => {
+            document.getElementById('login-tab').classList.add('active-tab');
+            document.getElementById('signup-tab').classList.remove('active-tab');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+        });
 
-            if(!name || !email || !password) {
-                authError.textContent = "Naam, email, aur password zaroori hai.";
-                return;
-            }
-            if(password.length < 6) {
-                authError.textContent = "Password kam se kam 6 characters ka hona chahiye.";
-                return;
-            }
-            
-            showLoader(true);
+        document.getElementById('signup-tab').addEventListener('click', () => {
+            document.getElementById('signup-tab').classList.add('active-tab');
+            document.getElementById('login-tab').classList.remove('active-tab');
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+        });
+
+        // Signup Form
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading(true);
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const errorEl = document.getElementById('signup-error');
+            errorEl.textContent = '';
+
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: name });
-                
-                await setDoc(doc(db, "users", userCredential.user.uid), {
-                    email: email,
+                const user = userCredential.user;
+                // Create user document in Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
                     name: name,
-                    role: loginTargetRole,
+                    email: email,
+                    role: role,
                     createdAt: serverTimestamp()
                 });
-
-                await sendEmailVerification(userCredential.user);
-                await signOut(auth);
-                showCustomAlert("Registration safal! Aapke email par ek verification link bheja gaya hai. Verify karne ke baad login karein.");
-                showView('email-verify-view');
-            } catch (error) {
-                authError.textContent = "Signup fail ho gaya: " + error.message;
-            } finally {
-                showLoader(false);
-            }
-        });
-
-        sendResetLinkBtn.addEventListener('click', async () => {
-            const email = document.getElementById('reset-email').value;
-            if (!email) {
-                showCustomAlert("Kripya apna email address daalein.");
-                return;
-            }
-            showLoader(true);
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showCustomAlert("Password reset link aapke email par bhej diya gaya hai. Kripya apna inbox check karein.");
-                showView('auth-view');
-            } catch (error) {
-                showCustomAlert("Link bhejne mein samasya aayi: " + error.message);
-            } finally {
-                showLoader(false);
-            }
-        });
-
-        resendBtn.addEventListener('click', async () => {
-            resendBtn.disabled = true;
-            const originalText = resendBtn.textContent;
-            
-            showCustomAlert("Email dobara bhejne ke liye, kripya login karne ki koshish karein. Agar aapka account unverified hai, to system aapko verification screen par le aayega.");
-            showView('auth-view');
-            
-            let seconds = 60;
-            resendBtn.textContent = `Dobara Bhejein (${seconds}s)`;
-            const interval = setInterval(() => {
-                seconds--;
-                resendBtn.textContent = `Dobara Bhejein (${seconds}s)`;
-                if (seconds <= 0) {
-                    clearInterval(interval);
-                    resendBtn.disabled = false;
-                    resendBtn.textContent = originalText;
+                // If student, create a dummy progress document for them
+                if (role === 'student') {
+                    await setDoc(doc(db, "studentProgress", user.uid), {
+                        scores: [65, 72, 70, 81, 78, 90]
+                    });
                 }
-            }, 1000);
+                // No need to call showPage here, onAuthStateChanged will handle it.
+            } catch (error) {
+                errorEl.textContent = error.message;
+            } finally {
+                showLoading(false);
+            }
         });
 
-        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+        // Login Form
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading(true);
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            errorEl.textContent = '';
+            try {
+                // Persist user session locally
+                await setPersistence(auth, browserLocalPersistence);
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorEl.textContent = "Failed to login. Check email/password.";
+            } finally {
+                showLoading(false);
+            }
+        });
 
-        // --- TEACHER VIEWS & LOGIC ---
-        const teacherDashboardView = document.getElementById('teacher-dashboard-view');
-        const createTestView = document.getElementById('create-test-view');
-        const sendNoticeView = document.getElementById('send-notice-view');
-        
-        const showTeacherSubView = (view) => {
-            [teacherDashboardView, createTestView, sendNoticeView].forEach(v => v.style.display = 'none');
-            view.style.display = 'block';
+        // Logout Buttons
+        document.getElementById('logout-btn-student').addEventListener('click', () => signOut(auth));
+        document.getElementById('logout-btn-teacher').addEventListener('click', () => signOut(auth));
+
+        // --- Student Dashboard Logic ---
+        let progressChartInstance = null;
+        async function setupStudentDashboard(userData) {
+            document.getElementById('student-name').textContent = userData.name;
+            document.getElementById('student-email').textContent = userData.email;
+            
+            // Fetch progress and render chart
+            const progressDocRef = doc(db, "studentProgress", userData.uid);
+            onSnapshot(progressDocRef, (doc) => {
+                if (doc.exists()) {
+                    renderProgressChart(doc.data().scores);
+                }
+            });
+
+            // Listen for notices and notifications in real-time
+            listenForNotices();
+            listenForNotifications();
         }
-
-        document.getElementById('create-test-btn').addEventListener('click', () => showTeacherSubView(createTestView));
-        document.getElementById('cancel-test-btn').addEventListener('click', () => showTeacherSubView(teacherDashboardView));
-        document.getElementById('send-notice-btn').addEventListener('click', () => showTeacherSubView(sendNoticeView));
-        document.getElementById('cancel-notice-btn').addEventListener('click', () => showTeacherSubView(teacherDashboardView));
-
-        document.getElementById('post-notice-btn').addEventListener('click', async () => {
-            const text = document.getElementById('notice-text').value;
-            if (!text) {
-                showCustomAlert("Kripya notice mein kuch likhein.");
-                return;
-            }
-            showLoader(true);
-            try {
-                await setDoc(doc(db, "notices", "latest"), {
-                    text: text,
-                    postedAt: serverTimestamp(),
-                    postedBy: currentUser.displayName
-                });
-                showCustomAlert("Notice safaltapoorvak bhej diya gaya hai.");
-                document.getElementById('notice-text').value = '';
-                showTeacherSubView(teacherDashboardView);
-            } catch (error) {
-                showCustomAlert("Notice bhejne mein samasya aayi.");
-            } finally {
-                showLoader(false);
-            }
-        });
-
-        const loadTeacherDashboard = async () => {
-            if (currentUserData?.role !== 'teacher') {
-                showView('forbidden-view');
-                return;
-            }
-            showTeacherSubView(teacherDashboardView);
-            
-            const testListContainer = document.getElementById('teacher-test-list');
-            testListContainer.innerHTML = '<p>Loading tests...</p>';
-            const q = query(collection(db, "tests"), where("createdBy", "==", currentUser.uid));
-            const querySnapshot = await getDocs(q);
-            
-            if(querySnapshot.empty) {
-                testListContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi banaya hai.</p>';
-            } else {
-                testListContainer.innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const test = doc.data();
-                    let statusBadge = '';
-                    const now = new Date();
-                    const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
-
-                    if (scheduledTime) {
-                        if (now < scheduledTime) {
-                            statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Scheduled</span>`;
-                        } else {
-                            statusBadge = `<span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Live</span>`;
-                        }
-                    } else {
-                        statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">Draft</span>`;
-                    }
-
-                    const testEl = document.createElement('div');
-                    testEl.className = 'p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg flex justify-between items-center';
-                    testEl.innerHTML = `
-                        <div>
-                            <h4 class="font-bold text-lg text-indigo-800">${test.title}</h4>
-                            <div class="mt-1">${statusBadge}</div>
-                        </div>
-                        <div>
-                            <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2" onclick="editTest('${doc.id}')"><i class="fa-solid fa-pencil"></i></button>
-                            <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteTest('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `;
-                    testListContainer.appendChild(testEl);
-                });
-            }
-
-            // Load students list
-            const studentListContainer = document.getElementById('student-list-container');
-            studentListContainer.innerHTML = '<p>Loading students...</p>';
-            const studentsQuery = query(collection(db, "users"), where("role", "==", "student"));
-            const studentsSnapshot = await getDocs(studentsQuery);
-
-            if (studentsSnapshot.empty) {
-                studentListContainer.innerHTML = '<p class="text-gray-500">Abhi tak koi student register nahi hua hai.</p>';
-            } else {
-                studentListContainer.innerHTML = '';
-                studentsSnapshot.forEach(doc => {
-                    const student = doc.data();
-                    const studentEl = document.createElement('div');
-                    studentEl.className = 'p-3 border rounded-lg flex items-center gap-3';
-                    studentEl.innerHTML = `
-                        <i class="fa-solid fa-user-graduate text-indigo-500"></i>
-                        <div>
-                            <p class="font-semibold">${student.name}</p>
-                            <p class="text-sm text-gray-500">${student.email}</p>
-                        </div>
-                    `;
-                    studentListContainer.appendChild(studentEl);
-                });
-            }
-        };
-
-        // --- CREATE/EDIT TEST LOGIC ---
-        document.getElementById('add-question-btn').addEventListener('click', () => addQuestionForm());
-
-        document.getElementById('save-test-btn').addEventListener('click', async () => {
-            if (currentUserData?.role !== 'teacher') {
-                showView('forbidden-view');
-                return;
-            }
-            const testId = document.getElementById('test-id-input').value;
-            const title = document.getElementById('test-title').value;
-            const scheduleTime = document.getElementById('test-schedule-time').value;
-
-            if (!title) {
-                showCustomAlert('Test ka title zaroori hai.');
-                return;
-            }
-
-            const questions = [];
-            const questionForms = document.querySelectorAll('#questions-container > div');
-            if (questionForms.length === 0) {
-                showCustomAlert('Kam se kam ek question jodein.');
-                return;
-            }
-            for (const form of questionForms) {
-                const questionText = form.querySelector('.question-text').value;
-                const options = Array.from(form.querySelectorAll('.option-text')).map(input => input.value);
-                const correctAnswerInput = form.querySelector('.correct-answer:checked');
-
-                if (!questionText || options.some(opt => !opt) || !correctAnswerInput) {
-                    showCustomAlert('Har question aur uske options ko bharein, aur sahi jawab chunein.');
-                    return;
-                }
-                questions.push({
-                    questionText,
-                    options,
-                    correctAnswerIndex: parseInt(correctAnswerInput.value)
-                });
-            }
-
-            showLoader(true);
-            const testData = {
-                title,
-                createdBy: currentUser.uid,
-                createdAt: serverTimestamp(),
-                scheduledAt: scheduleTime ? new Date(scheduleTime) : null
-            };
-
-            try {
-                let currentTestId = testId;
-                if (testId) {
-                    const testRef = doc(db, "tests", testId);
-                    await updateDoc(testRef, testData);
-                } else {
-                    const testDocRef = await addDoc(collection(db, "tests"), testData);
-                    currentTestId = testDocRef.id;
-                }
-                
-                const q = query(collection(db, "questions"), where("testId", "==", currentTestId));
-                const oldQuestionsSnap = await getDocs(q);
-                for (const docSnap of oldQuestionsSnap.docs) {
-                    await deleteDoc(doc(db, "questions", docSnap.id));
-                }
-                for (const qData of questions) {
-                    await addDoc(collection(db, "questions"), { testId: currentTestId, ...qData });
-                }
-
-                showCustomAlert('Test successfully save ho gaya!');
-                loadTeacherDashboard();
-            } catch (error) {
-                console.error("Test save karne mein error: ", error);
-                showCustomAlert("Test save karne mein samasya aayi. Kripya Firebase Rules check karein.");
-            } finally {
-                showLoader(false);
-            }
-        });
         
-        window.editTest = async (testId) => {
-             if (currentUserData?.role !== 'teacher') {
-                showView('forbidden-view');
-                return;
-            }
-            showLoader(true);
-            const testDoc = await getDoc(doc(db, "tests", testId));
-            if (!testDoc.exists()) {
-                showCustomAlert('Test nahi mila!');
-                showLoader(false);
-                return;
-            }
-            
-            const testData = testDoc.data();
-            document.getElementById('test-form-title').textContent = 'Test Edit Karein';
-            document.getElementById('test-id-input').value = testId;
-            document.getElementById('test-title').value = testData.title;
-            if (testData.scheduledAt) {
-                const d = testData.scheduledAt.toDate();
-                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-                document.getElementById('test-schedule-time').value = d.toISOString().slice(0,16);
-            } else {
-                 document.getElementById('test-schedule-time').value = '';
-            }
-
-            const questionsContainer = document.getElementById('questions-container');
-            questionsContainer.innerHTML = '';
-            questionCount = 0;
-            
-            const q = query(collection(db, "questions"), where("testId", "==", testId));
-            const questionsSnap = await getDocs(q);
-            questionsSnap.forEach(doc => addQuestionForm(doc.data()));
-
-            showTeacherSubView(createTestView);
-            showLoader(false);
-        };
-        
-        window.deleteTest = (testId) => {
-             if (currentUserData?.role !== 'teacher') {
-                showView('forbidden-view');
-                return;
-            }
-            showCustomConfirm('Kya aap sach mein is test ko delete karna chahte hain?', async (confirmed) => {
-                if (!confirmed) return;
-                
-                showLoader(true);
-                try {
-                    const q = query(collection(db, "questions"), where("testId", "==", testId));
-                    const questionsSnap = await getDocs(q);
-                    for (const docSnap of questionsSnap.docs) {
-                        await deleteDoc(doc(db, "questions", docSnap.id));
-                    }
-                    await deleteDoc(doc(db, "tests", testId));
-                    showCustomAlert('Test delete ho gaya.');
-                    loadTeacherDashboard();
-                } catch (error) {
-                    showCustomAlert("Test delete karne mein samasya aayi.");
-                } finally {
-                    showLoader(false);
-                }
-            });
-        };
-
-        // --- STUDENT VIEWS & LOGIC ---
-        const studentViews = document.querySelectorAll('.student-main-view');
-        const navItems = document.querySelectorAll('.nav-item');
-
-        const showStudentView = (viewName) => {
-            studentViews.forEach(v => v.classList.add('hidden'));
-            document.getElementById(`student-${viewName}-view`).classList.remove('hidden');
-
-            navItems.forEach(item => {
-                if (item.dataset.view === viewName) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            
-            if (viewName === 'home') loadStudentHome();
-            if (viewName === 'progress') loadStudentProgress();
-            if (viewName === 'certificates') loadStudentCertificates();
-            if (viewName === 'account') loadStudentAccount();
-        };
-
-        navItems.forEach(item => {
-            item.addEventListener('click', () => showStudentView(item.dataset.view));
-        });
-
-        const loadStudentHome = async () => {
-            const noticeContent = document.getElementById('notice-content');
-            const noticeDate = document.getElementById('notice-date');
-            try {
-                const noticeDoc = await getDoc(doc(db, "notices", "latest"));
-                if (noticeDoc.exists()) {
-                    const notice = noticeDoc.data();
-                    noticeContent.textContent = notice.text;
-                    noticeDate.textContent = new Date(notice.postedAt.seconds * 1000).toLocaleString();
-                } else {
-                    noticeContent.textContent = "Abhi koi nayi soochana nahi hai.";
-                    noticeDate.textContent = '';
-                }
-            } catch (e) {
-                noticeContent.textContent = "Soochana load karne mein samasya aayi.";
-            }
-            const testListContainer = document.getElementById('student-test-list');
-            testListContainer.innerHTML = '<p>Loading tests...</p>';
-            const testsSnapshot = await getDocs(collection(db, "tests"));
-            testListContainer.innerHTML = '';
-            
-            Object.values(countdownIntervals).forEach(clearInterval);
-
-            testsSnapshot.forEach((doc) => {
-                const test = doc.data();
-                const testEl = document.createElement('div');
-                testEl.className = 'p-4 border rounded-xl flex justify-between items-center transition-all hover:shadow-md hover:border-indigo-300';
-                
-                const now = new Date();
-                const scheduledTime = test.scheduledAt ? test.scheduledAt.toDate() : null;
-                let actionButton = '';
-
-                if (scheduledTime && now < scheduledTime) {
-                    const timerId = `timer-${doc.id}`;
-                    actionButton = `<div id="${timerId}" class="text-lg font-bold text-red-500">Loading...</div>`;
-                    
-                    countdownIntervals[doc.id] = setInterval(() => {
-                        const timeLeft = scheduledTime - new Date();
-                        const timerEl = document.getElementById(timerId);
-                        if(!timerEl) {
-                            clearInterval(countdownIntervals[doc.id]);
-                            return;
-                        }
-
-                        if (timeLeft <= 0) {
-                            clearInterval(countdownIntervals[doc.id]);
-                            timerEl.parentElement.innerHTML = `<button class="gradient-bg-student text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
-                        } else {
-                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                            timerEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                        }
-                    }, 1000);
-
-                } else {
-                    actionButton = `<button class="gradient-bg-student text-white px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-transform" onclick="startTest('${doc.id}', '${test.title}')">Test Shuru Karein</button>`;
-                }
-
-                testEl.innerHTML = `
-                    <h4 class="font-bold text-lg">${test.title}</h4>
-                    ${actionButton}
-                `;
-                testListContainer.appendChild(testEl);
-            });
-        };
-
-        const loadStudentProgress = async () => {
-            loadStudentHistory(); // This function loads all stats and chart
-        };
-        
-        const loadStudentCertificates = async () => {
-             const certListContainer = document.getElementById('certificate-list');
-             certListContainer.innerHTML = '<p>Loading certificates...</p>';
-             const q = query(collection(db, "results"), where("studentId", "==", currentUser.uid), orderBy("submittedAt", "desc"));
-             const resultsSnap = await getDocs(q);
-
-             if (resultsSnap.empty) {
-                 certListContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi diya hai.</p>';
-                 return;
-             }
-             
-             certListContainer.innerHTML = '';
-             for (const resultDoc of resultsSnap.docs) {
-                 const result = resultDoc.data();
-                 const testDoc = await getDoc(doc(db, "tests", result.testId));
-                 const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
-                 const percentage = (result.score / result.totalMarks) * 100;
-
-                 const certEl = document.createElement('div');
-                 certEl.className = 'p-4 border rounded-xl flex justify-between items-center cursor-pointer hover:bg-indigo-50';
-                 certEl.innerHTML = `
-                    <div>
-                        <p class="font-bold text-lg">${testTitle}</p>
-                        <p class="text-sm text-gray-500">Diya gaya: ${new Date(result.submittedAt.seconds * 1000).toLocaleDateString()}</p>
-                    </div>
-                    <p class="font-bold text-xl ${percentage >= 50 ? 'text-green-600' : 'text-red-600'}">${percentage.toFixed(0)}%</p>
-                 `;
-                 certEl.onclick = () => showMarksheet({ ...result, id: resultDoc.id });
-                 certListContainer.appendChild(certEl);
-             }
-        };
-
-        const loadStudentAccount = () => {
-            document.getElementById('account-name').textContent = currentUser.displayName;
-            document.getElementById('account-email').textContent = currentUser.email;
-        };
-
-        const loadStudentHistory = async () => {
-            const historyContainer = document.getElementById('recent-activity-list');
-            historyContainer.innerHTML = '<p>Loading history...</p>';
-            const q = query(collection(db, "results"), where("studentId", "==", currentUser.uid));
-            const resultsSnap = await getDocs(q);
-            
-            if(resultsSnap.empty) {
-                historyContainer.innerHTML = '<p class="text-gray-500">Aapne abhi tak koi test nahi diya hai.</p>';
-                if(progressChart) progressChart.destroy();
-                document.getElementById('stat-total-tests').textContent = 0;
-                document.getElementById('stat-avg-score').textContent = `0%`;
-                document.getElementById('stat-high-score').textContent = `0%`;
-                document.getElementById('stat-low-score').textContent = `0%`;
-                document.getElementById('stat-trend').innerHTML = '';
-                return;
-            }
-            
-            let totalTests = resultsSnap.size;
-            let totalPercentage = 0;
-            let high_score = 0;
-            let low_score = 100;
-
-            const chartData = { labels: [], scores: [] };
-            const resultsWithTitles = [];
-
-            for(const resultDoc of resultsSnap.docs) {
-                const result = resultDoc.data();
-                const testDoc = await getDoc(doc(db, "tests", result.testId));
-                const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
-                resultsWithTitles.push({ ...result, testTitle, id: resultDoc.id });
-            }
-            
-            resultsWithTitles.sort((a, b) => b.submittedAt.seconds - a.submittedAt.seconds);
-
-            historyContainer.innerHTML = '';
-            resultsWithTitles.slice(0, 3).forEach(result => {
-                 const percentage = (result.score / result.totalMarks) * 100;
-                 const resultEl = document.createElement('div');
-                 resultEl.className = 'p-3 border rounded-xl flex justify-between items-center';
-                 resultEl.innerHTML = `
-                    <div>
-                        <p class="font-bold">${result.testTitle}</p>
-                        <p class="text-sm text-gray-500">${new Date(result.submittedAt.seconds * 1000).toLocaleDateString()}</p>
-                    </div>
-                    <p class="font-bold text-lg ${percentage >= 50 ? 'text-green-600' : 'text-red-600'}">${percentage.toFixed(0)}%</p>
-                 `;
-                 historyContainer.appendChild(resultEl);
-            });
-
-            resultsWithTitles.sort((a, b) => a.submittedAt.seconds - b.submittedAt.seconds);
-            resultsWithTitles.forEach(result => {
-                const percentage = (result.score / result.totalMarks) * 100;
-                totalPercentage += percentage;
-                if(percentage > high_score) high_score = percentage;
-                if(percentage < low_score) low_score = percentage;
-                chartData.labels.push(result.testTitle);
-                chartData.scores.push(percentage);
-            });
-
-            if(resultsWithTitles.length > 1) {
-                const lastScore = chartData.scores[chartData.scores.length - 1];
-                const secondLastScore = chartData.scores[chartData.scores.length - 2];
-                const trendEl = document.getElementById('stat-trend');
-                if (lastScore > secondLastScore) {
-                    trendEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up text-green-500"></i>`;
-                } else if (lastScore < secondLastScore) {
-                    trendEl.innerHTML = `<i class="fa-solid fa-arrow-trend-down text-red-500"></i>`;
-                } else {
-                    trendEl.innerHTML = ``;
-                }
-            }
-            
-            document.getElementById('stat-total-tests').textContent = totalTests;
-            document.getElementById('stat-avg-score').textContent = `${(totalPercentage / totalTests).toFixed(0)}%`;
-            document.getElementById('stat-high-score').textContent = `${high_score.toFixed(0)}%`;
-            document.getElementById('stat-low-score').textContent = `${low_score.toFixed(0)}%`;
-
-            renderProgressChart(chartData.labels, chartData.scores);
-        };
-
-        const renderProgressChart = (labels, scores) => {
-            const ctx = document.getElementById('progress-chart').getContext('2d');
-            if (progressChart) progressChart.destroy();
-            progressChart = new Chart(ctx, {
+        function renderProgressChart(data) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            if (progressChartInstance) progressChartInstance.destroy();
+            progressChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     datasets: [{
-                        label: 'Performance (%)',
-                        data: scores,
-                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                        borderColor: 'rgba(102, 126, 234, 1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: 'rgba(102, 126, 234, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverRadius: 7,
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+                        label: 'Test Scores (%)',
+                        data: data,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.3,
+                        fill: true
                     }]
                 },
-                options: { scales: { y: { beginAtZero: true, max: 100 } }, responsive: true }
+                options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
             });
-        };
+        }
 
-        // --- TEST TAKING LOGIC ---
-        let activeTestId = null;
-        window.startTest = async (testId, testTitle) => {
-            activeTestId = testId;
-            document.getElementById('active-test-title').textContent = testTitle;
-            const questionsContainer = document.getElementById('test-questions-container');
-            questionsContainer.innerHTML = '<p>Loading questions...</p>';
-            showView('test-taking-view');
-            showLoader(true);
-
-            const q = query(collection(db, "questions"), where("testId", "==", testId));
-            const questionsSnap = await getDocs(q);
-            questionsContainer.innerHTML = '';
-            let qIndex = 0;
-            questionsSnap.forEach(doc => {
-                const question = doc.data();
-                const questionEl = document.createElement('div');
-                questionEl.dataset.questionId = doc.id;
-                questionEl.innerHTML = `
-                    <p class="font-semibold text-xl mb-4">${qIndex + 1}. ${question.questionText}</p>
-                    <div class="space-y-3">
-                        ${question.options.map((opt, i) => `
-                            <label class="block p-4 border-2 rounded-xl hover:bg-indigo-50 hover:border-indigo-400 cursor-pointer transition">
-                                <input type="radio" name="question-${doc.id}" value="${i}" class="mr-3 h-5 w-5">
-                                <span class="text-lg">${opt}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                `;
-                questionsContainer.appendChild(questionEl);
-                qIndex++;
+        function listenForNotices() {
+            const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                const noticeList = document.getElementById('notice-board-list');
+                noticeList.innerHTML = '';
+                if(querySnapshot.empty) {
+                    noticeList.innerHTML = '<p class="text-gray-500">Abhi koi notice nahi hai.</p>';
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
+                    const notice = doc.data();
+                    const date = notice.createdAt?.toDate().toLocaleDateString('en-IN') || 'N/A';
+                    noticeList.innerHTML += `
+                        <div class="bg-white p-4 rounded-xl shadow-md">
+                            <p class="text-sm text-gray-700">${notice.content}</p>
+                            <p class="text-xs text-gray-400 text-right mt-2">${date}</p>
+                        </div>`;
+                });
             });
-            showLoader(false);
-        };
-
-        document.getElementById('submit-test-btn').addEventListener('click', () => {
-            showCustomConfirm('Kya aap test submit karna chahte hain? Iske baad aap badlav nahi kar payenge.', async (confirmed) => {
-                if(!confirmed) return;
-
-                showLoader(true);
-                const answers = [];
-                const questionElements = document.querySelectorAll('#test-questions-container > div');
-                questionElements.forEach(el => {
-                    const questionId = el.dataset.questionId;
-                    const selectedInput = el.querySelector(`input[name="question-${questionId}"]:checked`);
-                    answers.push({
-                        questionId,
-                        selectedAnswer: selectedInput ? parseInt(selectedInput.value) : -1
-                    });
-                });
-
-                let score = 0;
-                const questionDocs = await getDocs(query(collection(db, "questions"), where("testId", "==", activeTestId)));
-                const correctAnswers = {};
-                questionDocs.forEach(doc => {
-                    correctAnswers[doc.id] = doc.data().correctAnswerIndex;
-                });
-
-                answers.forEach(ans => {
-                    if (ans.selectedAnswer === correctAnswers[ans.questionId]) {
-                        score++;
-                    }
-                });
-                
-                const resultRef = await addDoc(collection(db, "results"), {
-                    studentId: currentUser.uid,
-                    studentEmail: currentUser.email,
-                    studentName: currentUser.displayName,
-                    testId: activeTestId,
-                    score: score,
-                    totalMarks: questionElements.length,
-                    submittedAt: serverTimestamp()
-                });
-                
-                const resultData = (await getDoc(resultRef)).data();
-                sendDataToGoogleSheet({ ...resultData, id: resultRef.id });
-                showMarksheet({ ...resultData, id: resultRef.id });
-                showLoader(false);
-            });
-        });
+        }
         
-        const sendDataToGoogleSheet = async (resultData) => {
-            if (!GOOGLE_SHEET_WEB_APP_URL) {
-                console.log("Google Sheet URL not configured. Skipping data upload.");
-                return;
-            }
+        function listenForNotifications() {
+            const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                const notificationList = document.getElementById('notification-list');
+                notificationList.innerHTML = '';
+                if(!querySnapshot.empty) {
+                    document.getElementById('notification-dot').classList.remove('hidden');
+                } else {
+                     document.getElementById('notification-dot').classList.add('hidden');
+                }
+                querySnapshot.forEach((doc) => {
+                    const notification = doc.data();
+                    const date = notification.createdAt?.toDate().toLocaleDateString('en-IN') || 'N/A';
+                    notificationList.innerHTML += `
+                        <div class="border-b pb-2">
+                            <p class="text-sm text-gray-700">${notification.content}</p>
+                            <p class="text-xs text-gray-400 text-right mt-1">${date}</p>
+                        </div>`;
+                });
+            });
+        }
 
-            const testDoc = await getDoc(doc(db, "tests", resultData.testId));
-            const testTitle = testDoc.exists() ? testDoc.data().title : 'Unknown Test';
-
-            const dataToSend = {
-                timestamp: new Date(resultData.submittedAt.seconds * 1000).toLocaleString(),
-                studentName: resultData.studentName,
-                studentEmail: resultData.studentEmail,
-                testTitle: testTitle,
-                score: resultData.score,
-                totalMarks: resultData.totalMarks,
-                percentage: ((resultData.score / resultData.totalMarks) * 100).toFixed(2)
+        // --- Teacher Dashboard Logic ---
+        async function setupTeacherDashboard() {
+            document.getElementById('send-notice-btn').onclick = async () => {
+                const input = document.getElementById('notice-input');
+                if (input.value.trim() === '') return;
+                try {
+                    await addDoc(collection(db, "notices"), {
+                        content: input.value,
+                        createdAt: serverTimestamp()
+                    });
+                    input.value = '';
+                    // Using a custom modal instead of alert
+                    showCustomAlert('Notice sent successfully!');
+                } catch (error) {
+                    showCustomAlert('Failed to send notice.', true);
+                }
             };
 
-            try {
-                await fetch(GOOGLE_SHEET_WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dataToSend)
-                });
-                console.log("Result successfully sent to Google Sheet.");
-            } catch (error) {
-                console.error("Error sending data to Google Sheet:", error);
-            }
-        };
-
-        // --- MARKSHEET ---
-        const showMarksheet = async (resultData) => {
-            const testDoc = await getDoc(doc(db, "tests", resultData.testId));
+            document.getElementById('send-notification-btn').onclick = async () => {
+                const input = document.getElementById('notification-input');
+                if (input.value.trim() === '') return;
+                try {
+                    await addDoc(collection(db, "notifications"), {
+                        content: input.value,
+                        createdAt: serverTimestamp()
+                    });
+                    input.value = '';
+                    showCustomAlert('Notification sent successfully!');
+                } catch (error) {
+                    showCustomAlert('Failed to send notification.', true);
+                }
+            };
             
-            document.getElementById('marksheet-student-name').textContent = resultData.studentName || currentUser.email;
-            document.getElementById('marksheet-test-title').textContent = testDoc.exists() ? testDoc.data().title : 'Test';
-            document.getElementById('marksheet-score').textContent = `${resultData.score} / ${resultData.totalMarks}`;
-            const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(1) : 0;
-            document.getElementById('marksheet-percentage').textContent = `${percentage}%`;
-            document.getElementById('marksheet-date').textContent = new Date(resultData.submittedAt.seconds * 1000).toLocaleDateString();
-            document.getElementById('marksheet-cert-id').textContent = resultData.id.substring(0, 10).toUpperCase();
-
-            showView('marksheet-view');
-        };
+            fetchStudentProgress();
+        }
         
-        downloadCertBtn.addEventListener('click', () => {
-            const certificate = document.getElementById('certificate-to-download');
-            showLoader(true);
-            html2canvas(certificate, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'CSC-Campus-Certificate.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showLoader(false);
-            }).catch(err => {
-                showLoader(false);
-                showCustomAlert("Certificate download karne mein samasya aayi.");
-                console.error(err);
+        async function fetchStudentProgress() {
+            const progressList = document.getElementById('student-progress-list');
+            const q = query(collection(db, "users"), where("role", "==", "student"));
+            
+            onSnapshot(q, (querySnapshot) => {
+                progressList.innerHTML = '';
+                if(querySnapshot.empty) {
+                    progressList.innerHTML = '<p class="text-gray-500">No students found.</p>';
+                    return;
+                }
+
+                querySnapshot.forEach(async (userDoc) => {
+                    const student = userDoc.data();
+                    const progressDoc = await getDoc(doc(db, "studentProgress", student.uid));
+                    let avgScore = 0;
+                    if (progressDoc.exists()) {
+                        const scores = progressDoc.data().scores;
+                        if(scores && scores.length > 0) {
+                           avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+                        }
+                    }
+                    
+                    let barColor = 'bg-green-600';
+                    if (avgScore < 75) barColor = 'bg-yellow-400';
+                    if (avgScore < 50) barColor = 'bg-red-600';
+
+                    const studentElement = document.createElement('div');
+                    studentElement.className = 'flex items-center justify-between';
+                    studentElement.innerHTML = `
+                        <div>
+                            <p class="font-semibold">${student.name}</p>
+                            <p class="text-sm text-gray-500">Avg. Score: ${avgScore.toFixed(0)}%</p>
+                        </div>
+                        <div class="w-1/2 bg-gray-200 rounded-full h-2.5">
+                            <div class="${barColor} h-2.5 rounded-full" style="width: ${avgScore}%"></div>
+                        </div>`;
+                    progressList.appendChild(studentElement);
+                });
             });
+        }
+        
+        // --- General UI Functions ---
+        function showStudentContent(contentId) {
+            document.querySelectorAll('#student-dashboard main > div').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`student-${contentId}-content`).classList.remove('hidden');
+            document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`.bottom-nav-item[onclick="showStudentContent('${contentId}')"]`).classList.add('active');
+        }
+        window.showStudentContent = showStudentContent;
+
+        const notificationModal = document.getElementById('notification-modal');
+        document.getElementById('notification-bell').addEventListener('click', () => {
+            notificationModal.classList.remove('hidden');
+            document.getElementById('notification-dot').classList.add('hidden');
         });
+        document.getElementById('close-notification-modal').addEventListener('click', () => notificationModal.classList.add('hidden'));
+        document.querySelector('.modal-backdrop').addEventListener('click', () => notificationModal.classList.add('hidden'));
+
+        // Custom Alert function to avoid using the native alert()
+        function showCustomAlert(message, isError = false) {
+            const alertBox = document.createElement('div');
+            alertBox.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+            alertBox.textContent = message;
+            document.body.appendChild(alertBox);
+            setTimeout(() => {
+                alertBox.remove();
+            }, 3000);
+        }
 
     </script>
 </body>
