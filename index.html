@@ -169,7 +169,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, onSnapshot, serverTimestamp, orderBy, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, onSnapshot, serverTimestamp, orderBy, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCTywtZz-kOZH1RJKXiEsO8SK4YlLyR3ck",
@@ -298,9 +298,58 @@
             listenForNotifications();
             listenForLiveTests();
         }
-        function renderProgressChart(data) { /* ... (no changes) ... */ }
-        function listenForNotices() { /* ... (no changes) ... */ }
-        function listenForNotifications() { /* ... (no changes) ... */ }
+        function renderProgressChart(data) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            if (progressChartInstance) progressChartInstance.destroy();
+            progressChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Test Scores (%)',
+                        data: data,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+        }
+        function listenForNotices() {
+            const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                const noticeList = document.getElementById('notice-board-list');
+                noticeList.innerHTML = '';
+                if(querySnapshot.empty) {
+                    noticeList.innerHTML = '<p class="text-gray-500">Abhi koi notice nahi hai.</p>';
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
+                    const notice = doc.data();
+                    const date = notice.createdAt?.toDate().toLocaleDateString('en-IN') || 'N/A';
+                    noticeList.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-700">${notice.content}</p><p class="text-xs text-gray-400 text-right mt-2">${date}</p></div>`;
+                });
+            });
+        }
+        function listenForNotifications() {
+            const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                const notificationList = document.getElementById('notification-list');
+                notificationList.innerHTML = '';
+                if(!querySnapshot.empty) {
+                    document.getElementById('notification-dot').classList.remove('hidden');
+                } else {
+                     document.getElementById('notification-dot').classList.add('hidden');
+                }
+                querySnapshot.forEach((doc) => {
+                    const notification = doc.data();
+                    const date = notification.createdAt?.toDate().toLocaleDateString('en-IN') || 'N/A';
+                    notificationList.innerHTML += `<div class="border-b pb-2"><p class="text-sm text-gray-700">${notification.content}</p><p class="text-xs text-gray-400 text-right mt-1">${date}</p></div>`;
+                });
+            });
+        }
         function listenForLiveTests() {
             const q = query(collection(db, "tests"), where("isLive", "==", true), orderBy("createdAt", "desc"));
             onSnapshot(q, (querySnapshot) => {
@@ -337,12 +386,56 @@
                     document.getElementById('test-duration-input').value = '';
                 } catch (e) { showCustomAlert('Error creating test.', true); }
             };
-            document.getElementById('send-notice-btn').onclick = async () => { /* ... */ };
-            document.getElementById('send-notification-btn').onclick = async () => { /* ... */ };
+            document.getElementById('send-notice-btn').onclick = async () => {
+                 const input = document.getElementById('notice-input');
+                if (input.value.trim() === '') return;
+                try {
+                    await addDoc(collection(db, "notices"), { content: input.value, createdAt: serverTimestamp() });
+                    input.value = '';
+                    showCustomAlert('Notice sent successfully!');
+                } catch (error) { showCustomAlert('Failed to send notice.', true); }
+            };
+            document.getElementById('send-notification-btn').onclick = async () => {
+                const input = document.getElementById('notification-input');
+                if (input.value.trim() === '') return;
+                try {
+                    await addDoc(collection(db, "notifications"), { content: input.value, createdAt: serverTimestamp() });
+                    input.value = '';
+                    showCustomAlert('Notification sent successfully!');
+                } catch (error) { showCustomAlert('Failed to send notification.', true); }
+            };
             listenForStudentProgress();
             listenForTeacherTests();
         }
-        function listenForStudentProgress() { /* ... (no changes) ... */ }
+        function listenForStudentProgress() {
+            const q = query(collection(db, "users"), where("role", "==", "student"));
+            onSnapshot(q, (querySnapshot) => {
+                const progressList = document.getElementById('student-progress-list');
+                progressList.innerHTML = '';
+                if(querySnapshot.empty) {
+                    progressList.innerHTML = '<p class="text-gray-500">No students found.</p>';
+                    return;
+                }
+                querySnapshot.forEach(async (userDoc) => {
+                    const student = userDoc.data();
+                    const progressDoc = await getDoc(doc(db, "studentProgress", student.uid));
+                    let avgScore = 0;
+                    if (progressDoc.exists()) {
+                        const scores = progressDoc.data().scores;
+                        if(scores && scores.length > 0) {
+                           avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+                        }
+                    }
+                    let barColor = 'bg-green-600';
+                    if (avgScore < 75) barColor = 'bg-yellow-400';
+                    if (avgScore < 50) barColor = 'bg-red-600';
+                    const studentElement = document.createElement('div');
+                    studentElement.className = 'flex items-center justify-between';
+                    studentElement.innerHTML = `<div><p class="font-semibold">${student.name}</p><p class="text-sm text-gray-500">Avg. Score: ${avgScore.toFixed(0)}%</p></div><div class="w-1/2 bg-gray-200 rounded-full h-2.5"><div class="${barColor} h-2.5 rounded-full" style="width: ${avgScore}%"></div></div>`;
+                    progressList.appendChild(studentElement);
+                });
+            });
+        }
         function listenForTeacherTests() {
             const q = query(collection(db, "tests"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -383,6 +476,7 @@
         document.getElementById('close-question-modal').onclick = () => addQuestionModal.classList.add('hidden');
         addQuestionForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            showLoading(true);
             const question = document.getElementById('question-input').value;
             const options = [
                 document.getElementById('option1-input').value,
@@ -392,11 +486,19 @@
             ];
             const correctIndex = document.getElementById('correct-answer-select').value;
             
-            const questionRef = collection(db, "tests", currentTestIdForQuestions, "questions");
-            await addDoc(questionRef, { question, options, correctIndex: parseInt(correctIndex) });
-            
-            showCustomAlert('Question added!');
-            addQuestionForm.reset();
+            try {
+                const questionRef = collection(db, "tests", currentTestIdForQuestions, "questions");
+                await addDoc(questionRef, { question, options, correctIndex: parseInt(correctIndex) });
+                
+                showCustomAlert('Question added successfully!');
+                addQuestionForm.reset();
+                addQuestionModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Error adding question: ", error);
+                showCustomAlert('Failed to add question.', true);
+            } finally {
+                showLoading(false);
+            }
         });
 
         // --- Test Taking Logic (Student) ---
@@ -495,14 +597,30 @@
         }
 
         // --- General UI Functions ---
-        function showStudentContent(contentId) { /* ... */ }
+        function showStudentContent(contentId) {
+            document.querySelectorAll('#student-dashboard main > div').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`student-${contentId}-content`).classList.remove('hidden');
+            document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`.bottom-nav-item[onclick="showStudentContent('${contentId}')"]`).classList.add('active');
+        }
         window.showStudentContent = showStudentContent;
         const notificationModal = document.getElementById('notification-modal');
-        document.getElementById('notification-bell').addEventListener('click', () => { /* ... */ });
+        document.getElementById('notification-bell').addEventListener('click', () => {
+            notificationModal.classList.remove('hidden');
+            document.getElementById('notification-dot').classList.add('hidden');
+        });
         document.getElementById('close-notification-modal').addEventListener('click', () => notificationModal.classList.add('hidden'));
         document.querySelector('.modal-backdrop').addEventListener('click', () => notificationModal.classList.add('hidden'));
-        function showCustomAlert(message, isError = false) { /* ... */ }
+        function showCustomAlert(message, isError = false) {
+            const alertBox = document.createElement('div');
+            alertBox.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white ${isError ? 'bg-red-500' : 'bg-green-500'} z-50`;
+            alertBox.textContent = message;
+            document.body.appendChild(alertBox);
+            setTimeout(() => {
+                alertBox.remove();
+            }, 3000);
+        }
 
     </script>
 </body>
-</html>
+</ht
