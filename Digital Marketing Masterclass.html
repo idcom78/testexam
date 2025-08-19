@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>डिजिटल मार्केटिंग मास्टरक्लास: SEO, SEM और Content Marketing सीखें</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --text-color: #333;
+            --bg-light: #f9faff;
+            --white: #ffffff;
+            --gray: #f0f0f0;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 3.2em;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.3em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .part-title {
+            text-align: center;
+            font-size: 2.8em;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .part-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        .chapter {
+            background-color: var(--white);
+            margin-bottom: 30px;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .chapter:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(106, 17, 203, 0.15);
+        }
+        .chapter h3 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .chapter h4 {
+            font-size: 1.6em;
+            color: var(--secondary-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--gray);
+            padding-bottom: 10px;
+        }
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            stroke-width: 0;
+            stroke: currentColor;
+            fill: currentColor;
+        }
+        .info-box {
+            background-color: #eef4ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #2c5282;
+        }
+        .info-box-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .practice-box {
+            background-color: #fff9e6;
+            border: 2px dashed #ffc107;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .practice-box h5 {
+            margin-top: 0;
+            color: #856404;
+            font-size: 1.3em;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px;
+            margin-top: 40px;
+            background-color: #222;
+            color: var(--white);
+        }
+        .footer p { margin: 0; }
+
+        /* --- DIAGRAMS & VISUALS --- */
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            margin: 30px 0;
+            min-height: 250px;
+            overflow-x: auto;
+        }
+
+        /* Marketing Channels Grid */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 25px;
+            width: 100%;
+            text-align: center;
+        }
+        .channel-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        .channel-card:hover {
+            transform: scale(1.05);
+        }
+        .channel-card svg {
+            width: 50px;
+            height: 50px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        /* SEO Pillars Diagram */
+        .seo-pillars-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 20px;
+            padding: 40px 20px 20px 20px;
+            position: relative;
+        }
+        .seo-roof {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
+            font-size: 1.2em;
+        }
+        .seo-pillar {
+            width: 30%;
+            background-color: #e0eaff;
+            color: var(--primary-color);
+            text-align: center;
+            padding: 20px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 5px solid var(--secondary-color);
+        }
+
+        /* SEM Auction Diagram */
+        .sem-auction {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .auction-formula {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+        .formula-box {
+            background: var(--white);
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .operator {
+            font-size: 2em;
+            color: var(--primary-color);
+        }
+
+        /* Content Funnel Diagram */
+        .content-funnel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .funnel-stage {
+            background: var(--secondary-color);
+            color: var(--white);
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .funnel-stage::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid var(--secondary-color);
+        }
+        .funnel-stage:last-child::after {
+            display: none;
+        }
+        .funnel-stage.s1 { width: 100%; background: #2575fc; }
+        .funnel-stage.s2 { width: 80%; background: #4a90e2; }
+        .funnel-stage.s3 { width: 60%; background: #6badee; }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.8em; }
+            .part-title { font-size: 2.4em; }
+            .chapter h3 { font-size: 2em; }
+            .chapter h4 { font-size: 1.5em; }
+            .container { padding: 15px; }
+            .header { padding: 60px 15px; }
+        }
+
+        @media (max-width: 480px) {
+            body { line-height: 1.7; }
+            .header h1 { font-size: 2.2em; }
+            .header p { font-size: 1.1em; }
+            .part-title { font-size: 2em; }
+            .chapter { padding: 25px; }
+            .chapter h3 { font-size: 1.8em; }
+            .chapter h4 { font-size: 1.4em; }
+            .seo-pillars-container { flex-direction: column; gap: 15px; align-items: center; }
+            .seo-pillar { width: 80%; height: auto; padding: 20px; }
+            .seo-roof { width: 90%; position: relative; transform: none; left: auto; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>डिजिटल मार्केटिंग मास्टरक्लास</h1>
+        <p>SEO, SEM, और Content Marketing के Fundamentals सीखें</p>
+    </header>
+
+    <div class="container">
+
+        <h2 class="part-title">भाग 1: डिजिटल मार्केटिंग की दुनिया</h2>
+
+        <section class="chapter" id="chapter1">
+            <h3>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L8 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg>
+                अध्याय 1: डिजिटल मार्केटिंग क्या है?
+            </h3>
+            <p>डिजिटल मार्केटिंग का मतलब इंटरनेट और इलेक्ट्रॉनिक डिवाइसेस का उपयोग करके प्रोडक्ट्स या सर्विसेज़ का प्रचार करना है। यह सिर्फ फेसबुक पर ऐड चलाने या ईमेल भेजने से कहीं ज़्यादा है। यह सही समय पर, सही प्लेटफॉर्म पर, सही लोगों तक पहुँचने की कला और विज्ञान है।</p>
+            
+            <h4>मुख्य डिजिटल मार्केटिंग चैनल्स</h4>
+            <p>डिजिटल मार्केटिंग कई अलग-अलग चैनलों से मिलकर बनती है। यहाँ कुछ सबसे महत्वपूर्ण चैनल दिए गए हैं:</p>
+            <div class="diagram-container">
+                <div class="channels-grid">
+                    <div class="channel-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span>SEO</span>
+                    </div>
+                    <div class="channel-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L2 7 L12 12 L22 7 L12 2 Z"></path><path d="M2 17 L12 22 L22 17"></path><path d="M2 12 L12 17 L22 12"></path></svg>
+                        <span>SEM</span>
+                    </div>
+                    <div class="channel-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span>Email</span>
+                    </div>
+                    <div class="channel-card">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                        <span>Content</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="part-title">भाग 2: SEO - Search Engine की पहली पसंद बनें</h2>
+
+        <section class="chapter" id="chapter2">
+            <h3>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20.49 19l-5.73-5.73C15.53 12.2 16 10.91 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.41 0 2.7-.47 3.77-1.24L19 20.49 20.49 19zM5 9.5C5 7.01 7.01 5 9.5 5S14 7.01 14 9.5 11.99 14 9.5 14 5 11.99 5 9.5z"></path></svg>
+                अध्याय 2: SEO के Fundamentals
+            </h3>
+            <p>Search Engine Optimization (SEO) आपकी वेबसाइट को Google जैसे सर्च इंजन पर "free" या "organic" तरीके से ऊपर रैंक कराने की प्रक्रिया है। जब कोई आपके बिज़नेस से जुड़ा कीवर्ड सर्च करता है, तो आप चाहते हैं कि आपकी वेबसाइट पहले पेज पर दिखे। यही SEO का लक्ष्य है।</p>
+            
+            <h4>SEO के तीन स्तंभ</h4>
+            <p>एक मजबूत SEO रणनीति इन तीन स्तंभों पर टिकी होती है:</p>
+            <div class="diagram-container">
+                <div class="seo-pillars-container">
+                    <div class="seo-roof">🏆 High Ranking</div>
+                    <div class="seo-pillar">On-Page SEO<br>(आपकी वेबसाइट पर)</div>
+                    <div class="seo-pillar">Off-Page SEO<br>(दूसरी वेबसाइटों से)</div>
+                    <div class="seo-pillar">Technical SEO<br>(वेबसाइट का ढांचा)</div>
+                </div>
+            </div>
+            <ul>
+                <li><strong>On-Page SEO:</strong> इसमें आपकी वेबसाइट के कंटेंट और HTML सोर्स कोड को ऑप्टिमाइज़ करना शामिल है। जैसे - सही कीवर्ड का इस्तेमाल, अच्छे टाइटल्स और मेटा डिस्क्रिप्शन लिखना।</li>
+                <li><strong>Off-Page SEO:</strong> इसमें आपकी वेबसाइट की अथॉरिटी और प्रतिष्ठा बनाने के लिए दूसरी वेबसाइटों से लिंक (बैकलिंक्स) प्राप्त करना शामिल है।</li>
+                <li><strong>Technical SEO:</strong> यह सुनिश्चित करता है कि आपकी वेबसाइट को सर्च इंजन आसानी से क्रॉल और इंडेक्स कर सकें। इसमें साइट की स्पीड, मोबाइल-फ्रेंडलीनेस और साइट आर्किटेक्चर जैसी चीजें आती हैं।</li>
+            </ul>
+        </section>
+
+        <h2 class="part-title">भाग 3: SEM - Paid Ads से तुरंत Result पाएं</h2>
+
+        <section class="chapter" id="chapter3">
+            <h3>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.5-8.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm5 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-2.5 4c1.67 0 3.18-.85 4.07-2.14.33-.48.03-1.15-.49-1.34-.52-.19-1.12.1-1.34.62C13.63 13.4 12.88 14 12 14s-1.63-.6-2.24-1.85c-.22-.52-.82-.81-1.34-.62-.52.19-.82.86-.49 1.34C8.82 14.65 10.33 15.5 12 15.5z"></path></svg>
+                अध्याय 3: SEM और Google Ads का परिचय
+            </h3>
+            <p>Search Engine Marketing (SEM) एक व्यापक शब्द है जिसमें SEO और Pay-Per-Click (PPC) विज्ञापन दोनों शामिल हैं। PPC में, आप सर्च इंजन रिजल्ट्स में अपनी वेबसाइट को तुरंत दिखाने के लिए पैसे देते हैं। Google Ads इसका सबसे लोकप्रिय प्लेटफॉर्म है।</p>
+            
+            <h4>Google Ads Auction कैसे काम करता है?</h4>
+            <p>जब कोई कीवर्ड सर्च करता है, तो Google एक रियल-टाइम नीलामी (auction) चलाता है यह तय करने के लिए कि कौन से विज्ञापन दिखाए जाएंगे और किस क्रम में। आपकी Ad Rank यह निर्धारित करती है कि आपका विज्ञापन कहाँ दिखेगा।</p>
+            <div class="info-box">
+                <span class="info-box-title">यह जानना महत्वपूर्ण है:</span>
+                सबसे ज़्यादा बोली लगाने वाला हमेशा नहीं जीतता! Google यूज़र्स को अच्छे रिजल्ट्स दिखाना चाहता है, इसलिए आपके विज्ञापन की क्वालिटी भी बहुत मायने रखती है।
+            </div>
+            <div class="diagram-container">
+                <div class="sem-auction">
+                    <div class="auction-formula">
+                        <div class="formula-box">Max CPC Bid<br>(आपकी बोली)</div>
+                        <div class="operator">×</div>
+                        <div class="formula-box">Quality Score<br>(विज्ञापन की गुणवत्ता)</div>
+                        <div class="operator">=</div>
+                        <div class="formula-box" style="background: #e0eaff; color: var(--primary-color);">Ad Rank<br>(आपकी पोजीशन)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="practice-box">
+                <h5>अभ्यास:</h5>
+                <p>Google पर "buy shoes online" सर्च करें। देखें कि कौन से विज्ञापन सबसे ऊपर दिखाई देते हैं। सोचें कि उनका क्वालिटी स्कोर क्यों अच्छा हो सकता है (क्या उनका विज्ञापन आकर्षक है? क्या वह सीधे आपकी ज़रूरत से जुड़ा है?)</p>
+            </div>
+        </section>
+
+        <h2 class="part-title">भाग 4: Content Marketing - ग्राहकों को जोड़ें</h2>
+
+        <section class="chapter" id="chapter4">
+            <h3>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"></path></svg>
+                अध्याय 4: Content is King
+            </h3>
+            <p>कंटेंट मार्केटिंग एक रणनीतिक दृष्टिकोण है जो मूल्यवान, प्रासंगिक और सुसंगत कंटेंट बनाने और वितरित करने पर केंद्रित है ताकि एक स्पष्ट रूप से परिभाषित ऑडियंस को आकर्षित और बनाए रखा जा सके - और, अंततः, लाभदायक ग्राहक कार्रवाई को प्रेरित किया जा सके।</p>
+            
+            <h4>कंटेंट मार्केटिंग फनल</h4>
+            <p>कंटेंट मार्केटिंग आपके ग्राहकों को उनकी यात्रा के हर चरण में मदद करती है, जिसे फनल (funnel) कहा जाता है:</p>
+            <div class="diagram-container">
+                <div class="content-funnel">
+                    <div class="funnel-stage s1">जागरूकता (Awareness)<br><small>ब्लॉग पोस्ट, वीडियो</small></div>
+                    <div class="funnel-stage s2">विचार (Consideration)<br><small>ई-बुक्स, वेबिनार</small></div>
+                    <div class="funnel-stage s3">निर्णय (Decision)<br><small>केस स्टडी, डेमो</small></div>
+                </div>
+            </div>
+            <ul>
+                <li><strong>जागरूकता (Top of Funnel):</strong> इस चरण में, लोग अपनी समस्या के बारे में जानते हैं। आप उन्हें शिक्षित करने के लिए ब्लॉग पोस्ट या जानकारीपूर्ण वीडियो बना सकते हैं।</li>
+                <li><strong>विचार (Middle of Funnel):</strong> यहाँ, वे समाधानों की तलाश कर रहे हैं। आप उन्हें विस्तृत गाइड या वेबिनार के माध्यम से मदद कर सकते हैं।</li>
+                <li><strong>निर्णय (Bottom of Funnel):</strong> इस चरण में, वे खरीदने के लिए तैयार हैं। आप उन्हें केस स्टडी या प्रोडक्ट डेमो के साथ विश्वास दिला सकते हैं।</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 डिजिटल मार्केटिंग मास्टरक्लास।</p>
+    </footer>
+
+</body>
+</html>
