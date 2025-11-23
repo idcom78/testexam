@@ -1,292 +1,621 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drownford - Aapki Marketing Agency</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Tailwind CSS -->
+    <title>Influence: Complete Masterclass | Web Notes</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom Styles for Fonts and Theme */
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
         body {
-            font-family: 'Lato', sans-serif;
-            background-color: #0d1117; /* GitHub Dark Background */
-            color: #f0f6fc;
+            font-family: 'Outfit', sans-serif;
+            background-color: #020617;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        h1, h2, h3, .font-heading {
-            font-family: 'Poppins', sans-serif;
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* NEW: Hero Section Animated Graphic Background */
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(135deg, #0d1117, #161b22, #0d1117);
-            background-size: 400% 400%;
-            animation: gradient-animation 15s ease infinite;
+        /* Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .graphic-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-        }
-
-        .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 191, 255, 0.5); /* DeepSkyBlue */
-            top: -150px;
-            left: -150px;
-            animation: move-blob-1 20s infinite alternate ease-in-out;
-        }
-
-        .blob-2 {
-            width: 300px;
-            height: 300px;
-            background: rgba(0, 119, 190, 0.6); /* A darker blue */
-            bottom: -100px;
-            right: -100px;
-            animation: move-blob-2 25s infinite alternate ease-in-out;
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        @keyframes move-blob-1 {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(100px, 50px) rotate(180deg); }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        @keyframes move-blob-2 {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(-80px, -60px) rotate(-180deg); }
-        }
-        
-        /* Glassmorphism effect for Navbar and Cards */
-        .glass-effect {
-            background: rgba(22, 27, 34, 0.6); /* Darker transparent background */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Service card hover effect */
-        .service-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #30363d;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 191, 255, 0.1), 0 10px 10px -5px rgba(0, 191, 255, 0.04);
-            border-color: #00bfff; /* DeepSkyBlue */
-        }
-        
-        /* Custom gradient text */
-        .gradient-text {
-            background: linear-gradient(90deg, #00bfff, #0077be);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Text Selection */
+        ::selection {
+            background: rgba(234, 179, 8, 0.3);
+            color: #fef08a;
         }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="text-gray-200">
+<body class="text-slate-200">
 
-    <!-- Header / Navbar -->
-    <header id="navbar" class="glass-effect fixed w-full top-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold font-heading text-white">DROWNFORD</a>
-            <nav class="hidden md:flex items-center space-x-8">
-                <a href="#home" class="text-gray-300 hover:text-cyan-400 transition">Home</a>
-                <a href="#services" class="text-gray-300 hover:text-cyan-400 transition">Services</a>
-                <a href="courses.html" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">Courses</a>
-                <a href="#about" class="text-gray-300 hover:text-cyan-400 transition">About</a>
-                <a href="#contact" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg transition">Contact Us</a>
-            </nav>
-            <button id="mobile-menu-button" class="md:hidden text-white">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 border-b border-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/20">
+                        <i class="ph-fill ph-brain text-yellow-500 text-2xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold tracking-tight text-white leading-none">Influence</span>
+                        <span class="text-slate-500 text-xs font-medium tracking-wider uppercase">Masterclass Notes</span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-400">
+                    <a href="#hero" class="hover:text-yellow-400 transition-colors">Start</a>
+                    <a href="#principles" class="hover:text-yellow-400 transition-colors">7 Principles</a>
+                    <a href="#summary" class="hover:text-yellow-400 transition-colors">Summary</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menu-btn" class="md:hidden text-slate-300 p-2 hover:bg-white/10 rounded-full transition">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+            </div>
         </div>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="#home" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">Home</a>
-            <a href="#services" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">Services</a>
-            <a href="courses.html" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">Courses</a>
+        
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 py-4 px-6 flex flex-col gap-4 shadow-2xl">
+            <a href="#hero" class="text-lg font-medium text-slate-300 py-2 border-b border-slate-800">Start</a>
+            <a href="#principles" class="text-lg font-medium text-slate-300 py-2 border-b border-slate-800">The 7 Principles</a>
+            <a href="#summary" class="text-lg font-medium text-slate-300 py-2">Summary</a>
+        </div>
+    </nav>
 
-            <a href="#about" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">About</a>
-            <a href="#contact" class="block py-2 px-6 text-sm text-gray-300 hover:bg-gray-700">Contact Us</a>
+    <!-- Hero Section -->
+    <header id="hero" class="relative pt-40 pb-24 overflow-hidden flex items-center justify-center min-h-[90vh]">
+        <!-- Dynamic Background -->
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/30 via-slate-950 to-slate-950 -z-10"></div>
+        
+        <!-- Glowing Orbs -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[120px] animate-pulse -z-10"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] -z-10"></div>
+
+        <div class="text-center px-4 max-w-5xl mx-auto fade-in-up z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 bg-slate-900/50 backdrop-blur-md text-yellow-400 text-xs font-bold mb-8 uppercase tracking-[0.2em] shadow-lg">
+                <i class="ph-fill ph-book-bookmark"></i> Robert B. Cialdini
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 tracking-tight text-white leading-[1.1]">
+                The Psychology of <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600">Persuasion</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
+                Kyun hum <span class="text-white font-medium">"Haan"</span> bolte hain jab humein <span class="text-white font-medium">"Na"</span> bolna chahiye? 
+                Is book ke <strong>7 Hidden Psychological Triggers</strong> ko detail mein samjhein jo sales, marketing aur daily life mein use hote hain.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#principles" class="group relative inline-flex items-center gap-3 bg-yellow-500 text-slate-950 px-8 py-4 rounded-full font-bold hover:bg-yellow-400 transition-all shadow-[0_0_30px_rgba(234,179,8,0.3)] hover:-translate-y-1">
+                    Explore Principles
+                    <i class="ph-bold ph-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                </a>
+                <div class="text-slate-500 text-sm font-medium px-4">
+                    <i class="ph-fill ph-clock mr-1"></i> 10 Min Read
+                </div>
+            </div>
         </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="hero-section text-white flex items-center justify-center text-center">
-            <!-- NEW: Animated Graphic Elements -->
-            <div class="graphic-blob blob-1"></div>
-            <div class="graphic-blob blob-2"></div>
-            
-            <div class="relative z-10 px-4">
-                <h1 class="text-4xl md:text-7xl font-bold mb-4 animate-fade-in-down">Shor Ko Kam Karein.</h1>
-                <h2 class="text-4xl md:text-7xl font-bold mb-6 animate-fade-in-down animation-delay-300"><span class="gradient-text">Apne Brand Ko Aage Badhayein.</span></h2>
-                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-up animation-delay-600">Hum Drownford mein aapke business ke liye aise marketing solutions banate hain jo bheed se alag dikhein aur result dein.</p>
-                <a href="#services" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition transform hover:scale-105 animate-fade-in-up animation-delay-900">Humari Services Dekhein</a>
-            </div>
-        </section>
+    <!-- Principles Grid -->
+    <main id="principles" class="max-w-7xl mx-auto px-4 py-24 relative z-10">
+        <div class="mb-20 text-center fade-in-up">
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">The 7 Weapons of Influence</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Niche diye gaye cards par click karein aur har principle ka <span class="text-yellow-400">Deep Dive</span> unlock karein.</p>
+        </div>
 
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-[#161b22]">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-4xl font-bold mb-2 text-white">Aapke Business Ke Liye Services</h2>
-                <p class="text-gray-400 mb-12 max-w-2xl mx-auto">Hum aapke brand ko digital duniya mein grow karne ke liye har tarah ki service dete hain.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Service Card 1 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fas fa-share-square"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Social Media Post</h3>
-                        <p class="text-gray-400">Aapke audience ke liye engaging aur creative social media posts jo aapki reach badhayein.</p>
-                    </div>
-                    <!-- Service Card 2 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fas fa-video"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Business Short Video</h3>
-                        <p class="text-gray-400">Reels, ads aur stories ke liye high-impact short videos jo aapka message powerfully convey karein.</p>
-                    </div>
-                    <!-- Service Card 3 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fas fa-microphone-alt"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Audio Ad</h3>
-                        <p class="text-gray-400">Podcasts, radio, aur streaming platforms ke liye catchy audio ads jo sunne wale ko attract karein.</p>
-                    </div>
-                    <!-- Service Card 4 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fab fa-facebook-square"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Facebook & Instagram Ad</h3>
-                        <p class="text-gray-400">Sahi audience tak pahunchne ke liye targeted ad campaigns jo aapko real customers dein.</p>
-                    </div>
-                    <!-- Service Card 5 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fas fa-file-powerpoint"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">PPT & Presentations</h3>
-                        <p class="text-gray-400">Aapke ideas ko professional aur attractive presentations mein badlein jo audience ko impress karein.</p>
-                    </div>
-                    <!-- Service Card 6 -->
-                    <div class="service-card bg-[#0d1117] p-8 rounded-xl text-center">
-                        <div class="text-5xl text-cyan-400 mb-4"><i class="fas fa-pager"></i></div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">Landing Page</h3>
-                        <p class="text-gray-400">Aapke marketing campaigns ke liye high-converting landing pages jo visitors ko customers banayein.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Us Section -->
-        <section id="about" class="py-20">
-            <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-                <div class="md:w-1/2">
-                    <img src="https://placehold.co/600x400/161b22/00bfff?text=Drownford+Team" alt="Drownford Team" class="rounded-xl shadow-lg w-full">
-                </div>
-                <div class="md:w-1/2">
-                    <h2 class="text-4xl font-bold mb-4 text-white">Hum Sirf Agency Nahi, Aapke Partner Hain</h2>
-                    <p class="text-gray-400 mb-6">Drownford mein humara maksad sirf marketing karna nahi hai. Hum aapke vision ko samajhte hain aur use hakikat mein badalne ke liye creative aur data-driven strategies ka istemal karte hain. Humari team experts se bhari hai jo aapke brand ko safalta ki nayi unchaiyon tak le jaane ke liye passionate hain.</p>
-                    <a href="#contact" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg transition">Humse Baat Karein</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 bg-[#161b22]">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-4xl font-bold mb-4 text-white">Apne Project Ke Baare Mein Batayein</h2>
-                <p class="text-gray-400 mb-10 max-w-2xl mx-auto">Chaliye milkar aapke business ke liye kuch bada karte hain. Bas neeche diya form bharein.</p>
-                <form class="max-w-xl mx-auto">
-                    <div class="mb-4">
-                        <input type="text" placeholder="Aapka Naam" class="w-full p-3 rounded-lg bg-[#0d1117] border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white">
-                    </div>
-                    <div class="mb-4">
-                        <input type="email" placeholder="Aapka Email" class="w-full p-3 rounded-lg bg-[#0d1117] border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white">
-                    </div>
-                    <div class="mb-6">
-                        <textarea placeholder="Aapka Message" rows="5" class="w-full p-3 rounded-lg bg-[#0d1117] border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"></textarea>
-                    </div>
-                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition w-full">Message Bhejein</button>
-                </form>
-            </div>
-        </section>
+        <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards injected by JS -->
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-[#0d1117] py-8">
-        <div class="container mx-auto px-6 text-center text-gray-400">
-            <p class="font-heading text-xl font-bold text-white mb-2">DROWNFORD</p>
-            <div class="flex justify-center space-x-6 my-4">
-                <a href="#" class="hover:text-cyan-400 transition"><i class="fab fa-facebook-f text-xl"></i></a>
-                <a href="#" class="hover:text-cyan-400 transition"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="#" class="hover:text-cyan-400 transition"><i class="fab fa-linkedin-in text-xl"></i></a>
-                <a href="#" class="hover:text-cyan-400 transition"><i class="fab fa-twitter text-xl"></i></a>
+    <!-- Summary Footer -->
+    <footer id="summary" class="bg-slate-950 pt-24 pb-12 px-4 border-t border-slate-900 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="glass-card rounded-3xl p-8 md:p-12 text-center border border-slate-800 fade-in-up bg-gradient-to-b from-slate-900 to-slate-950">
+                <div class="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg transform rotate-3">
+                    <i class="ph-bold ph-lightbulb text-3xl text-slate-950"></i>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-white mb-6">Final Verdict (Nishkarsh)</h2>
+                
+                <div class="space-y-6 text-slate-300 text-lg leading-relaxed text-left md:text-center">
+                    <p>
+                        Cialdini kehte hain ki aaj ki fast-paced duniya mein humare paas har cheez sochne ka time nahi hai. Isliye humara dimaag in <strong>"Shortcuts"</strong> (Click-Whirr response) ka use karta hai.
+                    </p>
+                    <p>
+                        Marketing professionals in shortcuts ko jante hain aur humein manipulate karte hain (humare against use karte hain).
+                    </p>
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700 inline-block mx-auto mt-4">
+                        <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-2">The Golden Rule</h3>
+                        <p class="italic text-white">"Influence bura nahi hai, lekin Deception (dhokha) bura hai. In principles ka use win-win situation create karne ke liye karo, manipulation ke liye nahi."</p>
+                    </div>
+                </div>
             </div>
-            <p>&copy; 2024 Drownford. Sabhi adhikar surakshit hain.</p>
+            
+            <div class="text-center text-slate-600 text-sm mt-16">
+                Made with <i class="ph-fill ph-heart text-red-500 animate-pulse mx-1"></i> for Knowledge Seekers
+            </div>
         </div>
     </footer>
 
-    <script>
-        // JavaScript for Mobile Menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+    <!-- Full Screen Modal -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 overflow-y-auto">
+        <div class="min-h-screen px-4 py-10 flex items-center justify-center">
+            <!-- Modal Content -->
+            <div id="modal-content" class="relative w-full max-w-4xl bg-[#0B1120] border border-slate-700 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden transform scale-95 transition-all duration-300">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+    <!-- JavaScript Logic -->
+    <script>
+        // --- DATA: Detailed Principles from the Book ---
+        const principlesData = [
+            {
+                id: 1,
+                title: "Reciprocity",
+                hindi: "Len-Den Ka Niyam",
+                tagline: "Give before you Get",
+                icon: "ph-gift",
+                color: "text-pink-400",
+                bgGradient: "from-pink-600 to-rose-900",
+                border: "border-pink-500/30",
+                
+                // Deep Dive Content
+                concept: "Ye rule kehta hai ki humein bachpan se sikhaya gaya hai ki agar koi humare liye kuch kare, toh humein uska badla chukana padta hai. Hum 'udhaar' (debt) mein rehna pasand nahi karte. Ye feeling itni strong hoti hai ki hum us insaan ko bhi 'Haan' bol dete hain jise hum pasand nahi karte, bas karz utaarne ke liye.",
+                
+                experiment: {
+                    name: "The Joe & The Coke Experiment (Dennis Regan, 1971)",
+                    detail: "Experiment mein 'Joe' naam ka ek assistant tha. Break ke dauran, Joe kuch logon ke liye bina maange ek Coke ki bottle le aaya (Gift). Baad mein Joe ne un logon se Raffle Tickets khareedne ko kaha. <br/><br/><strong>Result:</strong> Jin logon ko Coke mili thi, unhone 2x zyada tickets khareede banisbat unke jinhone Coke nahi li thi. Bhale hi wo Joe ko pasand nahi karte the, phir bhi unhone tickets khareede taaki ahsaan utar sake."
+                },
+                
+                technique: {
+                    name: "Rejection-Then-Retreat (Door-in-the-Face)",
+                    detail: "Pehle ek badi request karo jo pakka mana ho jaye (Reject). Phir turant ek chhoti request karo (Retreat). Saamne wala sochega 'Isne samjhauta (compromise) kiya hai, toh mujhe bhi karna chahiye' aur wo chhoti request maan lega."
+                },
+                
+                example: "Hare Krishna Society pehle free phool (flower) ya book deti thi, aur jab log mana karte toh kehte 'Ye gift hai'. Phir donation maangte the. Log phool fenkna chahte the par guilt ki wajah se donation de dete the.",
+                
+                defense: "Samjho ki kya ye genuine gift hai ya sales tactic. Agar ye sales device hai, toh gift rakh lo aur paise mat do. 'Exploitation ka badla exploitation se do'."
+            },
+            {
+                id: 2,
+                title: "Commitment & Consistency",
+                hindi: "Vaade aur Aadat",
+                tagline: "People live up to their identity",
+                icon: "ph-check-circle",
+                color: "text-green-400",
+                bgGradient: "from-green-600 to-emerald-900",
+                border: "border-green-500/30",
+                
+                concept: "Ek baar jab hum koi choice kar lete hain ya stand le lete hain, humare upar ek pressure aata hai (personal aur social) ki hum us baat par tike rahein. Hum 'Double-faced' ya 'Confused' nahi dikhna chahte.",
+                
+                experiment: {
+                    name: "The Beach Towel Experiment (Moriarty, 1975)",
+                    detail: "Ek actor beach par apna radio chhod kar chala gaya. Ek chor (researcher) aaya aur radio churaya. Sirf 4 logo ne use roka. <br/>Next time, actor ne jaane se pehle padosi se kaha 'Please meri cheezon ka dhyan rakhna?'. Sabne 'Haan' kaha (Commitment). <br/><br/><strong>Result:</strong> Is baar 20 mein se 19 logon ne chor ke piche bhag kar use roka. Kyunki wo apne vaade ke pakke rehna chahte the."
+                },
+                
+                technique: {
+                    name: "Foot-in-the-Door Technique",
+                    detail: "Pehle ek bohot chhoti request manwao (jaise 'Safe Driving' ka sticker lagana). Isse aadmi ka self-image change hota hai ('Main ek responsible citizen hoon'). Phir bada billboard lagane ko kaho. Wo mana nahi kar payega kyunki wo apni nayi image ke sath consistent rehna chahta hai."
+                },
+                
+                example: "Toy Companies Christmas se pehle specific toys ke ads chalati hain, bacche promise le lete hain. Phir companies jaan boojh kar stock kam kar deti hain. Parents ko doosra toy lena padta hai. January mein wo wapas original toy ka ad chalate hain, aur parents ko wo bhi lena padta hai kyunki unhone 'Promise' kiya tha.",
+                
+                defense: "Apne pet (stomach) ya dil ki aawaz suno. Agar lage ki aapko trap kiya ja raha hai, toh seedha bolo: 'Agar mujhe pehle pata hota jo ab pata hai, toh main ye decision nahi leta'."
+            },
+            {
+                id: 3,
+                title: "Social Proof",
+                hindi: "Samajik Saboot",
+                tagline: "Truth is us",
+                icon: "ph-users-three",
+                color: "text-blue-400",
+                bgGradient: "from-blue-600 to-cyan-900",
+                border: "border-blue-500/30",
+                
+                concept: "Hum sahi aur galat ka faisla ye dekh kar karte hain ki baaki log kya kar rahe hain. Khas kar jab hum Uncertain (confuse) hote hain ya jab log humare jaise (Similar) hote hain.",
+                
+                experiment: {
+                    name: "The Smoke in the Room (Latane & Darley)",
+                    detail: "Ek student room mein baitha tha aur darwaze ke neeche se dhua (smoke) aane laga. Jab wo akela tha, 75% baar usne report kiya. <br/>Jab uske sath 2 aur log the jo chupchap baithe rahe (actors), toh sirf 10% baar student ne report kiya. <br/><br/><strong>Result:</strong> Usne socha 'Baaki log shant hain, matlab sab normal hai'. Isse 'Pluralistic Ignorance' kehte hain."
+                },
+                
+                technique: {
+                    name: "Artificial Queues & Testimonials",
+                    detail: "Nightclubs bahar lambi line lagwate hain bhale hi andar jagah khali ho. Log sochte hain 'Itni line hai, zaroor achha club hoga'."
+                },
+                
+                example: "Canned Laughter (Sitcoms mein nakli hansi). Hum jaante hain ye nakli hai, par research dikhati hai ki hum phir bhi un jokes par zyada hanste hain jinpe background laughter hota hai.",
+                
+                defense: "Bhed-chaal (Herd mentality) ka switch off karo. Jab sab log ek direction mein bhaag rahe hon, toh ruk kar check karo ki kahin sab galat toh nahi?"
+            },
+            {
+                id: 4,
+                title: "Liking",
+                hindi: "Pasand Karne Ka Niyam",
+                tagline: "The Friendly Thief",
+                icon: "ph-heart",
+                color: "text-red-400",
+                bgGradient: "from-red-600 to-orange-900",
+                border: "border-red-500/30",
+                
+                concept: "Hum un logon se 'Purchase' karna ya 'Haan' bolna pasand karte hain jinhein hum jaante hain aur pasand karte hain. <br/><strong>Key Factors:</strong> 1. Physical Attractiveness (Halo Effect) 2. Similarity (Humare jaise log) 3. Compliments (Taareef).",
+                
+                experiment: {
+                    name: "Mirroring Body Language",
+                    detail: "Research shows ki agar koi sales person aapki body language, tone aur verbal style ko copy (mirror) karta hai, toh aap usse zyada trust karte hain. 'Humare jaise log' humein safe lagte hain."
+                },
+                
+                technique: {
+                    name: "The Tupperware Party",
+                    detail: "Tupperware party mein aap kisi stranger se nahi khareed rahe, aap apni 'friend' (host) se khareed rahe hain. Friend ke liye 'Na' bolna mushkil hota hai. Company friend ke 'Social Capital' ka use karti hai."
+                },
+                
+                example: "Joe Girard (World's Greatest Salesman) sirf do cheezein karta tha: Fair Price aur cards bhejta tha jispe likha hota tha 'I Like You'. Sirf itna kaafi tha.",
+                
+                defense: "Focus on the Outcome, not the Person. Socho: 'Agar ye banda mera dost na hota, toh kya main ye car khareedta?'. Deal aur Dealer ko alag karke dekho."
+            },
+            {
+                id: 5,
+                title: "Authority",
+                hindi: "Satta Ka Prabhav",
+                tagline: "Directed Deference",
+                icon: "ph-medal",
+                color: "text-purple-400",
+                bgGradient: "from-purple-600 to-indigo-900",
+                border: "border-purple-500/30",
+                
+                concept: "Humare andar Authority ke liye 'Deep-seated Obedience' (gehri aagyakarita) hoti hai. Hum Titles (Dr., Prof.), Clothes (Uniforms, Suits), aur Trappings (Mehngi Cars) dekh kar bina soche obey karne lagte hain.",
+                
+                experiment: {
+                    name: "The Milgram Experiment (1963)",
+                    detail: "Ek Professor (Lab coat mein) ne Participants ko order diya ki wo doosre room mein baithe learner ko electric shocks dein agar wo galat jawab de. <br/><br/><strong>Horrifying Result:</strong> 65% log deadly 450 Volts tak gaye, sirf isliye kyunki 'Authority' ne kaha 'The experiment requires you to continue'. Unhone apni moral thinking band kar di thi."
+                },
+                
+                technique: {
+                    name: "Sly Sincerity (Vincent the Waiter)",
+                    detail: "Ek waiter aapko pehle kehta hai 'Sir, aaj ye dish achhi nahi hai'. Aap uspar trust karne lagte ho (Expert & Honest). Phir wo mehngi wine aur dessert suggest karta hai aur aap maan lete ho kyunki usne apni authority prove kar di."
+                },
+                
+                example: "Hospitals mein nurses aksar doctors ki galat dawai wali script ko bhi question nahi karti ('Captainitis'). Kyunki 'Doctor' ek authority title hai.",
+                
+                defense: "Khud se do sawal poocho: 1. 'Kya ye sach mein expert hai?' 2. 'Kya ye yahan sach bol raha hai ya apna fayda dekh raha hai?'"
+            },
+            {
+                id: 6,
+                title: "Scarcity",
+                hindi: "Kami Ka Siddhanth",
+                tagline: "The Rule of the Few",
+                icon: "ph-hourglass-high",
+                color: "text-yellow-400",
+                bgGradient: "from-yellow-600 to-amber-900",
+                border: "border-yellow-500/30",
+                
+                concept: "Opportunities humein zyada valuable lagti hain jab wo kam available hoti hain. Insaan 'Gain' se zyada 'Loss' se darta hai (Loss Aversion). Agar humein lage ki hum kuch kho denge, toh hum pagal ho jate hain.",
+                
+                experiment: {
+                    name: "The Cookie Jar Study (Stephen Worchel)",
+                    detail: "Participants ko jar mein se cookies di gayin. <br/>Condition A: Jar mein 10 cookies thi. <br/>Condition B: Jar mein sirf 2 cookies thi. <br/><br/><strong>Result:</strong> Jab cookies kam thi (2), logon ne unhein zyada tasty aur mehnga bataya, banisbat jab cookies zyada thi (10). Cheez wahi thi, bas availability kam thi."
+                },
+                
+                technique: {
+                    name: "Deadline & Limited Number",
+                    detail: "'Sale ends tonight' ya 'Only 2 seats left'. Ye dimaag ka thinking process band kar deta hai aur panic create karta hai."
+                },
+                
+                example: "The Romeo & Juliet Effect: Jab parents ne Romeo aur Juliet ke pyaar par rok lagayi (barrier), toh unka passion aur badh gaya. Jo cheez censored ya forbidden hoti hai, hum use zyada chahte hain.",
+                
+                defense: "Jab aapko scarcity ki wajah se excitement feel ho, toh ruk jao. Yaad rakho: 'Scarcity se cookie ka taste better nahi ho jayega'. Use pane ka maza alag hai aur use use karne ka maza alag."
+            },
+            {
+                id: 7,
+                title: "Unity",
+                hindi: "Ekta (Hum Sab Ek Hain)",
+                tagline: "The 'We' is the shared Me",
+                icon: "ph-link",
+                color: "text-teal-400",
+                bgGradient: "from-teal-600 to-cyan-900",
+                border: "border-teal-500/30",
+                
+                concept: "(New Principle) Ye 'Liking' se ek step aage hai. Ye sirf pasand karna nahi hai, ye hai 'One of Us' feel karna. Categories like Family, Race, Religion, aur Location humein Unity feel karate hain.",
+                
+                experiment: {
+                    name: "The Co-Creation Effect",
+                    detail: "Jab companies customers se feedback lekar product banati hain, toh customers us product ko defend karte hain. IKEA effect bhi yahi hai - jo hum khud banate hain, hum usse pyaar karte hain."
+                },
+                
+                technique: {
+                    name: "Using 'We' Language",
+                    detail: "Politicians aur Leaders 'Main' ki jagah 'Hum' use karte hain. 'Humare bacchon ka future', 'Humara desh'. Isse personal identity group identity ke sath merge ho jati hai."
+                },
+                
+                example: "Family First: Agar koi door ka rishtedaar bhi musibat mein ho, hum help karte hain kyunki 'Genetic Overlap' hai. Salesmen kehte hain 'Arre aap toh mere bhai jaise ho', taaki wo family wala trust le sakein.",
+                
+                defense: "Pehchano ki koi fake kinship (rishtedari) toh nahi bana raha? Agar koi salesman 'Bhai-Bhai' kar raha hai, toh alert ho jao."
+            }
+        ];
+
+        // --- RENDER CARDS ---
+        const container = document.getElementById('cards-container');
+
+        principlesData.forEach((p, index) => {
+            const card = document.createElement('div');
+            card.className = "group perspective-1000 cursor-pointer fade-in-up h-full";
+            card.style.animationDelay = `${index * 100}ms`;
+            
+            // Generating Card HTML
+            card.innerHTML = `
+                <div class="glass-card h-full rounded-3xl p-6 border border-slate-800/50 hover:border-slate-600 transition-all duration-500 relative overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex flex-col">
+                    
+                    <!-- Dynamic Gradient Background on Hover -->
+                    <div class="absolute inset-0 bg-gradient-to-br ${p.bgGradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10 flex-grow">
+                        <!-- Header -->
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-14 h-14 rounded-2xl bg-slate-900/80 border border-slate-700 flex items-center justify-center ${p.color} shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                <i class="ph-duotone ${p.icon} text-3xl"></i>
+                            </div>
+                            <span class="text-4xl font-black text-slate-800 group-hover:text-slate-700 transition-colors select-none">0${p.id}</span>
+                        </div>
+                        
+                        <!-- Title -->
+                        <h3 class="text-2xl font-bold text-white mb-1 group-hover:text-yellow-400 transition-colors">${p.title}</h3>
+                        <h4 class="text-sm font-medium text-slate-400 mb-4 uppercase tracking-wider">${p.hindi}</h4>
+                        
+                        <!-- Divider -->
+                        <div class="w-12 h-1 bg-slate-700 rounded-full mb-4 group-hover:w-full group-hover:bg-${p.color.split('-')[1]}-500 transition-all duration-500"></div>
+
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            "${p.tagline}"
+                        </p>
+                    </div>
+                    
+                    <!-- Footer Link -->
+                    <div class="mt-auto pt-4 border-t border-slate-800 group-hover:border-slate-600/50">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-500 group-hover:text-white transition-colors uppercase tracking-widest">
+                            <span>View Case Study</span>
+                            <i class="ph-bold ph-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => openModal(p));
+            container.appendChild(card);
         });
 
-        // JavaScript for Navbar scroll effect
-        const navbar = document.getElementById('navbar');
-        window.onscroll = () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('py-2');
-                navbar.classList.remove('py-4');
-            } else {
-                navbar.classList.add('py-4');
-                navbar.classList.remove('py-2');
-            }
+        // --- MODAL SYSTEM ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(data) {
+            const gradientColor = data.color.split('-')[1]; // Extracts 'pink', 'blue' etc.
+
+            modalContent.innerHTML = `
+                <!-- Modal Header (Hero) -->
+                <div class="relative h-48 md:h-64 bg-gradient-to-r ${data.bgGradient} overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
+                    <!-- Abstract Shapes -->
+                    <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+                    
+                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-10 bg-gradient-to-t from-[#0B1120] to-transparent">
+                        <div class="flex items-end gap-4">
+                            <div class="hidden md:flex w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 items-center justify-center text-white shadow-2xl">
+                                <i class="ph-fill ${data.icon} text-5xl"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 text-yellow-400 font-bold text-xs uppercase tracking-widest mb-2">
+                                    <span class="bg-yellow-500/20 px-2 py-1 rounded border border-yellow-500/20">Principle #${data.id}</span>
+                                    <span>${data.hindi}</span>
+                                </div>
+                                <h2 class="text-3xl md:text-5xl font-bold text-white leading-tight">${data.title}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="closeModal()" class="absolute top-6 right-6 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full backdrop-blur-sm transition-colors">
+                        <i class="ph-bold ph-x text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 md:p-10 space-y-10 bg-[#0B1120]">
+                    
+                    <!-- Section 1: Concept -->
+                    <div class="prose prose-invert max-w-none">
+                        <p class="text-lg md:text-xl text-slate-300 leading-relaxed font-light border-l-4 border-${gradientColor}-500 pl-6">
+                            ${data.concept}
+                        </p>
+                    </div>
+
+                    <!-- Section 2: The Experiment (Case Study) -->
+                    <div class="bg-slate-900/50 rounded-2xl border border-slate-800 overflow-hidden">
+                        <div class="bg-slate-800/80 px-6 py-3 border-b border-slate-700 flex items-center gap-3">
+                            <i class="ph-fill ph-flask text-${gradientColor}-400 text-xl"></i>
+                            <h3 class="font-bold text-white text-sm uppercase tracking-wider">The Famous Experiment</h3>
+                        </div>
+                        <div class="p-6 md:p-8">
+                            <h4 class="text-xl font-bold text-white mb-3">${data.experiment.name}</h4>
+                            <p class="text-slate-400 leading-relaxed">
+                                ${data.experiment.detail}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Tactic & Example Grid -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Tactic -->
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800">
+                            <h3 class="text-${gradientColor}-400 font-bold flex items-center gap-2 mb-4">
+                                <i class="ph-fill ph-crosshair"></i> Real World Tactic
+                            </h3>
+                            <h4 class="text-white font-semibold mb-2">${data.technique.name}</h4>
+                            <p class="text-slate-400 text-sm leading-relaxed">${data.technique.detail}</p>
+                        </div>
+                        
+                        <!-- Example -->
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800">
+                            <h3 class="text-yellow-500 font-bold flex items-center gap-2 mb-4">
+                                <i class="ph-fill ph-lightning"></i> Daily Life Example
+                            </h3>
+                            <p class="text-slate-300 text-sm leading-relaxed italic">"${data.example}"</p>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Defense -->
+                    <div class="bg-green-900/10 border border-green-500/20 rounded-2xl p-6 flex gap-4 items-start">
+                        <div class="bg-green-500/20 p-2 rounded-lg text-green-400 shrink-0">
+                            <i class="ph-fill ph-shield-check text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-green-400 font-bold mb-1 uppercase text-sm tracking-wide">How to Defend? (Bachav)</h3>
+                            <p class="text-green-100/70 text-sm leading-relaxed">
+                                ${data.defense}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="bg-slate-950 p-6 border-t border-slate-900 text-center">
+                    <button onclick="closeModal()" class="text-slate-500 hover:text-white text-sm font-bold uppercase tracking-widest transition-colors">
+                        Close Case Study
+                    </button>
+                </div>
+            `;
+
+            modalOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Animation Frame
+            requestAnimationFrame(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            });
+        }
+
+        window.closeModal = function() {
+            modalOverlay.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
         };
 
-        // Adding simple animations using Tailwind CSS classes (requires custom config for full effect)
-        // For this example, we'll add some basic CSS for animation
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes fadeInDown {
-                from { opacity: 0; transform: translateY(-20px); }
-                to { opacity: 1; transform: translateY(0); }
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+                closeModal();
             }
-            @keyframes fadeInUp {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
-            .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
-            .animation-delay-300 { animation-delay: 0.3s; }
-            .animation-delay-600 { animation-delay: 0.6s; }
-            .animation-delay-900 { animation-delay: 0.9s; }
-        `;
-        document.head.appendChild(style);
-    </script>
+        });
+        
+        // Close on outside click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
 
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-slate-950/90', 'backdrop-blur-lg', 'border-slate-800', 'py-3');
+                navbar.classList.remove('py-6', 'border-transparent');
+            } else {
+                navbar.classList.remove('bg-slate-950/90', 'backdrop-blur-lg', 'border-slate-800', 'py-3');
+                navbar.classList.add('py-6', 'border-transparent');
+            }
+        });
+
+        // Scroll Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+        
+        // Mobile Menu
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    </script>
 </body>
 </html>
