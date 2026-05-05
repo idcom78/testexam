@@ -1,621 +1,976 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Influence: Complete Masterclass | Web Notes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #020617;
-            overflow-x: hidden;
-        }
-
-        /* Glassmorphism Utilities */
-        .glass {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .glass-card {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Animations */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .pop-in {
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* Text Selection */
-        ::selection {
-            background: rgba(234, 179, 8, 0.3);
-            color: #fef08a;
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            950: '#020617',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0d08">
+<title>Operation Zenith — Time Command</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0d08;--surface:#121712;--card:#1a231a;--card2:#1f2a1f;
+  --accent:#5a9e4a;--accent2:#c8a84b;--accent3:#d9534f;
+  --text:#dde8d8;--text2:#8da882;--text3:#556650;
+  --border:#243020;--border2:#2e3e2e;
+  --green:#5a9e4a;--blue:#4a8cbe;--red:#d9534f;--amber:#c8a84b;--purple:#8b72be;--pink:#be7272;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* TOP BAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.logo{font-size:15px;font-weight:700;letter-spacing:2px;color:var(--accent);font-family:monospace}
+.logo span{color:var(--accent2)}
+.current-task-bar{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:10px}
+.ct-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ct-label{font-size:12px;color:var(--text2);letter-spacing:1px}
+.ct-title{font-size:13px;font-weight:600;color:var(--text);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clock-box{text-align:right}
+.clock{font-family:monospace;font-size:22px;font-weight:700;color:var(--accent);letter-spacing:2px}
+.date-str{font-size:11px;color:var(--text3);letter-spacing:1px}
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;overflow-y:auto;flex-shrink:0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;color:var(--text2);font-size:13px;letter-spacing:0.5px;user-select:none}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:var(--card);color:var(--accent);border-left-color:var(--accent)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.nav-section{font-size:10px;color:var(--text3);letter-spacing:2px;padding:16px 20px 6px;font-family:monospace}
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:16px;margin-bottom:12px}
+.card-title{font-size:11px;letter-spacing:2px;color:var(--text3);font-family:monospace;margin-bottom:12px}
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:14px}
+.stat-n{font-size:28px;font-weight:700;color:var(--accent);font-family:monospace}
+.stat-l{font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:2px}
+.progress-wrap{background:var(--surface);border-radius:4px;height:6px;overflow:hidden;margin:8px 0 4px}
+.progress-bar{height:100%;background:var(--accent);border-radius:4px;transition:width 0.5s}
+.prog-label{font-size:11px;color:var(--text3);font-family:monospace}
+/* SCHEDULE TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:6px}
+.slot{display:grid;grid-template-columns:80px 10px 1fr auto;align-items:start;gap:12px;padding:10px 12px;border-radius:6px;border:1px solid var(--border);transition:all 0.15s;position:relative}
+.slot.current{border-color:var(--accent);background:rgba(90,158,74,0.07)}
+.slot.past{opacity:0.45}
+.slot-time{font-family:monospace;font-size:12px;color:var(--text3);padding-top:2px}
+.slot-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.slot-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.slot-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.slot-dur{font-size:11px;font-family:monospace;color:var(--text3);white-space:nowrap}
+.slot-actions{display:flex;gap:4px;margin-top:4px}
+.btn-sm{padding:3px 8px;border:1px solid var(--border2);border-radius:4px;background:transparent;color:var(--text2);font-size:11px;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn-sm:hover{background:var(--card2);color:var(--text)}
+.btn-sm.danger:hover{border-color:var(--red);color:var(--red)}
+.cat-wake .slot-dot{background:#D85A30}
+.cat-study .slot-dot{background:#4a8cbe}
+.cat-work .slot-dot{background:#5a9e4a}
+.cat-health .slot-dot{background:#be7272}
+.cat-tech .slot-dot{background:#c8a84b}
+.cat-rest .slot-dot{background:#556650}
+.cat-sleep .slot-dot{background:#8b72be}
+/* HABIT CHECKLIST */
+.habit-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.habit-item:last-child{border:none}
+.habit-check{width:20px;height:20px;border:1.5px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:13px}
+.habit-item.done .habit-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.habit-item.done .habit-text{text-decoration:line-through;color:var(--text3)}
+.habit-text{font-size:13px;color:var(--text);flex:1}
+.habit-actions{opacity:0;display:flex;gap:4px;transition:opacity 0.15s}
+.habit-item:hover .habit-actions{opacity:1}
+/* GOALS */
+.goal-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.goal-item:last-child{border:none}
+.goal-cb{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.15s}
+.goal-item.done .goal-cb{background:var(--accent);border-color:var(--accent);color:#fff}
+.goal-item.done .goal-text{text-decoration:line-through;color:var(--text3)}
+.goal-text{font-size:13px;color:var(--text);flex:1;cursor:pointer}
+/* PHASE CARDS */
+.phase-card{border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.phase-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.phase-body{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px;border-top:1px solid var(--border)}
+.goal-li{font-size:12px;color:var(--text2);display:flex;align-items:flex-start;gap:6px;padding:2px 0}
+.goal-li::before{content:"▸";color:var(--text3);flex-shrink:0}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:24px;width:480px;max-width:95vw}
+.modal-title{font-size:14px;letter-spacing:2px;color:var(--accent);font-family:monospace;margin-bottom:16px}
+.form-row{margin-bottom:12px}
+.form-label{font-size:11px;color:var(--text3);letter-spacing:1px;margin-bottom:4px;display:block}
+.form-input{width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border 0.15s}
+.form-input:focus{border-color:var(--accent)}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-select{appearance:none;cursor:pointer}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn{padding:8px 18px;border-radius:5px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:0.5px;transition:all 0.15s;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#4a8e3a}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#b94340}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--card2);color:var(--text)}
+/* SETTINGS */
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border:none}
+.setting-label{font-size:13px;color:var(--text)}
+.setting-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--border2);position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle-knob{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left 0.2s}
+.toggle.on .toggle-knob{left:21px}
+/* TIMER */
+.timer-display{font-family:monospace;font-size:42px;font-weight:700;color:var(--accent);letter-spacing:4px;text-align:center;padding:20px 0}
+.timer-sub{font-size:12px;color:var(--text3);letter-spacing:2px;text-align:center;margin-bottom:16px}
+.timer-controls{display:flex;gap:8px;justify-content:center}
+/* MISC */
+.badge{font-size:10px;font-family:monospace;padding:3px 8px;border-radius:3px;letter-spacing:1px}
+.badge-green{background:rgba(90,158,74,0.15);color:#7ec86a;border:1px solid rgba(90,158,74,0.3)}
+.badge-amber{background:rgba(200,168,75,0.15);color:#d4b566;border:1px solid rgba(200,168,75,0.3)}
+.badge-red{background:rgba(217,83,79,0.15);color:#e06e6a;border:1px solid rgba(217,83,79,0.3)}
+.badge-blue{background:rgba(74,140,190,0.15);color:#6aace0;border:1px solid rgba(74,140,190,0.3)}
+.badge-purple{background:rgba(139,114,190,0.15);color:#a692d4;border:1px solid rgba(139,114,190,0.3)}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-8{gap:8px}.gap-12{gap:12px}
+.mt-8{margin-top:8px}.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}
+.text-accent{color:var(--accent)}.text-amber{color:var(--accent2)}.text-muted{color:var(--text3)}
+.h1{font-size:18px;font-weight:700;letter-spacing:1px}.h2{font-size:14px;font-weight:600}.h3{font-size:13px;font-weight:500}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:16px;font-weight:700;letter-spacing:2px;color:var(--text)}
+.add-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--accent);border:none;border-radius:5px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px;transition:background 0.15s;font-family:inherit}
+.add-btn:hover{background:#4a8e3a}
+.empty{text-align:center;padding:40px;color:var(--text3);font-size:13px}
+/* notification toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--accent);border-radius:8px;padding:12px 18px;font-size:13px;color:var(--text);z-index:9999;transform:translateY(80px);transition:transform 0.3s;max-width:300px}
+.toast.show{transform:translateY(0)}
+/* Color picker chips */
+.color-chips{display:flex;gap:8px;margin-top:8px}
+.chip{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border 0.15s}
+.chip.selected{border-color:#fff}
+/* Responsive sidebar toggle */
+.sidebar-toggle{display:none;background:transparent;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
+.week-day{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 4px;text-align:center}
+.week-day.today{border-color:var(--accent)}
+.week-day-name{font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:4px;font-family:monospace}
+.week-day-num{font-size:16px;font-weight:700;color:var(--text2)}
+.week-day.today .week-day-num{color:var(--accent)}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-220px;top:56px;height:calc(100vh - 56px);z-index:50;transition:left 0.25s}
+  .sidebar.open{left:0}
+  .sidebar-toggle{display:block}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .phase-body{grid-template-columns:1fr}
+  .form-row-2{grid-template-columns:1fr}
+  .current-task-bar{display:none}
+}
+</style>
 </head>
-<body class="text-slate-200">
+<body>
 
-    <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 border-b border-transparent">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="bg-yellow-500/10 p-2 rounded-lg border border-yellow-500/20">
-                        <i class="ph-fill ph-brain text-yellow-500 text-2xl"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-xl font-bold tracking-tight text-white leading-none">Influence</span>
-                        <span class="text-slate-500 text-xs font-medium tracking-wider uppercase">Masterclass Notes</span>
-                    </div>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-400">
-                    <a href="#hero" class="hover:text-yellow-400 transition-colors">Start</a>
-                    <a href="#principles" class="hover:text-yellow-400 transition-colors">7 Principles</a>
-                    <a href="#summary" class="hover:text-yellow-400 transition-colors">Summary</a>
-                </div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="logo">⚔ OPERATION <span>ZENITH</span></div>
+    <div class="current-task-bar" id="ctBar">
+      <div class="ct-dot"></div>
+      <div>
+        <div class="ct-label">ABHI KA MISSION</div>
+        <div class="ct-title" id="ctTitle">Loading...</div>
+      </div>
+    </div>
+  </div>
+  <div class="clock-box">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="date-str" id="dateStr">—</div>
+  </div>
+</div>
 
-                <!-- Mobile Menu Button -->
-                <button id="menu-btn" class="md:hidden text-slate-300 p-2 hover:bg-white/10 rounded-full transition">
-                    <i class="ph ph-list text-2xl"></i>
-                </button>
-            </div>
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav-section">COMMAND</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="nav('timer',this)"><span class="nav-icon">⏱</span> Live Timer</div>
+    <div class="nav-section">MISSIONS</div>
+    <div class="nav-item" onclick="nav('schedule',this)"><span class="nav-icon">📋</span> Schedule</div>
+    <div class="nav-item" onclick="nav('checklist',this)"><span class="nav-icon">✅</span> Daily Checklist</div>
+    <div class="nav-item" onclick="nav('goals',this)"><span class="nav-icon">🎯</span> Goals</div>
+    <div class="nav-section">STRATEGY</div>
+    <div class="nav-item" onclick="nav('monthly',this)"><span class="nav-icon">📅</span> Monthly Roadmap</div>
+    <div class="nav-item" onclick="nav('rules',this)"><span class="nav-icon">⚡</span> Iron Rules</div>
+    <div class="nav-section">SYSTEM</div>
+    <div class="nav-item" onclick="nav('settings',this)"><span class="nav-icon">⚙</span> Settings</div>
+    <div class="nav-item" onclick="exportData()"><span class="nav-icon">💾</span> Export Data</div>
+    <div class="nav-item" onclick="document.getElementById('importFile').click()"><span class="nav-icon">📂</span> Import Data</div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">📊 COMMAND CENTER</div>
+        <span class="badge badge-green" id="dayBadge">DAY 1</span>
+      </div>
+      <div id="weekStrip" class="week-strip"></div>
+      <div class="dash-grid">
+        <div class="stat-card">
+          <div class="stat-n text-accent" id="doneCount">0/10</div>
+          <div class="stat-l">HABITS DONE</div>
+          <div class="progress-wrap"><div class="progress-bar" id="habitProgress" style="width:0%"></div></div>
+          <div class="prog-label" id="habitPct">0%</div>
         </div>
-        
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 py-4 px-6 flex flex-col gap-4 shadow-2xl">
-            <a href="#hero" class="text-lg font-medium text-slate-300 py-2 border-b border-slate-800">Start</a>
-            <a href="#principles" class="text-lg font-medium text-slate-300 py-2 border-b border-slate-800">The 7 Principles</a>
-            <a href="#summary" class="text-lg font-medium text-slate-300 py-2">Summary</a>
+        <div class="stat-card">
+          <div class="stat-n" style="color:var(--accent2)" id="goalCount">0/6</div>
+          <div class="stat-l">WEEKLY GOALS</div>
+          <div class="progress-wrap" style="--pb-color:var(--accent2)"><div class="progress-bar" id="goalProgress" style="width:0%;background:var(--accent2)"></div></div>
+          <div class="prog-label" id="goalPct">0%</div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header id="hero" class="relative pt-40 pb-24 overflow-hidden flex items-center justify-center min-h-[90vh]">
-        <!-- Dynamic Background -->
-        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/30 via-slate-950 to-slate-950 -z-10"></div>
-        
-        <!-- Glowing Orbs -->
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[120px] animate-pulse -z-10"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] -z-10"></div>
-
-        <div class="text-center px-4 max-w-5xl mx-auto fade-in-up z-10">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 bg-slate-900/50 backdrop-blur-md text-yellow-400 text-xs font-bold mb-8 uppercase tracking-[0.2em] shadow-lg">
-                <i class="ph-fill ph-book-bookmark"></i> Robert B. Cialdini
-            </div>
-            
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 tracking-tight text-white leading-[1.1]">
-                The Psychology of <br />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-500 to-yellow-600">Persuasion</span>
-            </h1>
-            
-            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
-                Kyun hum <span class="text-white font-medium">"Haan"</span> bolte hain jab humein <span class="text-white font-medium">"Na"</span> bolna chahiye? 
-                Is book ke <strong>7 Hidden Psychological Triggers</strong> ko detail mein samjhein jo sales, marketing aur daily life mein use hote hain.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#principles" class="group relative inline-flex items-center gap-3 bg-yellow-500 text-slate-950 px-8 py-4 rounded-full font-bold hover:bg-yellow-400 transition-all shadow-[0_0_30px_rgba(234,179,8,0.3)] hover:-translate-y-1">
-                    Explore Principles
-                    <i class="ph-bold ph-arrow-down group-hover:translate-y-1 transition-transform"></i>
-                </a>
-                <div class="text-slate-500 text-sm font-medium px-4">
-                    <i class="ph-fill ph-clock mr-1"></i> 10 Min Read
-                </div>
-            </div>
+        <div class="stat-card">
+          <div class="stat-n" style="color:var(--blue)" id="timeLeft">—</div>
+          <div class="stat-l">CURRENT TASK LEFT</div>
+          <div class="progress-wrap"><div class="progress-bar" id="taskProgress" style="width:0%;background:var(--blue)"></div></div>
+          <div class="prog-label" id="taskPct">0%</div>
         </div>
-    </header>
-
-    <!-- Principles Grid -->
-    <main id="principles" class="max-w-7xl mx-auto px-4 py-24 relative z-10">
-        <div class="mb-20 text-center fade-in-up">
-            <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">The 7 Weapons of Influence</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto">Niche diye gaye cards par click karein aur har principle ka <span class="text-yellow-400">Deep Dive</span> unlock karein.</p>
-        </div>
-
-        <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Cards injected by JS -->
-        </div>
-    </main>
-
-    <!-- Summary Footer -->
-    <footer id="summary" class="bg-slate-950 pt-24 pb-12 px-4 border-t border-slate-900 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto relative z-10">
-            <div class="glass-card rounded-3xl p-8 md:p-12 text-center border border-slate-800 fade-in-up bg-gradient-to-b from-slate-900 to-slate-950">
-                <div class="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg transform rotate-3">
-                    <i class="ph-bold ph-lightbulb text-3xl text-slate-950"></i>
-                </div>
-                
-                <h2 class="text-3xl font-bold text-white mb-6">Final Verdict (Nishkarsh)</h2>
-                
-                <div class="space-y-6 text-slate-300 text-lg leading-relaxed text-left md:text-center">
-                    <p>
-                        Cialdini kehte hain ki aaj ki fast-paced duniya mein humare paas har cheez sochne ka time nahi hai. Isliye humara dimaag in <strong>"Shortcuts"</strong> (Click-Whirr response) ka use karta hai.
-                    </p>
-                    <p>
-                        Marketing professionals in shortcuts ko jante hain aur humein manipulate karte hain (humare against use karte hain).
-                    </p>
-                    <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700 inline-block mx-auto mt-4">
-                        <h3 class="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-2">The Golden Rule</h3>
-                        <p class="italic text-white">"Influence bura nahi hai, lekin Deception (dhokha) bura hai. In principles ka use win-win situation create karne ke liye karo, manipulation ke liye nahi."</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center text-slate-600 text-sm mt-16">
-                Made with <i class="ph-fill ph-heart text-red-500 animate-pulse mx-1"></i> for Knowledge Seekers
-            </div>
-        </div>
-    </footer>
-
-    <!-- Full Screen Modal -->
-    <div id="modal-overlay" class="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 overflow-y-auto">
-        <div class="min-h-screen px-4 py-10 flex items-center justify-center">
-            <!-- Modal Content -->
-            <div id="modal-content" class="relative w-full max-w-4xl bg-[#0B1120] border border-slate-700 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden transform scale-95 transition-all duration-300">
-                <!-- Content injected by JS -->
-            </div>
-        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">TODAY'S SCHEDULE — QUICK VIEW</div>
+        <div class="timeline" id="dashTimeline"></div>
+      </div>
     </div>
 
-    <!-- JavaScript Logic -->
-    <script>
-        // --- DATA: Detailed Principles from the Book ---
-        const principlesData = [
-            {
-                id: 1,
-                title: "Reciprocity",
-                hindi: "Len-Den Ka Niyam",
-                tagline: "Give before you Get",
-                icon: "ph-gift",
-                color: "text-pink-400",
-                bgGradient: "from-pink-600 to-rose-900",
-                border: "border-pink-500/30",
-                
-                // Deep Dive Content
-                concept: "Ye rule kehta hai ki humein bachpan se sikhaya gaya hai ki agar koi humare liye kuch kare, toh humein uska badla chukana padta hai. Hum 'udhaar' (debt) mein rehna pasand nahi karte. Ye feeling itni strong hoti hai ki hum us insaan ko bhi 'Haan' bol dete hain jise hum pasand nahi karte, bas karz utaarne ke liye.",
-                
-                experiment: {
-                    name: "The Joe & The Coke Experiment (Dennis Regan, 1971)",
-                    detail: "Experiment mein 'Joe' naam ka ek assistant tha. Break ke dauran, Joe kuch logon ke liye bina maange ek Coke ki bottle le aaya (Gift). Baad mein Joe ne un logon se Raffle Tickets khareedne ko kaha. <br/><br/><strong>Result:</strong> Jin logon ko Coke mili thi, unhone 2x zyada tickets khareede banisbat unke jinhone Coke nahi li thi. Bhale hi wo Joe ko pasand nahi karte the, phir bhi unhone tickets khareede taaki ahsaan utar sake."
-                },
-                
-                technique: {
-                    name: "Rejection-Then-Retreat (Door-in-the-Face)",
-                    detail: "Pehle ek badi request karo jo pakka mana ho jaye (Reject). Phir turant ek chhoti request karo (Retreat). Saamne wala sochega 'Isne samjhauta (compromise) kiya hai, toh mujhe bhi karna chahiye' aur wo chhoti request maan lega."
-                },
-                
-                example: "Hare Krishna Society pehle free phool (flower) ya book deti thi, aur jab log mana karte toh kehte 'Ye gift hai'. Phir donation maangte the. Log phool fenkna chahte the par guilt ki wajah se donation de dete the.",
-                
-                defense: "Samjho ki kya ye genuine gift hai ya sales tactic. Agar ye sales device hai, toh gift rakh lo aur paise mat do. 'Exploitation ka badla exploitation se do'."
-            },
-            {
-                id: 2,
-                title: "Commitment & Consistency",
-                hindi: "Vaade aur Aadat",
-                tagline: "People live up to their identity",
-                icon: "ph-check-circle",
-                color: "text-green-400",
-                bgGradient: "from-green-600 to-emerald-900",
-                border: "border-green-500/30",
-                
-                concept: "Ek baar jab hum koi choice kar lete hain ya stand le lete hain, humare upar ek pressure aata hai (personal aur social) ki hum us baat par tike rahein. Hum 'Double-faced' ya 'Confused' nahi dikhna chahte.",
-                
-                experiment: {
-                    name: "The Beach Towel Experiment (Moriarty, 1975)",
-                    detail: "Ek actor beach par apna radio chhod kar chala gaya. Ek chor (researcher) aaya aur radio churaya. Sirf 4 logo ne use roka. <br/>Next time, actor ne jaane se pehle padosi se kaha 'Please meri cheezon ka dhyan rakhna?'. Sabne 'Haan' kaha (Commitment). <br/><br/><strong>Result:</strong> Is baar 20 mein se 19 logon ne chor ke piche bhag kar use roka. Kyunki wo apne vaade ke pakke rehna chahte the."
-                },
-                
-                technique: {
-                    name: "Foot-in-the-Door Technique",
-                    detail: "Pehle ek bohot chhoti request manwao (jaise 'Safe Driving' ka sticker lagana). Isse aadmi ka self-image change hota hai ('Main ek responsible citizen hoon'). Phir bada billboard lagane ko kaho. Wo mana nahi kar payega kyunki wo apni nayi image ke sath consistent rehna chahta hai."
-                },
-                
-                example: "Toy Companies Christmas se pehle specific toys ke ads chalati hain, bacche promise le lete hain. Phir companies jaan boojh kar stock kam kar deti hain. Parents ko doosra toy lena padta hai. January mein wo wapas original toy ka ad chalate hain, aur parents ko wo bhi lena padta hai kyunki unhone 'Promise' kiya tha.",
-                
-                defense: "Apne pet (stomach) ya dil ki aawaz suno. Agar lage ki aapko trap kiya ja raha hai, toh seedha bolo: 'Agar mujhe pehle pata hota jo ab pata hai, toh main ye decision nahi leta'."
-            },
-            {
-                id: 3,
-                title: "Social Proof",
-                hindi: "Samajik Saboot",
-                tagline: "Truth is us",
-                icon: "ph-users-three",
-                color: "text-blue-400",
-                bgGradient: "from-blue-600 to-cyan-900",
-                border: "border-blue-500/30",
-                
-                concept: "Hum sahi aur galat ka faisla ye dekh kar karte hain ki baaki log kya kar rahe hain. Khas kar jab hum Uncertain (confuse) hote hain ya jab log humare jaise (Similar) hote hain.",
-                
-                experiment: {
-                    name: "The Smoke in the Room (Latane & Darley)",
-                    detail: "Ek student room mein baitha tha aur darwaze ke neeche se dhua (smoke) aane laga. Jab wo akela tha, 75% baar usne report kiya. <br/>Jab uske sath 2 aur log the jo chupchap baithe rahe (actors), toh sirf 10% baar student ne report kiya. <br/><br/><strong>Result:</strong> Usne socha 'Baaki log shant hain, matlab sab normal hai'. Isse 'Pluralistic Ignorance' kehte hain."
-                },
-                
-                technique: {
-                    name: "Artificial Queues & Testimonials",
-                    detail: "Nightclubs bahar lambi line lagwate hain bhale hi andar jagah khali ho. Log sochte hain 'Itni line hai, zaroor achha club hoga'."
-                },
-                
-                example: "Canned Laughter (Sitcoms mein nakli hansi). Hum jaante hain ye nakli hai, par research dikhati hai ki hum phir bhi un jokes par zyada hanste hain jinpe background laughter hota hai.",
-                
-                defense: "Bhed-chaal (Herd mentality) ka switch off karo. Jab sab log ek direction mein bhaag rahe hon, toh ruk kar check karo ki kahin sab galat toh nahi?"
-            },
-            {
-                id: 4,
-                title: "Liking",
-                hindi: "Pasand Karne Ka Niyam",
-                tagline: "The Friendly Thief",
-                icon: "ph-heart",
-                color: "text-red-400",
-                bgGradient: "from-red-600 to-orange-900",
-                border: "border-red-500/30",
-                
-                concept: "Hum un logon se 'Purchase' karna ya 'Haan' bolna pasand karte hain jinhein hum jaante hain aur pasand karte hain. <br/><strong>Key Factors:</strong> 1. Physical Attractiveness (Halo Effect) 2. Similarity (Humare jaise log) 3. Compliments (Taareef).",
-                
-                experiment: {
-                    name: "Mirroring Body Language",
-                    detail: "Research shows ki agar koi sales person aapki body language, tone aur verbal style ko copy (mirror) karta hai, toh aap usse zyada trust karte hain. 'Humare jaise log' humein safe lagte hain."
-                },
-                
-                technique: {
-                    name: "The Tupperware Party",
-                    detail: "Tupperware party mein aap kisi stranger se nahi khareed rahe, aap apni 'friend' (host) se khareed rahe hain. Friend ke liye 'Na' bolna mushkil hota hai. Company friend ke 'Social Capital' ka use karti hai."
-                },
-                
-                example: "Joe Girard (World's Greatest Salesman) sirf do cheezein karta tha: Fair Price aur cards bhejta tha jispe likha hota tha 'I Like You'. Sirf itna kaafi tha.",
-                
-                defense: "Focus on the Outcome, not the Person. Socho: 'Agar ye banda mera dost na hota, toh kya main ye car khareedta?'. Deal aur Dealer ko alag karke dekho."
-            },
-            {
-                id: 5,
-                title: "Authority",
-                hindi: "Satta Ka Prabhav",
-                tagline: "Directed Deference",
-                icon: "ph-medal",
-                color: "text-purple-400",
-                bgGradient: "from-purple-600 to-indigo-900",
-                border: "border-purple-500/30",
-                
-                concept: "Humare andar Authority ke liye 'Deep-seated Obedience' (gehri aagyakarita) hoti hai. Hum Titles (Dr., Prof.), Clothes (Uniforms, Suits), aur Trappings (Mehngi Cars) dekh kar bina soche obey karne lagte hain.",
-                
-                experiment: {
-                    name: "The Milgram Experiment (1963)",
-                    detail: "Ek Professor (Lab coat mein) ne Participants ko order diya ki wo doosre room mein baithe learner ko electric shocks dein agar wo galat jawab de. <br/><br/><strong>Horrifying Result:</strong> 65% log deadly 450 Volts tak gaye, sirf isliye kyunki 'Authority' ne kaha 'The experiment requires you to continue'. Unhone apni moral thinking band kar di thi."
-                },
-                
-                technique: {
-                    name: "Sly Sincerity (Vincent the Waiter)",
-                    detail: "Ek waiter aapko pehle kehta hai 'Sir, aaj ye dish achhi nahi hai'. Aap uspar trust karne lagte ho (Expert & Honest). Phir wo mehngi wine aur dessert suggest karta hai aur aap maan lete ho kyunki usne apni authority prove kar di."
-                },
-                
-                example: "Hospitals mein nurses aksar doctors ki galat dawai wali script ko bhi question nahi karti ('Captainitis'). Kyunki 'Doctor' ek authority title hai.",
-                
-                defense: "Khud se do sawal poocho: 1. 'Kya ye sach mein expert hai?' 2. 'Kya ye yahan sach bol raha hai ya apna fayda dekh raha hai?'"
-            },
-            {
-                id: 6,
-                title: "Scarcity",
-                hindi: "Kami Ka Siddhanth",
-                tagline: "The Rule of the Few",
-                icon: "ph-hourglass-high",
-                color: "text-yellow-400",
-                bgGradient: "from-yellow-600 to-amber-900",
-                border: "border-yellow-500/30",
-                
-                concept: "Opportunities humein zyada valuable lagti hain jab wo kam available hoti hain. Insaan 'Gain' se zyada 'Loss' se darta hai (Loss Aversion). Agar humein lage ki hum kuch kho denge, toh hum pagal ho jate hain.",
-                
-                experiment: {
-                    name: "The Cookie Jar Study (Stephen Worchel)",
-                    detail: "Participants ko jar mein se cookies di gayin. <br/>Condition A: Jar mein 10 cookies thi. <br/>Condition B: Jar mein sirf 2 cookies thi. <br/><br/><strong>Result:</strong> Jab cookies kam thi (2), logon ne unhein zyada tasty aur mehnga bataya, banisbat jab cookies zyada thi (10). Cheez wahi thi, bas availability kam thi."
-                },
-                
-                technique: {
-                    name: "Deadline & Limited Number",
-                    detail: "'Sale ends tonight' ya 'Only 2 seats left'. Ye dimaag ka thinking process band kar deta hai aur panic create karta hai."
-                },
-                
-                example: "The Romeo & Juliet Effect: Jab parents ne Romeo aur Juliet ke pyaar par rok lagayi (barrier), toh unka passion aur badh gaya. Jo cheez censored ya forbidden hoti hai, hum use zyada chahte hain.",
-                
-                defense: "Jab aapko scarcity ki wajah se excitement feel ho, toh ruk jao. Yaad rakho: 'Scarcity se cookie ka taste better nahi ho jayega'. Use pane ka maza alag hai aur use use karne ka maza alag."
-            },
-            {
-                id: 7,
-                title: "Unity",
-                hindi: "Ekta (Hum Sab Ek Hain)",
-                tagline: "The 'We' is the shared Me",
-                icon: "ph-link",
-                color: "text-teal-400",
-                bgGradient: "from-teal-600 to-cyan-900",
-                border: "border-teal-500/30",
-                
-                concept: "(New Principle) Ye 'Liking' se ek step aage hai. Ye sirf pasand karna nahi hai, ye hai 'One of Us' feel karna. Categories like Family, Race, Religion, aur Location humein Unity feel karate hain.",
-                
-                experiment: {
-                    name: "The Co-Creation Effect",
-                    detail: "Jab companies customers se feedback lekar product banati hain, toh customers us product ko defend karte hain. IKEA effect bhi yahi hai - jo hum khud banate hain, hum usse pyaar karte hain."
-                },
-                
-                technique: {
-                    name: "Using 'We' Language",
-                    detail: "Politicians aur Leaders 'Main' ki jagah 'Hum' use karte hain. 'Humare bacchon ka future', 'Humara desh'. Isse personal identity group identity ke sath merge ho jati hai."
-                },
-                
-                example: "Family First: Agar koi door ka rishtedaar bhi musibat mein ho, hum help karte hain kyunki 'Genetic Overlap' hai. Salesmen kehte hain 'Arre aap toh mere bhai jaise ho', taaki wo family wala trust le sakein.",
-                
-                defense: "Pehchano ki koi fake kinship (rishtedari) toh nahi bana raha? Agar koi salesman 'Bhai-Bhai' kar raha hai, toh alert ho jao."
-            }
-        ];
+    <!-- TIMER -->
+    <div class="page" id="page-timer">
+      <div class="page-header"><div class="page-title">⏱ LIVE MISSION TIMER</div></div>
+      <div class="card">
+        <div class="card-title">CURRENT MISSION</div>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px" id="timerTaskName">—</div>
+        <div style="font-size:12px;color:var(--text3)" id="timerTaskSub">—</div>
+        <div class="timer-display" id="timerDisplay">00:00:00</div>
+        <div class="timer-sub" id="timerSubText">TIME ELAPSED IN CURRENT SLOT</div>
+        <div class="progress-wrap" style="height:10px;margin-bottom:16px"><div class="progress-bar" id="timerProgress" style="width:0%"></div></div>
+        <div style="text-align:center;font-size:12px;color:var(--text3);font-family:monospace" id="timerEndText">—</div>
+      </div>
+      <div class="card">
+        <div class="card-title">CUSTOM POMODORO</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+          <input class="form-input" id="pomoDur" type="number" value="25" min="1" max="180" style="width:80px">
+          <span style="font-size:13px;color:var(--text2)">minutes</span>
+          <button class="btn btn-primary" onclick="startPomo()">START POMO</button>
+          <button class="btn btn-ghost" onclick="stopPomo()">STOP</button>
+        </div>
+        <div style="font-family:monospace;font-size:32px;font-weight:700;color:var(--accent2);letter-spacing:3px;text-align:center" id="pomoDisplay">25:00</div>
+      </div>
+    </div>
 
-        // --- RENDER CARDS ---
-        const container = document.getElementById('cards-container');
+    <!-- SCHEDULE -->
+    <div class="page" id="page-schedule">
+      <div class="page-header">
+        <div class="page-title">📋 DAILY SCHEDULE</div>
+        <button class="add-btn" onclick="openSlotModal()">+ ADD SLOT</button>
+      </div>
+      <div class="card">
+        <div class="card-title">TIME SLOTS — CLICK TO EDIT</div>
+        <div class="timeline" id="scheduleList"></div>
+      </div>
+    </div>
 
-        principlesData.forEach((p, index) => {
-            const card = document.createElement('div');
-            card.className = "group perspective-1000 cursor-pointer fade-in-up h-full";
-            card.style.animationDelay = `${index * 100}ms`;
-            
-            // Generating Card HTML
-            card.innerHTML = `
-                <div class="glass-card h-full rounded-3xl p-6 border border-slate-800/50 hover:border-slate-600 transition-all duration-500 relative overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex flex-col">
-                    
-                    <!-- Dynamic Gradient Background on Hover -->
-                    <div class="absolute inset-0 bg-gradient-to-br ${p.bgGradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                    
-                    <div class="relative z-10 flex-grow">
-                        <!-- Header -->
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="w-14 h-14 rounded-2xl bg-slate-900/80 border border-slate-700 flex items-center justify-center ${p.color} shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                <i class="ph-duotone ${p.icon} text-3xl"></i>
-                            </div>
-                            <span class="text-4xl font-black text-slate-800 group-hover:text-slate-700 transition-colors select-none">0${p.id}</span>
-                        </div>
-                        
-                        <!-- Title -->
-                        <h3 class="text-2xl font-bold text-white mb-1 group-hover:text-yellow-400 transition-colors">${p.title}</h3>
-                        <h4 class="text-sm font-medium text-slate-400 mb-4 uppercase tracking-wider">${p.hindi}</h4>
-                        
-                        <!-- Divider -->
-                        <div class="w-12 h-1 bg-slate-700 rounded-full mb-4 group-hover:w-full group-hover:bg-${p.color.split('-')[1]}-500 transition-all duration-500"></div>
+    <!-- CHECKLIST -->
+    <div class="page" id="page-checklist">
+      <div class="page-header">
+        <div class="page-title">✅ DAILY HABITS</div>
+        <button class="add-btn" onclick="openHabitModal()">+ ADD HABIT</button>
+      </div>
+      <div class="card">
+        <div class="card-title" id="habitDate">TODAY — LOADING</div>
+        <div id="habitList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">STREAK TRACKER</div>
+        <div id="streakDisplay" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+      </div>
+    </div>
 
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            "${p.tagline}"
-                        </p>
-                    </div>
-                    
-                    <!-- Footer Link -->
-                    <div class="mt-auto pt-4 border-t border-slate-800 group-hover:border-slate-600/50">
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-500 group-hover:text-white transition-colors uppercase tracking-widest">
-                            <span>View Case Study</span>
-                            <i class="ph-bold ph-arrow-right group-hover:translate-x-2 transition-transform"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            card.addEventListener('click', () => openModal(p));
-            container.appendChild(card);
-        });
+    <!-- GOALS -->
+    <div class="page" id="page-goals">
+      <div class="page-header">
+        <div class="page-title">🎯 WEEKLY GOALS</div>
+        <button class="add-btn" onclick="openGoalModal()">+ ADD GOAL</button>
+      </div>
+      <div class="card">
+        <div class="card-title" id="weekLabel">THIS WEEK</div>
+        <div id="goalList"></div>
+      </div>
+    </div>
 
-        // --- MODAL SYSTEM ---
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalContent = document.getElementById('modal-content');
+    <!-- MONTHLY -->
+    <div class="page" id="page-monthly">
+      <div class="page-header"><div class="page-title">📅 12-MONTH ROADMAP</div></div>
+      <div id="monthlyContent"></div>
+    </div>
 
-        function openModal(data) {
-            const gradientColor = data.color.split('-')[1]; // Extracts 'pink', 'blue' etc.
+    <!-- RULES -->
+    <div class="page" id="page-rules">
+      <div class="page-header">
+        <div class="page-title">⚡ IRON RULES</div>
+        <button class="add-btn" onclick="openRuleModal()">+ ADD RULE</button>
+      </div>
+      <div class="card" id="rulesCard"></div>
+      <div class="card" style="border-color:rgba(217,83,79,0.4);margin-top:12px">
+        <div class="card-title" style="color:var(--red)">COMMANDER'S OATH</div>
+        <div style="font-size:14px;color:#e06e6a;line-height:1.8" id="oathText">Duniya ka sabse amir insaan banana ek marathon hai, sprint nahi. Har ek din ka discipline compounding karta hai. Commitment kar li — ab sirf execute karna hai. Koi excuse nahi.</div>
+        <button class="btn btn-ghost" style="margin-top:10px;font-size:11px" onclick="editOath()">EDIT OATH</button>
+      </div>
+    </div>
 
-            modalContent.innerHTML = `
-                <!-- Modal Header (Hero) -->
-                <div class="relative h-48 md:h-64 bg-gradient-to-r ${data.bgGradient} overflow-hidden">
-                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
-                    <!-- Abstract Shapes -->
-                    <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    
-                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-10 bg-gradient-to-t from-[#0B1120] to-transparent">
-                        <div class="flex items-end gap-4">
-                            <div class="hidden md:flex w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 items-center justify-center text-white shadow-2xl">
-                                <i class="ph-fill ${data.icon} text-5xl"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 text-yellow-400 font-bold text-xs uppercase tracking-widest mb-2">
-                                    <span class="bg-yellow-500/20 px-2 py-1 rounded border border-yellow-500/20">Principle #${data.id}</span>
-                                    <span>${data.hindi}</span>
-                                </div>
-                                <h2 class="text-3xl md:text-5xl font-bold text-white leading-tight">${data.title}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button onclick="closeModal()" class="absolute top-6 right-6 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full backdrop-blur-sm transition-colors">
-                        <i class="ph-bold ph-x text-xl"></i>
-                    </button>
-                </div>
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><div class="page-title">⚙ SETTINGS</div></div>
+      <div class="card">
+        <div class="card-title">PROFILE</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Commander Name</div><div class="setting-sub">Dashboard pe dikhega</div></div>
+          <input class="form-input" id="settName" style="width:160px" onchange="saveSetting('name',this.value)">
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Mission Start Date</div><div class="setting-sub">Day counter ke liye</div></div>
+          <input class="form-input" id="settStart" type="date" style="width:160px" onchange="saveSetting('startDate',this.value)">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">NOTIFICATIONS</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Task Switch Alert</div><div class="setting-sub">Nayi task pe reminder</div></div>
+          <div class="toggle" id="notifToggle" onclick="toggleNotif()"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Sleep Reminder</div><div class="setting-sub">22:00 pe alert</div></div>
+          <div class="toggle" id="sleepToggle" onclick="toggleSleep()"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">ACCENT COLOR</div>
+        <div class="color-chips" id="colorChips">
+          <div class="chip" style="background:#5a9e4a" data-color="#5a9e4a" onclick="setAccent('#5a9e4a','#4a8e3a')"></div>
+          <div class="chip" style="background:#4a8cbe" data-color="#4a8cbe" onclick="setAccent('#4a8cbe','#3a7aae')"></div>
+          <div class="chip" style="background:#c8a84b" data-color="#c8a84b" onclick="setAccent('#c8a84b','#b8983b')"></div>
+          <div class="chip" style="background:#d9534f" data-color="#d9534f" onclick="setAccent('#d9534f','#c9433f')"></div>
+          <div class="chip" style="background:#8b72be" data-color="#8b72be" onclick="setAccent('#8b72be','#7b62ae')"></div>
+          <div class="chip" style="background:#be7272" data-color="#be7272" onclick="setAccent('#be7272','#ae6262')"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">DATA</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="exportData()">💾 Export JSON</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">📂 Import JSON</button>
+          <button class="btn btn-danger" onclick="if(confirm('Sab data delete ho jayega!'))resetAll()">🗑 Reset All</button>
+        </div>
+      </div>
+    </div>
 
-                <!-- Modal Body -->
-                <div class="p-6 md:p-10 space-y-10 bg-[#0B1120]">
-                    
-                    <!-- Section 1: Concept -->
-                    <div class="prose prose-invert max-w-none">
-                        <p class="text-lg md:text-xl text-slate-300 leading-relaxed font-light border-l-4 border-${gradientColor}-500 pl-6">
-                            ${data.concept}
-                        </p>
-                    </div>
+  </div><!-- /main -->
+</div><!-- /layout -->
 
-                    <!-- Section 2: The Experiment (Case Study) -->
-                    <div class="bg-slate-900/50 rounded-2xl border border-slate-800 overflow-hidden">
-                        <div class="bg-slate-800/80 px-6 py-3 border-b border-slate-700 flex items-center gap-3">
-                            <i class="ph-fill ph-flask text-${gradientColor}-400 text-xl"></i>
-                            <h3 class="font-bold text-white text-sm uppercase tracking-wider">The Famous Experiment</h3>
-                        </div>
-                        <div class="p-6 md:p-8">
-                            <h4 class="text-xl font-bold text-white mb-3">${data.experiment.name}</h4>
-                            <p class="text-slate-400 leading-relaxed">
-                                ${data.experiment.detail}
-                            </p>
-                        </div>
-                    </div>
+<!-- MODALS -->
+<div class="modal-overlay" id="slotModal">
+  <div class="modal">
+    <div class="modal-title" id="slotModalTitle">ADD TIME SLOT</div>
+    <div class="form-row">
+      <label class="form-label">TITLE</label>
+      <input class="form-input" id="slotTitle" placeholder="e.g., Morning Workout">
+    </div>
+    <div class="form-row">
+      <label class="form-label">SUBTITLE / DESCRIPTION</label>
+      <input class="form-input" id="slotSub" placeholder="e.g., Push-ups, running, stretching">
+    </div>
+    <div class="form-row form-row-2">
+      <div>
+        <label class="form-label">START TIME</label>
+        <input class="form-input" id="slotStart" type="time">
+      </div>
+      <div>
+        <label class="form-label">END TIME</label>
+        <input class="form-input" id="slotEnd" type="time">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">CATEGORY</label>
+      <select class="form-input form-select" id="slotCat">
+        <option value="study">📘 Study</option>
+        <option value="work">💰 Work / Income</option>
+        <option value="tech">⚡ Technology</option>
+        <option value="health">🏃 Health / Walk</option>
+        <option value="rest">😮‍💨 Rest / Meal</option>
+        <option value="wake">🌅 Wake / Routine</option>
+        <option value="sleep">😴 Sleep</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('slotModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveSlot()">SAVE SLOT</button>
+    </div>
+  </div>
+</div>
 
-                    <!-- Section 3: Tactic & Example Grid -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Tactic -->
-                        <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800">
-                            <h3 class="text-${gradientColor}-400 font-bold flex items-center gap-2 mb-4">
-                                <i class="ph-fill ph-crosshair"></i> Real World Tactic
-                            </h3>
-                            <h4 class="text-white font-semibold mb-2">${data.technique.name}</h4>
-                            <p class="text-slate-400 text-sm leading-relaxed">${data.technique.detail}</p>
-                        </div>
-                        
-                        <!-- Example -->
-                        <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800">
-                            <h3 class="text-yellow-500 font-bold flex items-center gap-2 mb-4">
-                                <i class="ph-fill ph-lightning"></i> Daily Life Example
-                            </h3>
-                            <p class="text-slate-300 text-sm leading-relaxed italic">"${data.example}"</p>
-                        </div>
-                    </div>
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <div class="modal-title">ADD HABIT</div>
+    <div class="form-row">
+      <label class="form-label">HABIT TEXT</label>
+      <input class="form-input" id="habitInput" placeholder="e.g., 2 glass paani piya">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('habitModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveHabit()">ADD</button>
+    </div>
+  </div>
+</div>
 
-                    <!-- Section 4: Defense -->
-                    <div class="bg-green-900/10 border border-green-500/20 rounded-2xl p-6 flex gap-4 items-start">
-                        <div class="bg-green-500/20 p-2 rounded-lg text-green-400 shrink-0">
-                            <i class="ph-fill ph-shield-check text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-green-400 font-bold mb-1 uppercase text-sm tracking-wide">How to Defend? (Bachav)</h3>
-                            <p class="text-green-100/70 text-sm leading-relaxed">
-                                ${data.defense}
-                            </p>
-                        </div>
-                    </div>
+<div class="modal-overlay" id="goalModal">
+  <div class="modal">
+    <div class="modal-title">ADD WEEKLY GOAL</div>
+    <div class="form-row">
+      <label class="form-label">GOAL</label>
+      <input class="form-input" id="goalInput" placeholder="e.g., Maths ke 5 topics complete">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('goalModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveGoal()">ADD</button>
+    </div>
+  </div>
+</div>
 
-                </div>
-                
-                <!-- Modal Footer -->
-                <div class="bg-slate-950 p-6 border-t border-slate-900 text-center">
-                    <button onclick="closeModal()" class="text-slate-500 hover:text-white text-sm font-bold uppercase tracking-widest transition-colors">
-                        Close Case Study
-                    </button>
-                </div>
-            `;
+<div class="modal-overlay" id="ruleModal">
+  <div class="modal">
+    <div class="modal-title">ADD IRON RULE</div>
+    <div class="form-row">
+      <label class="form-label">RULE</label>
+      <input class="form-input" id="ruleInput" placeholder="e.g., Phone band 22:00 ke baad">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('ruleModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveRule()">ADD</button>
+    </div>
+  </div>
+</div>
 
-            modalOverlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            
-            // Animation Frame
-            requestAnimationFrame(() => {
-                modalOverlay.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-                modalContent.classList.add('scale-100');
-            });
-        }
+<div class="toast" id="toast"></div>
 
-        window.closeModal = function() {
-            modalOverlay.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-            
-            setTimeout(() => {
-                modalOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 300);
-        };
+<script>
+// ============ DATA ============
+const DEF_SCHEDULE = [
+  {id:1,time:"04:00",endTime:"04:30",title:"Reveille — Morning Routine",sub:"Uthna, paani, freshen up, 5 min meditation",cat:"wake"},
+  {id:2,time:"04:30",endTime:"05:30",title:"Newspaper + Current Affairs",sub:"The Hindu / Indian Express + notes banana",cat:"study"},
+  {id:3,time:"05:30",endTime:"06:30",title:"English Mission",sub:"Grammar, vocabulary, reading, speaking practice",cat:"study"},
+  {id:4,time:"06:30",endTime:"08:00",title:"Mathematics",sub:"SSC CGL + UPSC level problems, practice sets",cat:"study"},
+  {id:5,time:"08:00",endTime:"08:30",title:"Breakfast + Recovery",sub:"Nutrition break — meal ke waqt koi screen nahi",cat:"rest"},
+  {id:6,time:"08:30",endTime:"12:30",title:"Digital Marketing — Session 1",sub:"Client work, campaigns, content creation",cat:"work"},
+  {id:7,time:"12:30",endTime:"13:00",title:"Lunch + Power Rest",sub:"Khana + 10 min rest max — no social media",cat:"rest"},
+  {id:8,time:"13:00",endTime:"17:00",title:"Digital Marketing — Session 2",sub:"Strategy, outreach, analysis, scaling",cat:"work"},
+  {id:9,time:"17:00",endTime:"19:00",title:"Evening Walk",sub:"Bahar walk — phone nahi, mindful thinking",cat:"health"},
+  {id:10,time:"19:00",endTime:"22:00",title:"Technology R&D",sub:"Research, learning, experiments, building",cat:"tech"},
+  {id:11,time:"22:00",endTime:"04:00",title:"Lights Out — Sleep",sub:"21:45 ke baad phone strictly band",cat:"sleep"},
+];
+const DEF_HABITS = [
+  {id:1,text:"04:00 AM pe exact uthna"},
+  {id:2,text:"2 glass paani piya (subah)"},
+  {id:3,text:"Newspaper padha + notes banaye"},
+  {id:4,text:"English practice ki (1 ghanta)"},
+  {id:5,text:"Maths problems solve kiye (1.5 ghanta)"},
+  {id:6,text:"8 ghanta digital marketing kaam kiya"},
+  {id:7,text:"Shaam ki walk ki (5-7 baje)"},
+  {id:8,text:"Tech R&D ki (3 ghanta)"},
+  {id:9,text:"22:00 pe sone gaya"},
+  {id:10,text:"Personal social media 30 min se kam"},
+];
+const DEF_GOALS = [
+  {id:1,text:"Maths — 5 topics complete karna"},
+  {id:2,text:"English — 50 naye words seekhna"},
+  {id:3,text:"Current Affairs — daily notes lena"},
+  {id:4,text:"Marketing — weekly revenue badhana"},
+  {id:5,text:"Tech — 1 experiment/project complete"},
+  {id:6,text:"Sunday full review karna"},
+];
+const DEF_RULES = [
+  "04:00 AM pe exact uthna — alarm nahi, discipline se",
+  "22:00 PM pe exact sona — phone bed se door rakhna",
+  "Social media ka koi dedicated time nahi — sirf kaam ke liye",
+  "Study time pe sirf study — multitasking banned",
+  "Walk time pe phone nahi — mind recharge karo",
+  "Har Sunday weekly review karo — kya kiya, kya chuka",
+  "Excuses zero — beemar nahi to schedule follow karna hai",
+  "Har kaam time-block me — free time = learning",
+];
+const DEF_MONTHLY = [
+  {phase:"PHASE 1 — FOUNDATION",period:"MONTH 1-3",color:"var(--blue)",goals:["English basic fluency — daily practice","SSC CGL syllabus shuru karo","Marketing — ₹20K/month target","Tech: Next.js + Python master karo","Maths basics — Algebra, Arithmetic solid karo","UPSC pattern samjho — roadmap banao"]},
+  {phase:"PHASE 2 — GROWTH",period:"MONTH 4-6",color:"var(--green)",goals:["English intermediate — speaking fluent","SSC CGL mock tests weekly dena shuru","Marketing — ₹50K+/month scale karo","AI tools + automation product launch","UPSC NCERT + basics complete karo","Pehla SaaS/product prototype banao"]},
+  {phase:"PHASE 3 — DOMINATION",period:"MONTH 7-12",color:"var(--accent2)",goals:["SSC CGL exam attempt karo","UPSC Prelims prep intensive karo","Marketing agency — ₹1L+/month target","Tech product — beta users lao","English — professional level achieve karo","AI company — legal entity register karo"]},
+];
 
-        // Close on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
-        
-        // Close on outside click
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModal();
-        });
+// ============ STATE ============
+let S = {};
+let editingSlotId = null;
+let pomoTimer = null;
+let pomoLeft = 0;
+let lastNotifSlot = null;
 
-        // Navbar Scroll Effect
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('bg-slate-950/90', 'backdrop-blur-lg', 'border-slate-800', 'py-3');
-                navbar.classList.remove('py-6', 'border-transparent');
-            } else {
-                navbar.classList.remove('bg-slate-950/90', 'backdrop-blur-lg', 'border-slate-800', 'py-3');
-                navbar.classList.add('py-6', 'border-transparent');
-            }
-        });
+function load(){
+  S = {
+    schedule: lsGet('schedule') || JSON.parse(JSON.stringify(DEF_SCHEDULE)),
+    habits: lsGet('habits') || JSON.parse(JSON.stringify(DEF_HABITS)),
+    habitDone: lsGet('habitDone') || {},
+    goals: lsGet('goals') || JSON.parse(JSON.stringify(DEF_GOALS)),
+    goalDone: lsGet('goalDone') || {},
+    rules: lsGet('rules') || [...DEF_RULES],
+    monthly: lsGet('monthly') || JSON.parse(JSON.stringify(DEF_MONTHLY)),
+    settings: lsGet('settings') || {name:'Commander Sonu', startDate: new Date().toISOString().split('T')[0], notif:false, sleep:false, accent:'#5a9e4a'},
+    oath: lsGet('oath') || DEF_RULES[0] && "Duniya ka sabse amir insaan banana ek marathon hai, sprint nahi. Har ek din ka discipline compounding karta hai. Commitment kar li — ab sirf execute karna hai. Koi excuse nahi.",
+  };
+  applyAccent(S.settings.accent);
+}
+function save(){
+  lsSet('schedule',S.schedule);lsSet('habits',S.habits);lsSet('habitDone',S.habitDone);
+  lsSet('goals',S.goals);lsSet('goalDone',S.goalDone);lsSet('rules',S.rules);
+  lsSet('monthly',S.monthly);lsSet('settings',S.settings);lsSet('oath',S.oath);
+}
+function lsGet(k){try{return JSON.parse(localStorage.getItem('oz_'+k))}catch(e){return null}}
+function lsSet(k,v){localStorage.setItem('oz_'+k,JSON.stringify(v))}
 
-        // Scroll Animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
-        
-        // Mobile Menu
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.add('hidden')));
-    </script>
+// ============ CLOCK + CURRENT TASK ============
+function timeToMins(t){const[h,m]=t.split(':').map(Number);return h*60+m}
+function minsToTime(m){const h=Math.floor(m/60)%24,mn=m%60;return String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0')}
+function getCurrentSlot(){
+  const now=new Date(),h=now.getHours(),m=now.getMinutes();
+  const nowM=h*60+m;
+  for(const sl of S.schedule){
+    const s=timeToMins(sl.time),e=timeToMins(sl.endTime);
+    if(s<e){if(nowM>=s&&nowM<e)return sl;}
+    else{if(nowM>=s||nowM<e)return sl;}
+  }
+  return null;
+}
+function getSlotProgress(sl){
+  const now=new Date(),nowM=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const s=timeToMins(sl.time),e=timeToMins(sl.endTime);
+  let total=e>s?e-s:e+1440-s;
+  let elapsed=nowM>=s?nowM-s:nowM+1440-s;
+  return Math.min(100,Math.max(0,(elapsed/total)*100));
+}
+function getSlotRemaining(sl){
+  const now=new Date(),nowM=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const s=timeToMins(sl.time),e=timeToMins(sl.endTime);
+  let total=e>s?e-s:e+1440-s;
+  let elapsed=nowM>=s?nowM-s:nowM+1440-s;
+  let rem=Math.max(0,total-elapsed);
+  const rh=Math.floor(rem/60),rm=Math.floor(rem%60);
+  if(rh>0)return rh+'h '+rm+'m baki';
+  return rm+'m baki';
+}
+function getDayNum(){
+  const start=new Date(S.settings.startDate||new Date());
+  const today=new Date();
+  const diff=Math.floor((today-start)/(1000*60*60*24));
+  return Math.max(1,diff+1);
+}
+function tick(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('en-IN',{hour12:false});
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateStr').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+  const sl=getCurrentSlot();
+  if(sl){
+    document.getElementById('ctTitle').textContent=sl.title;
+    // Notifications
+    if(S.settings.notif && sl.id!==lastNotifSlot){
+      lastNotifSlot=sl.id;
+      if(Notification.permission==='granted')new Notification('⚔ Operation Zenith',{body:'New mission: '+sl.title,icon:''});
+    }
+    if(S.settings.sleep && sl.cat==='sleep' && now.getHours()===22 && now.getMinutes()===0 && now.getSeconds()<5){
+      if(Notification.permission==='granted')new Notification('🌙 Lights Out!',{body:'22:00 ho gaya — abhi so jao!'});
+    }
+    // Timer page
+    document.getElementById('timerTaskName').textContent=sl.title;
+    document.getElementById('timerTaskSub').textContent=sl.sub;
+    const pct=getSlotProgress(sl);
+    document.getElementById('timerProgress').style.width=pct+'%';
+    document.getElementById('timerEndText').textContent='End time: '+sl.endTime;
+    // elapsed display
+    const s=timeToMins(sl.time),e=timeToMins(sl.endTime);
+    const total=(e>s?e-s:e+1440-s)*60;
+    const elapsed=Math.floor(pct/100*total);
+    const eh=Math.floor(elapsed/3600),em=Math.floor((elapsed%3600)/60),es=elapsed%60;
+    document.getElementById('timerDisplay').textContent=String(eh).padStart(2,'0')+':'+String(em).padStart(2,'0')+':'+String(es).padStart(2,'0');
+    // Dashboard
+    document.getElementById('timeLeft').textContent=getSlotRemaining(sl);
+    document.getElementById('taskProgress').style.width=pct+'%';
+    document.getElementById('taskPct').textContent=Math.round(pct)+'% done';
+  } else {
+    document.getElementById('ctTitle').textContent='Koi slot nahi — free time!';
+  }
+}
+
+// ============ NAVIGATION ============
+function nav(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
+  renderPage(page);
+  if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function renderPage(p){
+  if(p==='dashboard')renderDashboard();
+  else if(p==='schedule')renderSchedule();
+  else if(p==='checklist')renderChecklist();
+  else if(p==='goals')renderGoals();
+  else if(p==='monthly')renderMonthly();
+  else if(p==='rules')renderRules();
+  else if(p==='settings')renderSettings();
+}
+
+// ============ DASHBOARD ============
+function renderDashboard(){
+  // Week strip
+  const today=new Date();
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let ws='';
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(today.getDate()-today.getDay()+i);
+    const isToday=d.toDateString()===today.toDateString();
+    ws+=`<div class="week-day${isToday?' today':''}"><div class="week-day-name">${dayNames[i]}</div><div class="week-day-num">${d.getDate()}</div></div>`;
+  }
+  document.getElementById('weekStrip').innerHTML=ws;
+  // Day badge
+  document.getElementById('dayBadge').textContent='DAY '+getDayNum();
+  // Habit progress
+  const todayKey=today.toDateString();
+  const done=S.habits.filter(h=>S.habitDone[todayKey+'_'+h.id]).length;
+  const total=S.habits.length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('doneCount').textContent=done+'/'+total;
+  document.getElementById('habitProgress').style.width=pct+'%';
+  document.getElementById('habitPct').textContent=pct+'% done';
+  // Goal progress
+  const weekKey=getWeekKey();
+  const gDone=S.goals.filter(g=>S.goalDone[weekKey+'_'+g.id]).length;
+  const gTotal=S.goals.length;
+  const gPct=gTotal?Math.round(gDone/gTotal*100):0;
+  document.getElementById('goalCount').textContent=gDone+'/'+gTotal;
+  document.getElementById('goalProgress').style.width=gPct+'%';
+  document.getElementById('goalPct').textContent=gPct+'% done';
+  // Mini timeline
+  const sl=getCurrentSlot();
+  let tl='';
+  const sorted=[...S.schedule].sort((a,b)=>timeToMins(a.time)-timeToMins(b.time));
+  sorted.forEach(s=>{
+    const isCurrent=sl&&sl.id===s.id;
+    const past=isPast(s);
+    tl+=`<div class="slot cat-${s.cat}${isCurrent?' current':''}${(!isCurrent&&past)?' past':''}">
+      <span class="slot-time">${s.time}</span>
+      <span class="slot-dot"></span>
+      <div><div class="slot-title">${s.title}${isCurrent?'<span class="badge badge-green" style="margin-left:6px">NOW</span>':''}</div></div>
+      <span class="slot-dur">${getDur(s)}</span>
+    </div>`;
+  });
+  document.getElementById('dashTimeline').innerHTML=tl||'<div class="empty">Koi slot nahi</div>';
+}
+function isPast(sl){
+  const now=new Date(),nowM=now.getHours()*60+now.getMinutes();
+  const end=timeToMins(sl.endTime),start=timeToMins(sl.time);
+  if(end>start)return nowM>=end;
+  return nowM>=end&&nowM<start;
+}
+function getDur(sl){
+  const s=timeToMins(sl.time),e=timeToMins(sl.endTime);
+  const d=e>s?e-s:e+1440-s;
+  if(d>=60){const h=Math.floor(d/60),m=d%60;return m?h+'h '+m+'m':h+'h';}
+  return d+'m';
+}
+
+// ============ SCHEDULE ============
+function renderSchedule(){
+  const sorted=[...S.schedule].sort((a,b)=>timeToMins(a.time)-timeToMins(b.time));
+  const sl=getCurrentSlot();
+  let html='';
+  sorted.forEach(s=>{
+    const isCur=sl&&sl.id===s.id;
+    html+=`<div class="slot cat-${s.cat}${isCur?' current':''}">
+      <span class="slot-time">${s.time}<br><span style="color:var(--text3);font-size:10px">→${s.endTime}</span></span>
+      <span class="slot-dot"></span>
+      <div>
+        <div class="slot-title">${s.title}${isCur?'<span class="badge badge-green" style="margin-left:6px">NOW</span>':''}</div>
+        <div class="slot-sub">${s.sub}</div>
+        <div class="slot-actions">
+          <button class="btn-sm" onclick="editSlot(${s.id})">Edit</button>
+          <button class="btn-sm danger" onclick="deleteSlot(${s.id})">Delete</button>
+        </div>
+      </div>
+      <span class="slot-dur">${getDur(s)}</span>
+    </div>`;
+  });
+  document.getElementById('scheduleList').innerHTML=html||'<div class="empty">Koi slot nahi — Add karo!</div>';
+}
+
+// ============ SLOT MODAL ============
+function openSlotModal(id){
+  editingSlotId=id||null;
+  document.getElementById('slotModalTitle').textContent=id?'EDIT TIME SLOT':'ADD TIME SLOT';
+  if(id){
+    const s=S.schedule.find(x=>x.id===id);
+    document.getElementById('slotTitle').value=s.title;
+    document.getElementById('slotSub').value=s.sub;
+    document.getElementById('slotStart').value=s.time;
+    document.getElementById('slotEnd').value=s.endTime;
+    document.getElementById('slotCat').value=s.cat;
+  } else {
+    document.getElementById('slotTitle').value='';
+    document.getElementById('slotSub').value='';
+    document.getElementById('slotStart').value='';
+    document.getElementById('slotEnd').value='';
+    document.getElementById('slotCat').value='study';
+  }
+  document.getElementById('slotModal').classList.add('open');
+}
+function editSlot(id){openSlotModal(id)}
+function saveSlot(){
+  const title=document.getElementById('slotTitle').value.trim();
+  const sub=document.getElementById('slotSub').value.trim();
+  const st=document.getElementById('slotStart').value;
+  const en=document.getElementById('slotEnd').value;
+  const cat=document.getElementById('slotCat').value;
+  if(!title||!st||!en){showToast('Sab fields bharo!');return;}
+  if(editingSlotId){
+    const i=S.schedule.findIndex(x=>x.id===editingSlotId);
+    S.schedule[i]={...S.schedule[i],title,sub,time:st,endTime:en,cat};
+  } else {
+    S.schedule.push({id:Date.now(),title,sub,time:st,endTime:en,cat});
+  }
+  save();closeModal('slotModal');renderSchedule();showToast('Slot save ho gaya!');
+}
+function deleteSlot(id){
+  if(!confirm('Is slot ko delete karo?'))return;
+  S.schedule=S.schedule.filter(x=>x.id!==id);
+  save();renderSchedule();showToast('Slot delete ho gaya.');
+}
+
+// ============ CHECKLIST ============
+function getWeekKey(){const d=new Date();const day=d.getDay();const diff=d.getDate()-day+(day===0?-6:1);const mon=new Date(d);mon.setDate(diff);return mon.toDateString();}
+function renderChecklist(){
+  const today=new Date();
+  document.getElementById('habitDate').textContent='TODAY — '+today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  const todayKey=today.toDateString();
+  let html='';
+  S.habits.forEach(h=>{
+    const done=!!S.habitDone[todayKey+'_'+h.id];
+    html+=`<div class="habit-item${done?' done':''}" onclick="toggleHabit(${h.id})">
+      <div class="habit-check">${done?'✓':''}</div>
+      <div class="habit-text">${h.text}</div>
+      <div class="habit-actions">
+        <button class="btn-sm danger" onclick="event.stopPropagation();deleteHabit(${h.id})">✕</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('habitList').innerHTML=html||'<div class="empty">Koi habit nahi — Add karo!</div>';
+  // Streak
+  const done=S.habits.filter(h=>S.habitDone[todayKey+'_'+h.id]).length;
+  const pct=S.habits.length?Math.round(done/S.habits.length*100):0;
+  document.getElementById('streakDisplay').innerHTML=`<div style="font-size:24px;font-weight:700;color:var(--accent);font-family:monospace">${pct}%</div><div style="font-size:13px;color:var(--text2);margin-top:4px">Aaj ke ${done} / ${S.habits.length} habits complete hue</div><div style="font-size:12px;color:var(--text3);margin-top:8px">${pct===100?'🔥 PERFECT DAY — Bilkul sahi!':pct>=70?'💪 Acha performance — thoda aur!':'⚡ Shuru karo — abhi se!'}</div>`;
+}
+function toggleHabit(id){
+  const k=new Date().toDateString()+'_'+id;
+  S.habitDone[k]=!S.habitDone[k];
+  save();renderChecklist();renderDashboard();
+}
+function openHabitModal(){document.getElementById('habitInput').value='';document.getElementById('habitModal').classList.add('open')}
+function saveHabit(){
+  const t=document.getElementById('habitInput').value.trim();
+  if(!t){showToast('Habit likho!');return;}
+  S.habits.push({id:Date.now(),text:t});
+  save();closeModal('habitModal');renderChecklist();showToast('Habit add ho gaya!');
+}
+function deleteHabit(id){
+  if(!confirm('Habit delete karo?'))return;
+  S.habits=S.habits.filter(h=>h.id!==id);
+  save();renderChecklist();
+}
+
+// ============ GOALS ============
+function renderGoals(){
+  const wk=getWeekKey();
+  document.getElementById('weekLabel').textContent='WEEK OF '+wk.toUpperCase();
+  let html='';
+  S.goals.forEach(g=>{
+    const done=!!S.goalDone[wk+'_'+g.id];
+    html+=`<div class="goal-item${done?' done':''}">
+      <div class="goal-cb" onclick="toggleGoal(${g.id})">${done?'✓':''}</div>
+      <div class="goal-text" onclick="toggleGoal(${g.id})">${g.text}</div>
+      <button class="btn-sm danger" onclick="deleteGoal(${g.id})">✕</button>
+    </div>`;
+  });
+  document.getElementById('goalList').innerHTML=html||'<div class="empty">Koi goal nahi — Add karo!</div>';
+}
+function toggleGoal(id){
+  const k=getWeekKey()+'_'+id;
+  S.goalDone[k]=!S.goalDone[k];
+  save();renderGoals();renderDashboard();
+}
+function openGoalModal(){document.getElementById('goalInput').value='';document.getElementById('goalModal').classList.add('open')}
+function saveGoal(){
+  const t=document.getElementById('goalInput').value.trim();
+  if(!t){showToast('Goal likho!');return;}
+  S.goals.push({id:Date.now(),text:t});
+  save();closeModal('goalModal');renderGoals();showToast('Goal add ho gaya!');
+}
+function deleteGoal(id){
+  if(!confirm('Goal delete karo?'))return;
+  S.goals=S.goals.filter(g=>g.id!==id);
+  save();renderGoals();
+}
+
+// ============ MONTHLY ============
+function renderMonthly(){
+  const colors=['var(--blue)','var(--green)','var(--accent2)'];
+  let html='';
+  S.monthly.forEach((ph,i)=>{
+    html+=`<div class="phase-card" style="border-color:${colors[i]||'var(--border2)'}">
+      <div class="phase-head" style="background:rgba(0,0,0,0.2)">
+        <div style="font-size:14px;font-weight:700;color:${colors[i]||'var(--text)'};letter-spacing:1px">${ph.phase}</div>
+        <span class="badge" style="background:rgba(0,0,0,0.3);color:${colors[i]}">${ph.period}</span>
+      </div>
+      <div class="phase-body">${ph.goals.map(g=>`<div class="goal-li">${g}</div>`).join('')}</div>
+    </div>`;
+  });
+  document.getElementById('monthlyContent').innerHTML=html;
+}
+
+// ============ RULES ============
+function renderRules(){
+  let html='';
+  S.rules.forEach((r,i)=>{
+    html+=`<div class="setting-row" style="padding:10px 0">
+      <div style="display:flex;align-items:flex-start;gap:10px;flex:1">
+        <span style="font-family:monospace;font-size:13px;color:var(--text3);min-width:24px">0${i+1}</span>
+        <span style="font-size:13px;color:var(--text)">${r}</span>
+      </div>
+      <button class="btn-sm danger" style="margin-left:8px;flex-shrink:0" onclick="deleteRule(${i})">✕</button>
+    </div>`;
+  });
+  document.getElementById('rulesCard').innerHTML='<div class="card-title">IRON RULES — ZERO EXCEPTION</div>'+html;
+  document.getElementById('oathText').textContent=S.oath;
+}
+function openRuleModal(){document.getElementById('ruleInput').value='';document.getElementById('ruleModal').classList.add('open')}
+function saveRule(){
+  const t=document.getElementById('ruleInput').value.trim();
+  if(!t)return;
+  S.rules.push(t);save();closeModal('ruleModal');renderRules();showToast('Rule add ho gaya!');
+}
+function deleteRule(i){
+  if(!confirm('Rule delete karo?'))return;
+  S.rules.splice(i,1);save();renderRules();
+}
+function editOath(){
+  const v=prompt('Oath edit karo:',S.oath);
+  if(v){S.oath=v;save();renderRules();}
+}
+
+// ============ SETTINGS ============
+function renderSettings(){
+  document.getElementById('settName').value=S.settings.name||'';
+  document.getElementById('settStart').value=S.settings.startDate||'';
+  const nT=document.getElementById('notifToggle'),sT=document.getElementById('sleepToggle');
+  if(S.settings.notif)nT.classList.add('on');else nT.classList.remove('on');
+  if(S.settings.sleep)sT.classList.add('on');else sT.classList.remove('on');
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('selected',c.dataset.color===S.settings.accent);
+  });
+}
+function saveSetting(k,v){S.settings[k]=v;save();}
+function toggleNotif(){
+  if(!S.settings.notif&&Notification.permission!=='granted'){
+    Notification.requestPermission().then(p=>{if(p==='granted'){S.settings.notif=true;save();renderSettings();showToast('Notifications on!');}});
+  } else {
+    S.settings.notif=!S.settings.notif;save();renderSettings();
+  }
+}
+function toggleSleep(){S.settings.sleep=!S.settings.sleep;save();renderSettings();}
+function setAccent(c,h){
+  S.settings.accent=c;save();applyAccent(c);renderSettings();showToast('Color change ho gaya!');
+}
+function applyAccent(c){document.documentElement.style.setProperty('--accent',c);}
+
+// ============ POMODORO ============
+function startPomo(){
+  stopPomo();
+  pomoLeft=parseInt(document.getElementById('pomoDur').value)*60;
+  pomoTimer=setInterval(()=>{
+    if(pomoLeft<=0){stopPomo();showToast('Pomodoro complete! Ek chhoti break lo.');return;}
+    pomoLeft--;updatePomoDisplay();
+  },1000);
+  updatePomoDisplay();
+}
+function stopPomo(){clearInterval(pomoTimer);pomoTimer=null;}
+function updatePomoDisplay(){
+  const m=Math.floor(pomoLeft/60),s=pomoLeft%60;
+  document.getElementById('pomoDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+// ============ MODALS ============
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})});
+
+// ============ DATA IO ============
+function exportData(){
+  const data={schedule:S.schedule,habits:S.habits,goals:S.goals,rules:S.rules,settings:S.settings,oath:S.oath,monthly:S.monthly,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='operation-zenith-backup.json';a.click();
+  showToast('Data export ho gaya!');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.schedule)S.schedule=d.schedule;
+      if(d.habits)S.habits=d.habits;
+      if(d.goals)S.goals=d.goals;
+      if(d.rules)S.rules=d.rules;
+      if(d.settings)S.settings=d.settings;
+      if(d.oath)S.oath=d.oath;
+      if(d.monthly)S.monthly=d.monthly;
+      save();renderPage(document.querySelector('.page.active').id.replace('page-',''));
+      showToast('Data import ho gaya!');
+    }catch(err){showToast('File galat hai!');}
+  };
+  r.readAsText(file);
+  e.target.value='';
+}
+function resetAll(){
+  localStorage.clear();load();renderDashboard();showToast('Data reset ho gaya.');
+}
+
+// ============ TOAST ============
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ============ INIT ============
+load();
+renderDashboard();
+tick();
+setInterval(tick,1000);
+setInterval(renderDashboard,60000);
+</script>
 </body>
 </html>
