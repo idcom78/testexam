@@ -1,637 +1,2027 @@
+html
 
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>COMMANDER — Daily Ops</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080f08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="COMMANDER">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Military Time Commander — Strict Discipline App">
+<title>⚔ COMMANDER — SUPREME CONTROL</title>
+
+<!-- PWA Manifest inline -->
+<script>
+const manifest = {
+  name: "COMMANDER — Supreme Control",
+  short_name: "COMMANDER",
+  description: "Military Discipline Time Manager",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#080f08",
+  theme_color: "#080f08",
+  orientation: "portrait",
+  icons: [{
+    src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23080f08'/><text y='320' x='56' font-size='340' font-family='serif'>⚔</text></svg>",
+    sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
+  }]
+};
+const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+const link = document.createElement('link');
+link.rel = 'manifest';
+link.href = URL.createObjectURL(blob);
+document.head.appendChild(link);
+</script>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
 
-  :root {
-    --army-dark: #0d1a0f;
-    --army-mid: #1a2f1c;
-    --army-green: #2d5a27;
-    --army-light: #4a8c3f;
-    --army-accent: #6dbf67;
-    --army-gold: #c8a84b;
-    --army-red: #c0392b;
-    --army-text: #d4e8d0;
-    --army-muted: #7a9e75;
-    --army-border: #2a4a25;
-    --grid-color: rgba(77, 140, 63, 0.08);
-  }
+:root {
+  --bg: #080f08;
+  --bg2: #0d160d;
+  --surface: #111a11;
+  --card: #162016;
+  --card2: #1c2a1c;
+  --card3: #213121;
+  --accent: #4fc14a;
+  --accent2: #c8a84b;
+  --accent3: #d9534f;
+  --blue: #4a9ebe;
+  --purple: #9b72be;
+  --text: #d8ead4;
+  --text2: #8dac84;
+  --text3: #546850;
+  --border: #1e2e1e;
+  --border2: #2a3e2a;
+  --border3: #3a5a3a;
+  --red: #d9534f;
+  --amber: #c8a84b;
+  --green: #4fc14a;
+  --grid: rgba(79,193,74,0.04);
+  --scanline: rgba(0,0,0,0.025);
+  --glow: rgba(79,193,74,0.15);
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-main: 'Rajdhani', 'Segoe UI', sans-serif;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    background: var(--army-dark);
-    color: var(--army-text);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px;
-    min-height: 100vh;
-    background-image:
-      linear-gradient(rgba(77,140,63,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(77,140,63,0.04) 1px, transparent 1px);
-    background-size: 20px 20px;
-    overflow-x: hidden;
-  }
+html { scroll-behavior: smooth; }
 
-  .scanline {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 15px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 
-  /* HEADER */
-  .hdr {
-    background: var(--army-mid);
-    border-bottom: 2px solid var(--army-green);
-    padding: 10px 14px 8px;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .hdr-top { display: flex; justify-content: space-between; align-items: center; }
-  .codename { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--army-gold); letter-spacing: 3px; }
-  .clock-display { font-family: 'Share Tech Mono', monospace; font-size: 22px; color: var(--army-accent); font-weight: 700; }
-  .date-display { font-size: 11px; color: var(--army-muted); letter-spacing: 1px; margin-top: 1px; }
-  .mission-bar { 
-    margin-top: 8px; padding: 6px 10px; 
-    background: rgba(109,191,103,0.08); 
-    border: 1px solid var(--army-border);
-    border-radius: 4px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .mission-label { font-size: 10px; color: var(--army-gold); letter-spacing: 2px; }
-  .mission-text { font-size: 13px; color: var(--army-accent); flex: 1; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--army-accent); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+/* SCANLINES */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, var(--scanline) 3px, var(--scanline) 4px);
+}
 
-  /* NAV */
-  .nav-tabs {
-    display: flex; background: var(--army-mid);
-    border-bottom: 1px solid var(--army-border);
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .nav-tabs::-webkit-scrollbar { display: none; }
-  .tab-btn {
-    flex: 1; padding: 10px 8px; font-family: 'Rajdhani', sans-serif;
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-    background: none; border: none; color: var(--army-muted); cursor: pointer;
-    border-bottom: 3px solid transparent; transition: all 0.2s; min-width: 55px;
-    white-space: nowrap;
-  }
-  .tab-btn.active { color: var(--army-accent); border-bottom-color: var(--army-accent); }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border3); border-radius: 2px; }
 
-  /* PAGES */
-  .page { display: none; padding: 12px; }
-  .page.active { display: block; }
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border2);
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
 
-  /* SECTION TITLE */
-  .sec-title {
-    font-size: 11px; letter-spacing: 3px; color: var(--army-gold);
-    text-transform: uppercase; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--army-border); }
+.topbar-left { display: flex; align-items: center; gap: 10px; }
 
-  /* TODAY SCHEDULE */
-  .timeline { display: flex; flex-direction: column; gap: 4px; }
-  .tl-item {
-    display: flex; gap: 10px; align-items: stretch;
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; overflow: hidden; cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .tl-item:hover { border-color: var(--army-light); }
-  .tl-item.current { border-color: var(--army-accent); background: rgba(109,191,103,0.06); }
-  .tl-item.done { opacity: 0.5; }
-  .tl-item.done .tl-bar { background: var(--army-muted); }
-  .tl-bar { width: 4px; background: var(--army-green); flex-shrink: 0; }
-  .tl-item.current .tl-bar { background: var(--army-accent); }
-  .tl-content { padding: 8px 8px 8px 0; flex: 1; }
-  .tl-time { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--army-gold); }
-  .tl-task { font-size: 14px; font-weight: 600; color: var(--army-text); margin: 2px 0; }
-  .tl-cat { font-size: 11px; color: var(--army-muted); }
-  .tl-badge {
-    padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700;
-    letter-spacing: 1px; align-self: center; margin-right: 8px; flex-shrink: 0;
-  }
-  .badge-study { background: rgba(200,168,75,0.2); color: var(--army-gold); }
-  .badge-work { background: rgba(109,191,103,0.2); color: var(--army-accent); }
-  .badge-tech { background: rgba(52,152,219,0.2); color: #74b9ff; }
-  .badge-health { background: rgba(192,57,43,0.2); color: #ff7675; }
-  .badge-personal { background: rgba(155,89,182,0.2); color: #a29bfe; }
-  .badge-sleep { background: rgba(45,52,54,0.5); color: var(--army-muted); }
+.menu-btn {
+  background: none; border: none; color: var(--text2); cursor: pointer;
+  font-size: 20px; padding: 4px 8px; border-radius: 4px;
+  transition: all 0.15s; display: none;
+}
+.menu-btn:active { background: var(--card); }
 
-  /* STATS BAR */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }
-  .stat-card {
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; padding: 8px; text-align: center;
-  }
-  .stat-num { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: var(--army-accent); font-weight: 700; }
-  .stat-lbl { font-size: 10px; color: var(--army-muted); letter-spacing: 1px; text-transform: uppercase; }
+.logo {
+  font-family: var(--font-mono);
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 3px; color: var(--accent);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo span { color: var(--accent2); }
+.logo-icon { font-size: 18px; }
 
-  /* PROGRESS */
-  .prog-bar-wrap { background: rgba(0,0,0,0.3); border-radius: 3px; height: 6px; margin-top: 4px; }
-  .prog-bar-fill { height: 6px; border-radius: 3px; background: var(--army-accent); transition: width 0.5s; }
+.live-mission {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 5px 12px;
+  max-width: 260px;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.live-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; }
+.live-title { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
 
-  /* GOALS PAGE */
-  .goal-card {
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 8px; padding: 12px; margin-bottom: 10px;
-  }
-  .goal-title { font-size: 15px; font-weight: 700; color: var(--army-text); margin-bottom: 4px; }
-  .goal-sub { font-size: 12px; color: var(--army-muted); margin-bottom: 8px; }
-  .goal-tag {
-    display: inline-block; padding: 2px 8px; border-radius: 3px;
-    font-size: 10px; font-weight: 700; letter-spacing: 1px;
-    background: rgba(200,168,75,0.15); color: var(--army-gold); margin-bottom: 8px;
-  }
+.topbar-right { text-align: right; }
+.clock { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 2px; line-height: 1; }
+.date-str { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; margin-top: 2px; }
 
-  /* TASKS PAGE */
-  .task-input-row { display: flex; gap: 6px; margin-bottom: 12px; }
-  .task-input {
-    flex: 1; background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; padding: 9px 12px; color: var(--army-text);
-    font-family: 'Rajdhani', sans-serif; font-size: 14px;
-  }
-  .task-input:focus { outline: none; border-color: var(--army-accent); }
-  .add-btn {
-    background: var(--army-green); border: none; color: white;
-    border-radius: 6px; padding: 9px 14px; font-size: 18px; cursor: pointer;
-  }
-  .task-item {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; padding: 10px 12px; margin-bottom: 6px;
-  }
-  .task-check {
-    width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--army-green);
-    background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-  }
-  .task-check.done-check { background: var(--army-green); border-color: var(--army-green); }
-  .task-text { flex: 1; font-size: 14px; }
-  .task-text.done-text { text-decoration: line-through; color: var(--army-muted); }
-  .del-btn { background: none; border: none; color: var(--army-muted); cursor: pointer; font-size: 16px; padding: 2px 4px; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.85)} }
 
-  /* TIMER PAGE */
-  .timer-display {
-    text-align: center; padding: 20px 0;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 52px; color: var(--army-accent); letter-spacing: 4px;
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 10px; margin-bottom: 14px;
-  }
-  .timer-label { font-size: 12px; color: var(--army-gold); letter-spacing: 3px; text-align: center; margin-top: -4px; padding-bottom: 10px; }
-  .timer-btns { display: flex; gap: 8px; margin-bottom: 16px; }
-  .t-btn {
-    flex: 1; padding: 12px; border: 1px solid var(--army-border);
-    background: var(--army-mid); color: var(--army-text);
-    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; border-radius: 6px; cursor: pointer;
-    transition: all 0.15s;
-  }
-  .t-btn:active { transform: scale(0.97); }
-  .t-btn.start-btn { background: var(--army-green); border-color: var(--army-accent); color: white; }
-  .t-btn.stop-btn { background: rgba(192,57,43,0.3); border-color: var(--army-red); color: #ff7675; }
-  .preset-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .preset-btn {
-    padding: 10px; background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; color: var(--army-muted); font-family: 'Rajdhani', sans-serif;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  }
-  .preset-btn:hover { border-color: var(--army-accent); color: var(--army-accent); }
+/* ===== LAYOUT ===== */
+.layout { display: flex; min-height: calc(100vh - 58px); }
 
-  /* NOTES PAGE */
-  .notes-area {
-    width: 100%; min-height: 200px; background: var(--army-mid);
-    border: 1px solid var(--army-border); border-radius: 6px;
-    padding: 12px; color: var(--army-text); font-family: 'Rajdhani', sans-serif;
-    font-size: 14px; line-height: 1.6; resize: vertical;
-    margin-bottom: 8px;
-  }
-  .notes-area:focus { outline: none; border-color: var(--army-accent); }
-  .save-btn {
-    width: 100%; padding: 11px; background: var(--army-green); border: none;
-    border-radius: 6px; color: white; font-family: 'Rajdhani', sans-serif;
-    font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer;
-  }
-  .save-msg { text-align: center; font-size: 12px; color: var(--army-accent); margin-top: 6px; height: 18px; }
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 230px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky; top: 58px;
+  height: calc(100vh - 58px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
 
-  /* WEEKLY */
-  .week-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .day-card {
-    background: var(--army-mid); border: 1px solid var(--army-border);
-    border-radius: 6px; padding: 10px;
-  }
-  .day-name { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--army-gold); margin-bottom: 4px; }
-  .day-focus { font-size: 13px; color: var(--army-text); margin-bottom: 6px; }
-  .day-items { font-size: 11px; color: var(--army-muted); line-height: 1.7; }
+.nav-section {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--text3);
+  letter-spacing: 3px; text-transform: uppercase;
+  padding: 16px 18px 6px;
+}
 
-  /* ALERT */
-  .alert-box {
-    background: rgba(192,57,43,0.15); border: 1px solid var(--army-red);
-    border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
-    font-size: 13px; color: #ff7675; display: none;
-  }
-  .alert-box.show { display: block; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  color: var(--text2); font-size: 13px;
+  font-weight: 600; letter-spacing: 0.5px;
+  cursor: pointer; border-left: 3px solid transparent;
+  transition: all 0.15s; user-select: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--card); color: var(--accent); border-left-color: var(--accent); }
+.nav-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--accent); color: var(--bg);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 10px; min-width: 20px; text-align: center;
+}
 
-  /* QUOTE */
-  .quote-box {
-    background: rgba(200,168,75,0.08); border: 1px solid rgba(200,168,75,0.2);
-    border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;
-    font-size: 13px; color: var(--army-gold); font-style: italic; line-height: 1.6;
+.sidebar-footer {
+  margin-top: auto; padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.sidebar-name {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 1px; margin-bottom: 4px;
+}
+.sidebar-goal {
+  font-size: 11px; color: var(--accent2); line-height: 1.4;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  flex: 1; overflow-y: auto;
+  padding: 20px;
+  min-width: 0;
+}
+
+.page { display: none; animation: fadeIn 0.2s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.page-title {
+  font-size: 17px; font-weight: 700; letter-spacing: 2px;
+  color: var(--text); display: flex; align-items: center; gap: 8px;
+}
+.page-title-icon { font-size: 20px; }
+
+/* ===== CARD ===== */
+.card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 16px; margin-bottom: 12px;
+}
+.card-title {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.card-glow { box-shadow: 0 0 20px rgba(79,193,74,0.08); }
+
+/* ===== STAT CARDS ===== */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 14px 12px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent); opacity: 0.6;
+}
+.stat-card.amber::before { background: var(--amber); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-n { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-n.amber { color: var(--amber); }
+.stat-n.blue { color: var(--blue); }
+.stat-l { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; margin-top: 4px; }
+.stat-prog { background: var(--bg); border-radius: 2px; height: 3px; margin-top: 8px; overflow: hidden; }
+.stat-prog-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.5s; }
+.stat-prog-fill.amber { background: var(--amber); }
+.stat-prog-fill.blue { background: var(--blue); }
+
+/* ===== TIMELINE / SCHEDULE ===== */
+.timeline { display: flex; flex-direction: column; gap: 5px; }
+
+.slot {
+  display: flex; gap: 0; align-items: stretch;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 7px; overflow: hidden;
+  transition: all 0.15s; cursor: pointer;
+}
+.slot:hover { border-color: var(--border3); transform: translateX(2px); }
+.slot.current {
+  border-color: var(--accent);
+  background: rgba(79,193,74,0.06);
+  box-shadow: 0 0 12px rgba(79,193,74,0.12);
+}
+.slot.past { opacity: 0.45; }
+.slot.current .slot-bar { background: var(--accent); }
+.slot.past .slot-bar { background: var(--text3); }
+
+.slot-bar { width: 3px; flex-shrink: 0; background: var(--border3); }
+.slot-bar.cat-study { background: var(--blue); }
+.slot-bar.cat-work { background: var(--accent); }
+.slot-bar.cat-tech { background: var(--amber); }
+.slot-bar.cat-health { background: #e07878; }
+.slot-bar.cat-rest { background: var(--text3); }
+.slot-bar.cat-wake { background: #e08830; }
+.slot-bar.cat-sleep { background: var(--purple); }
+
+.slot-main { flex: 1; padding: 10px 10px 10px 12px; min-width: 0; }
+.slot-time { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-bottom: 2px; }
+.slot-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.slot-sub { font-size: 11px; color: var(--text3); margin-top: 2px; line-height: 1.3; }
+.slot-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding: 8px 10px; gap: 5px; flex-shrink: 0; }
+.slot-dur { font-family: var(--font-mono); font-size: 11px; color: var(--text3); white-space: nowrap; }
+.slot-actions { display: flex; gap: 4px; }
+.slot-actions .icon-btn { opacity: 0; }
+.slot:hover .slot-actions .icon-btn { opacity: 1; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 8px 16px; border-radius: 5px; font-family: var(--font-main);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; border: none; transition: all 0.15s;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: #5dd158; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #c0403c; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: var(--card2); color: var(--text); }
+.btn-amber { background: var(--amber); color: var(--bg); }
+
+.add-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--accent); border: none;
+  border-radius: 5px; color: var(--bg); font-family: var(--font-main);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  letter-spacing: 1px; transition: all 0.15s;
+}
+.add-btn:hover { background: #5dd158; }
+
+.icon-btn {
+  width: 28px; height: 28px; border-radius: 5px; border: 1px solid var(--border2);
+  background: transparent; color: var(--text3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--card3); color: var(--text); }
+.icon-btn.danger:hover { border-color: var(--red); color: var(--red); }
+.icon-btn.success:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ===== HABIT ITEMS ===== */
+.habit-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none; transition: background 0.1s;
+}
+.habit-item:last-child { border: none; }
+.habit-cb {
+  width: 22px; height: 22px; border-radius: 5px;
+  border: 1.5px solid var(--border3);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s; font-size: 13px; color: #fff;
+}
+.habit-item.done .habit-cb { background: var(--accent); border-color: var(--accent); }
+.habit-item.done .habit-text { text-decoration: line-through; color: var(--text3); }
+.habit-text { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.habit-item .ia { opacity: 0; transition: opacity 0.15s; display: flex; gap: 4px; }
+.habit-item:hover .ia { opacity: 1; }
+.habit-cat {
+  font-family: var(--font-mono); font-size: 9px; padding: 2px 6px;
+  border-radius: 3px; letter-spacing: 1px; flex-shrink: 0;
+}
+
+/* ===== PROGRESS BAR ===== */
+.prog-wrap { background: var(--bg); border-radius: 4px; height: 6px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.6s ease; }
+.prog-fill.amber { background: var(--amber); }
+.prog-fill.blue { background: var(--blue); }
+.prog-fill.red { background: var(--red); }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  padding: 3px 9px; border-radius: 4px; letter-spacing: 1px;
+  white-space: nowrap;
+}
+.badge-green { background: rgba(79,193,74,0.12); color: #6ee069; border: 1px solid rgba(79,193,74,0.25); }
+.badge-amber { background: rgba(200,168,75,0.12); color: #d4b566; border: 1px solid rgba(200,168,75,0.25); }
+.badge-red { background: rgba(217,83,79,0.12); color: #e06e6a; border: 1px solid rgba(217,83,79,0.25); }
+.badge-blue { background: rgba(74,158,190,0.12); color: #6abce0; border: 1px solid rgba(74,158,190,0.25); }
+.badge-purple { background: rgba(155,114,190,0.12); color: #b892d4; border: 1px solid rgba(155,114,190,0.25); }
+.badge-gray { background: rgba(84,104,80,0.2); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ===== GOAL ITEMS ===== */
+.goal-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.goal-item:last-child { border: none; }
+.goal-cb {
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 1.5px solid var(--border3);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer; transition: all 0.15s; font-size: 12px;
+}
+.goal-item.done .goal-cb { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.goal-item.done .goal-text { text-decoration: line-through; color: var(--text3); }
+.goal-text { flex: 1; font-size: 14px; color: var(--text); cursor: pointer; }
+.goal-pri {
+  font-family: var(--font-mono); font-size: 9px; padding: 2px 6px;
+  border-radius: 3px; letter-spacing: 1px; flex-shrink: 0;
+}
+
+/* ===== TIMER ===== */
+.timer-big {
+  font-family: var(--font-mono); font-size: 58px; font-weight: 700;
+  color: var(--accent); letter-spacing: 6px; text-align: center;
+  padding: 24px 0 8px; line-height: 1;
+}
+.timer-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 3px; text-align: center; margin-bottom: 16px; }
+.timer-controls { display: flex; gap: 8px; justify-content: center; }
+
+.preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+.preset-btn {
+  padding: 9px 6px; background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text2); font-family: var(--font-main);
+  font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+  transition: all 0.15s; letter-spacing: 0.5px;
+}
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ===== WEEK VIEW ===== */
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
+.wday {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 4px; text-align: center;
+}
+.wday.today { border-color: var(--accent); background: rgba(79,193,74,0.05); }
+.wday-name { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; margin-bottom: 4px; }
+.wday-num { font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--text2); }
+.wday.today .wday-num { color: var(--accent); }
+
+/* ===== FORMS ===== */
+.form-row { margin-bottom: 12px; }
+.form-label { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 2px; margin-bottom: 5px; }
+.form-input {
+  width: 100%; padding: 10px 12px;
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text);
+  font-family: var(--font-main); font-size: 14px;
+  outline: none; transition: border 0.15s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--text3); }
+.form-input option { background: var(--card); }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+textarea.form-input { resize: vertical; min-height: 80px; }
+select.form-input { appearance: none; cursor: pointer; }
+
+/* ===== MODALS ===== */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 22px;
+  width: 480px; max-width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+.modal-title { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 3px; margin-bottom: 18px; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+/* ===== SETTINGS ===== */
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.setting-row:last-child { border: none; }
+.setting-label { font-size: 14px; font-weight: 500; color: var(--text); }
+.setting-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.toggle { width: 42px; height: 24px; border-radius: 12px; background: var(--border2); position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: var(--accent); }
+.toggle-k { width: 18px; height: 18px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left 0.2s; }
+.toggle.on .toggle-k { left: 21px; }
+
+/* ===== RULES ===== */
+.rule-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.rule-num { font-family: var(--font-mono); font-size: 12px; color: var(--text3); min-width: 28px; margin-top: 2px; }
+.rule-text { flex: 1; font-size: 14px; color: var(--text); line-height: 1.4; }
+
+/* ===== NOTES ===== */
+.notes-area {
+  width: 100%; min-height: 200px; background: var(--bg2);
+  border: 1px solid var(--border2); border-radius: 6px;
+  padding: 14px; color: var(--text); font-family: var(--font-main);
+  font-size: 14px; outline: none; resize: vertical;
+  line-height: 1.6; transition: border 0.15s;
+}
+.notes-area:focus { border-color: var(--accent); }
+
+/* ===== OATH BOX ===== */
+.oath-box {
+  background: rgba(200,168,75,0.06); border: 1px solid rgba(200,168,75,0.25);
+  border-radius: 8px; padding: 16px; margin-bottom: 14px;
+  font-size: 13px; color: var(--amber); line-height: 1.7;
+  font-style: italic; text-align: center;
+}
+
+/* ===== MONTHLY PHASE ===== */
+.phase-card { border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+.phase-head { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); }
+.phase-body { padding: 12px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-top: 1px solid var(--border); }
+.phase-li { font-size: 12px; color: var(--text2); display: flex; align-items: flex-start; gap: 6px; }
+.phase-li::before { content: '▸'; color: var(--text3); flex-shrink: 0; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px);
+  background: var(--card); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 12px 20px;
+  font-family: var(--font-mono); font-size: 12px; color: var(--text);
+  z-index: 9999; transition: all 0.3s;
+  opacity: 0; pointer-events: none; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== BOTTOM NAV (Mobile) ===== */
+.bottom-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg2); border-top: 1px solid var(--border2);
+  z-index: 200; padding: 6px 0 env(safe-area-inset-bottom, 6px);
+  grid-template-columns: repeat(5, 1fr);
+}
+.bnav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 4px; cursor: pointer; color: var(--text3);
+  transition: color 0.15s; border: none; background: none;
+  font-family: var(--font-main);
+}
+.bnav-item.active { color: var(--accent); }
+.bnav-icon { font-size: 18px; }
+.bnav-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.5px; }
+
+/* ===== DIVIDER ===== */
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* ===== CHIP COLOR ===== */
+.color-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.chip { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+.chip.selected { border-color: #fff; transform: scale(1.15); }
+
+/* ===== FLEX UTILS ===== */
+.flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+.gap-6 { gap: 6px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; }
+.mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; } .mb-8 { margin-bottom: 8px; } .mb-12 { margin-bottom: 12px; }
+.text-accent { color: var(--accent); } .text-amber { color: var(--amber); } .text-muted { color: var(--text3); }
+.text-center { text-align: center; } .font-mono { font-family: var(--font-mono); }
+.fw-700 { font-weight: 700; }
+
+/* ===== MOTIVATION QUOTE ===== */
+.quote-box {
+  background: rgba(79,193,74,0.04); border: 1px solid rgba(79,193,74,0.12);
+  border-radius: 6px; padding: 12px 14px; margin-bottom: 14px;
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+  font-style: italic;
+  transition: opacity 0.5s;
+}
+
+/* ===== STREAK ===== */
+.streak-num { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--amber); }
+.streak-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px; }
+.streak-dot {
+  width: 24px; height: 24px; border-radius: 4px;
+  background: var(--border); font-family: var(--font-mono);
+  font-size: 8px; color: var(--text3);
+  display: flex; align-items: center; justify-content: center;
+}
+.streak-dot.done { background: rgba(79,193,74,0.3); color: var(--accent); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed; left: -240px; top: 58px;
+    height: calc(100vh - 58px);
+    z-index: 150; width: 240px;
+    transition: left 0.25s ease;
+    border-right: 1px solid var(--border2);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.5);
   }
+  .sidebar.open { left: 0; }
+  .sidebar-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 140;
+    background: rgba(0,0,0,0.6);
+  }
+  .sidebar-backdrop.show { display: block; }
+  .menu-btn { display: block; }
+  .live-mission { display: none; }
+  .bottom-nav { display: grid; }
+  .main { padding: 12px 12px 80px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .form-row-2 { grid-template-columns: 1fr; }
+  .phase-body { grid-template-columns: 1fr; }
+  .preset-grid { grid-template-columns: repeat(2, 1fr); }
+  .week-grid { grid-template-columns: repeat(7, 1fr); }
+  .wday-name { font-size: 8px; }
+  .timer-big { font-size: 44px; }
+}
+@media (max-width: 400px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .timer-big { font-size: 36px; letter-spacing: 3px; }
+  .clock { font-size: 17px; }
+}
 </style>
 </head>
 <body>
-<div class="scanline"></div>
 
-<div class="hdr">
-  <div class="hdr-top">
-    <div>
-      <div class="codename">◈ COMMANDER-X PROTOCOL</div>
-      <div class="date-display" id="dateDisplay">LOADING...</div>
-    </div>
-    <div>
-      <div class="clock-display" id="clockDisplay">00:00:00</div>
-    </div>
-  </div>
-  <div class="mission-bar">
-    <div class="status-dot"></div>
-    <span class="mission-label">MISSION:</span>
-    <span class="mission-text" id="currentMission">Calculating...</span>
-  </div>
-</div>
-
-<div class="nav-tabs">
-  <button class="tab-btn active" onclick="showPage('today')">TODAY</button>
-  <button class="tab-btn" onclick="showPage('tasks')">TASKS</button>
-  <button class="tab-btn" onclick="showPage('timer')">TIMER</button>
-  <button class="tab-btn" onclick="showPage('weekly')">WEEKLY</button>
-  <button class="tab-btn" onclick="showPage('goals')">GOALS</button>
-  <button class="tab-btn" onclick="showPage('notes')">NOTES</button>
-</div>
-
-<!-- TODAY PAGE -->
-<div class="page active" id="page-today">
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-num" id="statDone">0</div>
-      <div class="stat-lbl">Done</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statLeft">0</div>
-      <div class="stat-lbl">Left</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statPct">0%</div>
-      <div class="stat-lbl">Progress</div>
-    </div>
-  </div>
-
-  <div class="quote-box" id="quoteBox">
-    "Discipline is the bridge between goals and accomplishment." — Jim Rohn
-  </div>
-
-  <div class="sec-title">◆ Daily Operations Schedule</div>
-  <div class="timeline" id="timeline"></div>
-</div>
-
-<!-- TASKS PAGE -->
-<div class="page" id="page-tasks">
-  <div class="sec-title">◆ Mission Tasks</div>
-  <div class="task-input-row">
-    <input type="text" class="task-input" id="taskInput" placeholder="Add new task..." onkeypress="if(event.key==='Enter')addTask()">
-    <button class="add-btn" onclick="addTask()">+</button>
-  </div>
-  <div id="taskList"></div>
-</div>
-
-<!-- TIMER PAGE -->
-<div class="page" id="page-timer">
-  <div class="sec-title">◆ Focus Timer</div>
-  <div class="timer-display" id="timerDisplay">25:00</div>
-  <div class="timer-label" id="timerLabel">POMODORO — READY</div>
-  <div class="timer-btns">
-    <button class="t-btn start-btn" id="startBtn" onclick="startTimer()">▶ START</button>
-    <button class="t-btn stop-btn" onclick="resetTimer()">■ RESET</button>
-  </div>
-  <div class="sec-title">◆ Quick Set</div>
-  <div class="preset-row">
-    <button class="preset-btn" onclick="setTimer(25,'POMODORO FOCUS')">25 min Focus</button>
-    <button class="preset-btn" onclick="setTimer(5,'SHORT BREAK')">5 min Break</button>
-    <button class="preset-btn" onclick="setTimer(45,'DEEP WORK')">45 min Deep</button>
-    <button class="preset-btn" onclick="setTimer(60,'POWER HOUR')">60 min Power</button>
-    <button class="preset-btn" onclick="setTimer(90,'DIG MARKETING')">90 min DM</button>
-    <button class="preset-btn" onclick="setTimer(15,'REVIEW OPS')">15 min Review</button>
-  </div>
-</div>
-
-<!-- WEEKLY PAGE -->
-<div class="page" id="page-weekly">
-  <div class="sec-title">◆ Weekly Battle Plan</div>
-  <div class="week-grid" id="weekGrid"></div>
-</div>
-
-<!-- GOALS PAGE -->
-<div class="page" id="page-goals">
-  <div class="sec-title">◆ Mission Objectives</div>
-  <div id="goalsList"></div>
-</div>
-
-<!-- NOTES PAGE -->
-<div class="page" id="page-notes">
-  <div class="sec-title">◆ Field Notes</div>
-  <textarea class="notes-area" id="notesArea" placeholder="Apne notes yahan likhein..."></textarea>
-  <button class="save-btn" onclick="saveNotes()">◈ SAVE NOTES</button>
-  <div class="save-msg" id="saveMsg"></div>
-</div>
-
-<script>
-const SCHEDULE = [
-  {time:'04:00',end:'04:15',task:'Uthna + Cold Water + Ready',cat:'Morning Ritual',badge:'health',bg:'badge-health'},
-  {time:'04:15',end:'05:15',task:'English — Grammar + Speaking',cat:'Study Block',badge:'STUDY',bg:'badge-study'},
-  {time:'05:15',end:'06:15',task:'Mathematics — SSC/UPSC Level',cat:'Study Block',badge:'STUDY',bg:'badge-study'},
-  {time:'06:15',end:'07:00',task:'Newspaper + Current Affairs',cat:'Study Block',badge:'STUDY',bg:'badge-study'},
-  {time:'07:00',end:'07:15',task:'Break + Breakfast',cat:'Fuel Up',badge:'HEALTH',bg:'badge-health'},
-  {time:'07:15',end:'08:00',task:'UPSC/SSC — Polity/GS',cat:'Study Block',badge:'STUDY',bg:'badge-study'},
-  {time:'08:00',end:'16:00',task:'Digital Marketing Work',cat:'Income Mission — 8 Hours',badge:'WORK',bg:'badge-work'},
-  {time:'16:00',end:'16:30',task:'Lunch + Rest',cat:'Recovery',badge:'HEALTH',bg:'badge-health'},
-  {time:'16:30',end:'17:00',task:'Technology Learning/Research',cat:'Tech Block',badge:'TECH',bg:'badge-tech'},
-  {time:'17:00',end:'19:00',task:'Evening Walk + Fresh Air',cat:'Physical & Mental Reset',badge:'HEALTH',bg:'badge-health'},
-  {time:'19:00',end:'20:30',task:'Technology Experiment & Project',cat:'Build Block',badge:'TECH',bg:'badge-tech'},
-  {time:'20:30',end:'21:30',task:'Personal Research + Planning',cat:'Strategy',badge:'PERSONAL',bg:'badge-personal'},
-  {time:'21:30',end:'22:00',task:'Day Review + Sleep Prep',cat:'After Action Review',badge:'REVIEW',bg:'badge-personal'},
-  {time:'22:00',end:'04:00',task:'SLEEP — Recovery Mode',cat:'6 Hours Mandatory',badge:'SLEEP',bg:'badge-sleep'},
-];
-
-const GOALS = [
-  {title:'Duniya Ka Sabse Ameer Aadmi',sub:'Technology + Business se world-class wealth build karna',tag:'LONG-TERM VISION',pct:5},
-  {title:'Digital Marketing Business',sub:'8 hr/day — Client base build, revenue scale karna',tag:'ACTIVE NOW',pct:30},
-  {title:'Technology Research & Build',sub:'3 hr/day — Products, experiments, learning',tag:'ACTIVE NOW',pct:20},
-  {title:'SSC CGL — Crack Karna Hai',sub:'Maths + GS + English — Daily 2.5 hrs study',tag:'EXAM TARGET',pct:25},
-  {title:'UPSC CSE — Clear Karna Hai',sub:'Commitment complete hai — karna hai to karna hai',tag:'EXAM TARGET',pct:15},
-  {title:'English Fluency',sub:'Daily 1 hr — Grammar, reading, speaking practice',tag:'FOUNDATION',pct:20},
-];
-
-const WEEKLY = [
-  {day:'MON',focus:'Digital Marketing + Maths Deep Dive',items:'Client work · Algebra/Number System · English Grammar'},
-  {day:'TUE',focus:'Tech Research + Current Affairs',items:'Technology study · News analysis · Polity revision'},
-  {day:'WED',focus:'UPSC Prep Focus Day',items:'History/Geography · Essay practice · DM work'},
-  {day:'THU',focus:'SSC CGL Practice Day',items:'Mock test · DM work · Tech experiments'},
-  {day:'FRI',focus:'Business Building Day',items:'DM strategy · Tech project · Research'},
-  {day:'SAT',focus:'Weekly Review + Deep Work',items:'All subjects revision · Full mock test · Planning'},
-  {day:'SUN',focus:'Rest + Reflection + Next Week Plan',items:'Light reading · Review progress · Sunday plan'},
-];
-
-const QUOTES = [
-  '"Discipline is the bridge between goals and accomplishment." — Jim Rohn',
-  '"Success is the sum of small efforts, repeated day in and day out."',
-  '"The secret of getting ahead is getting started." — Mark Twain',
-  '"An army of one with discipline beats an army of many without it."',
-  '"Karo ya na karo, try karne ka koi sawaal nahi." — Yoda (Hindi)',
-  '"Jab tak todenge nahi, tab tak chodenge nahi."',
-];
-
-const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-
-let timerInterval = null;
-let timerSeconds = 25*60;
-let timerRunning = false;
-let timerLabel = 'POMODORO FOCUS';
-let tasks = JSON.parse(localStorage.getItem('cmdr_tasks')||'[]');
-let notes = localStorage.getItem('cmdr_notes')||'';
-
-function pad(n){return String(n).padStart(2,'0');}
-
-function timeToMins(t){
-  const [h,m]=t.split(':').map(Number);
-  return h*60+m;
-}
-
-function updateClock(){
-  const now=new Date();
-  const h=pad(now.getHours()), m=pad(now.getMinutes()), s=pad(now.getSeconds());
-  document.getElementById('clockDisplay').textContent=`${h}:${m}:${s}`;
-  const day=DAYS[now.getDay()], date=now.getDate(), mon=MONTHS[now.getMonth()], yr=now.getFullYear();
-  document.getElementById('dateDisplay').textContent=`${day} · ${pad(date)} ${mon} ${yr}`;
-  updateMission(now);
-  updateTimeline(now);
-}
-
-function getCurrentMins(now){
-  return now.getHours()*60+now.getMinutes();
-}
-
-function updateMission(now){
-  const cur=getCurrentMins(now);
-  let mission='Rest / Free Time';
-  for(const s of SCHEDULE){
-    const st=timeToMins(s.time);
-    let en=timeToMins(s.end);
-    if(en<st) en+=24*60;
-    let c=cur; if(c<st && en>24*60) c+=24*60;
-    if(c>=st && c<en){mission=s.task; break;}
-  }
-  document.getElementById('currentMission').textContent=mission;
-}
-
-function updateTimeline(now){
-  const cur=getCurrentMins(now);
-  const tl=document.getElementById('timeline');
-  if(!tl) return;
-  let done=0, total=SCHEDULE.length;
-  const items=tl.querySelectorAll('.tl-item');
-  items.forEach((item,i)=>{
-    const s=SCHEDULE[i];
-    const st=timeToMins(s.time);
-    let en=timeToMins(s.end);
-    if(en<st) en+=24*60;
-    let c=cur;
-    item.classList.remove('current','done');
-    if(c>=en||(en>24*60&&c+24*60>=en&&c<st)){item.classList.add('done');done++;}
-    else if(c>=st&&c<en){item.classList.add('current');}
-  });
-  document.getElementById('statDone').textContent=done;
-  document.getElementById('statLeft').textContent=total-done;
-  document.getElementById('statPct').textContent=Math.round(done/total*100)+'%';
-}
-
-function buildTimeline(){
-  const tl=document.getElementById('timeline');
-  tl.innerHTML='';
-  SCHEDULE.forEach((s,i)=>{
-    const div=document.createElement('div');
-    div.className='tl-item';
-    div.innerHTML=`
-      <div class="tl-bar"></div>
-      <div class="tl-content">
-        <div class="tl-time">${s.time} — ${s.end}</div>
-        <div class="tl-task">${s.task}</div>
-        <div class="tl-cat">${s.cat}</div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="logo"><span class="logo-icon">⚔</span>CMD<span>R</span></div>
+    <div class="live-mission">
+      <div class="live-dot"></div>
+      <div>
+        <div class="live-label">ABHI KA MISSION</div>
+        <div class="live-title" id="liveTitle">Loading…</div>
       </div>
-      <span class="tl-badge ${s.bg}">${s.badge}</span>
-    `;
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="date-str" id="dateStr">—</div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- SIDEBAR BACKDROP -->
+<div class="sidebar-backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="nav-section">COMMAND</div>
+  <div class="nav-item active" onclick="nav('dashboard',this)" data-page="dashboard"><span class="nav-icon">🏠</span>Dashboard</div>
+  <div class="nav-item" onclick="nav('timer',this)" data-page="timer"><span class="nav-icon">⏱</span>Live Timer</div>
+
+  <div class="nav-section">MISSIONS</div>
+  <div class="nav-item" onclick="nav('schedule',this)" data-page="schedule"><span class="nav-icon">📋</span>Schedule</div>
+  <div class="nav-item" onclick="nav('habits',this)" data-page="habits"><span class="nav-icon">✅</span>Daily Habits<span class="nav-badge" id="habitBadge">0</span></div>
+  <div class="nav-item" onclick="nav('goals',this)" data-page="goals"><span class="nav-icon">🎯</span>Goals</div>
+
+  <div class="nav-section">STRATEGY</div>
+  <div class="nav-item" onclick="nav('weekly',this)" data-page="weekly"><span class="nav-icon">📅</span>Weekly Plan</div>
+  <div class="nav-item" onclick="nav('monthly',this)" data-page="monthly"><span class="nav-icon">🗓</span>Monthly Roadmap</div>
+  <div class="nav-item" onclick="nav('rules',this)" data-page="rules"><span class="nav-icon">⚡</span>Iron Rules</div>
+
+  <div class="nav-section">PERSONAL</div>
+  <div class="nav-item" onclick="nav('notes',this)" data-page="notes"><span class="nav-icon">📝</span>Mission Notes</div>
+  <div class="nav-item" onclick="nav('english',this)" data-page="english"><span class="nav-icon">🇬🇧</span>English Tracker</div>
+
+  <div class="nav-section">SYSTEM</div>
+  <div class="nav-item" onclick="nav('settings',this)" data-page="settings"><span class="nav-icon">⚙</span>Settings</div>
+  <div class="nav-item" onclick="exportData()"><span class="nav-icon">💾</span>Export Backup</div>
+  <div class="nav-item" onclick="document.getElementById('importFile').click()"><span class="nav-icon">📂</span>Import Backup</div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+
+  <div class="sidebar-footer">
+    <div class="sidebar-name" id="sidebarName">COMMANDER</div>
+    <div class="sidebar-goal">🎯 Duniya ka sabse amir aadmi + SSC CGL + UPSC CSE</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+<!-- ========== DASHBOARD ========== -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">🏠</span>COMMAND CENTER</div>
+    <span class="badge badge-amber" id="dayBadge">DAY 1</span>
+  </div>
+
+  <div class="quote-box" id="quoteBox">Loading motivation…</div>
+
+  <div class="week-grid" id="weekStrip"></div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-n" id="dashHabitCount">0/10</div>
+      <div class="stat-l">HABITS DONE</div>
+      <div class="stat-prog"><div class="stat-prog-fill" id="dashHabitProg" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-n amber" id="dashGoalCount">0/6</div>
+      <div class="stat-l">WEEKLY GOALS</div>
+      <div class="stat-prog"><div class="stat-prog-fill amber" id="dashGoalProg" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-n blue" id="dashTimeLeft">—</div>
+      <div class="stat-l">TASK LEFT</div>
+      <div class="stat-prog"><div class="stat-prog-fill blue" id="dashTaskProg" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="card card-glow">
+    <div class="card-title">AJ KA SCHEDULE — LIVE</div>
+    <div class="timeline" id="dashTimeline"></div>
+  </div>
+</div>
+
+<!-- ========== TIMER ========== -->
+<div class="page" id="page-timer">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">⏱</span>LIVE MISSION TIMER</div>
+  </div>
+  <div class="card card-glow">
+    <div class="card-title">CURRENT MISSION</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text)" id="timerTaskName">—</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:2px;margin-bottom:4px" id="timerTaskSub">—</div>
+    <div class="timer-big" id="timerDisplay">00:00:00</div>
+    <div class="timer-sub" id="timerSubText">ELAPSED IN CURRENT SLOT</div>
+    <div class="prog-wrap" style="height:8px;margin-bottom:12px"><div class="prog-fill" id="timerProg" style="width:0%"></div></div>
+    <div class="text-center font-mono" style="font-size:11px;color:var(--text3)" id="timerEndText">—</div>
+  </div>
+  <div class="card">
+    <div class="card-title">CUSTOM POMODORO TIMER</div>
+    <div class="timer-big" id="pomoDisplay" style="font-size:44px;color:var(--amber)">25:00</div>
+    <div class="timer-sub">FOCUS COUNTDOWN</div>
+    <div class="flex gap-8 items-center mb-12">
+      <input class="form-input" id="pomoDur" type="number" value="25" min="1" max="180" style="width:80px;text-align:center">
+      <span style="font-size:13px;color:var(--text2)">minutes</span>
+    </div>
+    <div class="timer-controls">
+      <button class="btn btn-amber" onclick="startPomo()">▶ START</button>
+      <button class="btn btn-ghost" onclick="pausePomo()">⏸ PAUSE</button>
+      <button class="btn btn-ghost" onclick="stopPomo()">⏹ RESET</button>
+    </div>
+    <div class="preset-grid mt-12">
+      <div class="preset-btn" onclick="setPomoMin(25)">📚 25 min<br><small>Focus</small></div>
+      <div class="preset-btn" onclick="setPomoMin(45)">💪 45 min<br><small>Deep Work</small></div>
+      <div class="preset-btn" onclick="setPomoMin(90)">🔥 90 min<br><small>Power Block</small></div>
+      <div class="preset-btn" onclick="setPomoMin(5)">☕ 5 min<br><small>Break</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SCHEDULE ========== -->
+<div class="page" id="page-schedule">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">📋</span>DAILY SCHEDULE</div>
+    <button class="add-btn" onclick="openSlotModal()">+ ADD SLOT</button>
+  </div>
+  <div class="card">
+    <div class="card-title">TIME SLOTS — EDIT KARO APNA ROUTINE</div>
+    <div class="timeline" id="scheduleList"></div>
+  </div>
+</div>
+
+<!-- ========== HABITS ========== -->
+<div class="page" id="page-habits">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">✅</span>DAILY HABITS</div>
+    <button class="add-btn" onclick="openHabitModal()">+ ADD</button>
+  </div>
+  <div class="card">
+    <div class="flex justify-between items-center mb-12">
+      <div class="card-title" id="habitDate" style="margin:0">TODAY</div>
+      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="resetHabits()">RESET</button>
+    </div>
+    <div id="habitList"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">STREAK TRACKER</div>
+    <div class="flex items-center gap-12">
+      <div><div class="streak-num" id="streakNum">0</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Days Streak</div></div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Aaj ka completion:</div>
+        <div class="prog-wrap"><div class="prog-fill amber" id="streakProg" style="width:0%"></div></div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);margin-top:4px" id="streakPct">0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== GOALS ========== -->
+<div class="page" id="page-goals">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">🎯</span>GOALS</div>
+    <button class="add-btn" onclick="openGoalModal()">+ ADD</button>
+  </div>
+  <div class="card">
+    <div class="card-title">LONG-TERM MISSIONS</div>
+    <div id="bigGoalsList"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">WEEKLY GOALS</div>
+    <div id="weekGoalsList"></div>
+    <button class="btn btn-ghost mt-8" style="width:100%;font-size:12px" onclick="openWeekGoalModal()">+ ADD WEEKLY GOAL</button>
+  </div>
+</div>
+
+<!-- ========== WEEKLY ========== -->
+<div class="page" id="page-weekly">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">📅</span>WEEKLY PLAN</div>
+  </div>
+  <div id="weeklyCards"></div>
+</div>
+
+<!-- ========== MONTHLY ========== -->
+<div class="page" id="page-monthly">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">🗓</span>MONTHLY ROADMAP</div>
+    <button class="add-btn" onclick="openPhaseModal()">+ PHASE</button>
+  </div>
+  <div id="monthlyContent"></div>
+</div>
+
+<!-- ========== RULES ========== -->
+<div class="page" id="page-rules">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">⚡</span>IRON RULES</div>
+    <button class="add-btn" onclick="openRuleModal()">+ ADD</button>
+  </div>
+  <div class="oath-box" id="oathBox" onclick="editOath()">Loading oath…</div>
+  <div class="card">
+    <div id="rulesList"></div>
+  </div>
+</div>
+
+<!-- ========== NOTES ========== -->
+<div class="page" id="page-notes">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">📝</span>MISSION NOTES</div>
+    <button class="btn btn-primary" onclick="saveNotes()">SAVE</button>
+  </div>
+  <div class="card">
+    <div class="card-title">PERSONAL RESEARCH & NOTES</div>
+    <textarea class="notes-area" id="notesArea" placeholder="Yahan apne notes, ideas, research likho…"></textarea>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);margin-top:8px" id="saveMsg"></div>
+  </div>
+</div>
+
+<!-- ========== ENGLISH TRACKER ========== -->
+<div class="page" id="page-english">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">🇬🇧</span>ENGLISH MISSION</div>
+    <button class="add-btn" onclick="openWordModal()">+ WORD</button>
+  </div>
+  <div class="card">
+    <div class="card-title">DAILY VOCABULARY LOG</div>
+    <div id="wordList"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ENGLISH PROGRESS</div>
+    <div class="stats-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="stat-card"><div class="stat-n" id="wordCount">0</div><div class="stat-l">WORDS LEARNED</div></div>
+      <div class="stat-card amber"><div class="stat-n amber" id="weekWordCount">0</div><div class="stat-l">THIS WEEK</div></div>
+      <div class="stat-card blue"><div class="stat-n blue">B2</div><div class="stat-l">TARGET LEVEL</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS ========== -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <div class="page-title"><span class="page-title-icon">⚙</span>SETTINGS</div>
+  </div>
+  <div class="card">
+    <div class="card-title">COMMANDER INFO</div>
+    <div class="form-row">
+      <label class="form-label">APNA NAAM</label>
+      <input class="form-input" id="settName" placeholder="e.g., Rahul Singh" onchange="saveSetting('name',this.value)">
+    </div>
+    <div class="form-row">
+      <label class="form-label">MISSION START DATE</label>
+      <input class="form-input" id="settStart" type="date" onchange="saveSetting('startDate',this.value)">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">NOTIFICATIONS</div>
+    <div class="setting-row">
+      <div><div class="setting-label">Task Switch Alert</div><div class="setting-sub">Nayi task ke waqt notification</div></div>
+      <div class="toggle" id="notifToggle" onclick="toggleNotif()"><div class="toggle-k"></div></div>
+    </div>
+    <div class="setting-row">
+      <div><div class="setting-label">Sleep Reminder (22:00)</div><div class="setting-sub">Sone ka time reminder</div></div>
+      <div class="toggle" id="sleepToggle" onclick="toggleSleep()"><div class="toggle-k"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">ACCENT COLOR</div>
+    <div class="color-chips" id="colorChips">
+      <div class="chip selected" style="background:#4fc14a" data-c="#4fc14a" onclick="setAccent('#4fc14a')"></div>
+      <div class="chip" style="background:#4a9ebe" data-c="#4a9ebe" onclick="setAccent('#4a9ebe')"></div>
+      <div class="chip" style="background:#c8a84b" data-c="#c8a84b" onclick="setAccent('#c8a84b')"></div>
+      <div class="chip" style="background:#d9534f" data-c="#d9534f" onclick="setAccent('#d9534f')"></div>
+      <div class="chip" style="background:#9b72be" data-c="#9b72be" onclick="setAccent('#9b72be')"></div>
+      <div class="chip" style="background:#e07878" data-c="#e07878" onclick="setAccent('#e07878')"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">DATA MANAGEMENT</div>
+    <div class="flex gap-8" style="flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="exportData()">💾 Export JSON</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">📂 Import JSON</button>
+      <button class="btn btn-danger" onclick="confirmReset()">🗑 Reset All</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">INSTALL AS APP</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px">
+      <b style="color:var(--text)">Android/Chrome:</b> Browser menu (⋮) → "Add to Home Screen" → Install<br>
+      <b style="color:var(--text)">iPhone/Safari:</b> Share button (□↑) → "Add to Home Screen" → Add<br>
+      <b style="color:var(--text)">Desktop:</b> Address bar mein install icon press karo
+    </div>
+    <button class="btn btn-primary" id="installBtn" onclick="installApp()" style="display:none">📲 Install App Now</button>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)" id="installNote">Ek baar install karne ke baad 100% offline chalta hai</div>
+  </div>
+</div>
+
+</main>
+</div><!-- /layout -->
+
+<!-- BOTTOM NAV (Mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bnav-item active" onclick="nav('dashboard',null,'dash')" data-bnav="dash">
+    <span class="bnav-icon">🏠</span><span class="bnav-label">HOME</span>
+  </button>
+  <button class="bnav-item" onclick="nav('schedule',null,'sched')" data-bnav="sched">
+    <span class="bnav-icon">📋</span><span class="bnav-label">SCHEDULE</span>
+  </button>
+  <button class="bnav-item" onclick="nav('timer',null,'timer')" data-bnav="timer">
+    <span class="bnav-icon">⏱</span><span class="bnav-label">TIMER</span>
+  </button>
+  <button class="bnav-item" onclick="nav('habits',null,'hab')" data-bnav="hab">
+    <span class="bnav-icon">✅</span><span class="bnav-label">HABITS</span>
+  </button>
+  <button class="bnav-item" onclick="nav('goals',null,'goal')" data-bnav="goal">
+    <span class="bnav-icon">🎯</span><span class="bnav-label">GOALS</span>
+  </button>
+</nav>
+
+<!-- ===== MODALS ===== -->
+
+<!-- SLOT MODAL -->
+<div class="overlay" id="slotModal">
+  <div class="modal">
+    <div class="modal-title" id="slotModalTitle">ADD TIME SLOT</div>
+    <div class="form-row"><label class="form-label">TASK TITLE</label>
+      <input class="form-input" id="slotTitle" placeholder="e.g., Digital Marketing Session 1"></div>
+    <div class="form-row"><label class="form-label">DESCRIPTION</label>
+      <input class="form-input" id="slotSub" placeholder="e.g., Client campaigns, content creation"></div>
+    <div class="form-row form-row-2">
+      <div><label class="form-label">START TIME</label><input class="form-input" id="slotStart" type="time"></div>
+      <div><label class="form-label">END TIME</label><input class="form-input" id="slotEnd" type="time"></div>
+    </div>
+    <div class="form-row"><label class="form-label">CATEGORY</label>
+      <select class="form-input" id="slotCat">
+        <option value="study">📘 Study (Maths/English/CA)</option>
+        <option value="work">💰 Work / Digital Marketing</option>
+        <option value="tech">⚡ Technology R&D</option>
+        <option value="health">🏃 Health / Evening Walk</option>
+        <option value="rest">😮 Rest / Meal Break</option>
+        <option value="wake">🌅 Morning Routine</option>
+        <option value="sleep">😴 Sleep</option>
+      </select></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('slotModal')">CANCEL</button>
+      <button class="btn btn-danger" id="slotDeleteBtn" onclick="deleteSlot()" style="display:none">DELETE</button>
+      <button class="btn btn-primary" onclick="saveSlot()">SAVE SLOT</button>
+    </div>
+  </div>
+</div>
+
+<!-- HABIT MODAL -->
+<div class="overlay" id="habitModal">
+  <div class="modal">
+    <div class="modal-title" id="habitModalTitle">ADD DAILY HABIT</div>
+    <div class="form-row"><label class="form-label">HABIT</label>
+      <input class="form-input" id="habitInput" placeholder="e.g., 04:00 AM pe exact uthna"></div>
+    <div class="form-row"><label class="form-label">CATEGORY</label>
+      <select class="form-input" id="habitCat">
+        <option value="study">📘 Study</option>
+        <option value="work">💰 Work</option>
+        <option value="tech">⚡ Tech</option>
+        <option value="health">🏃 Health</option>
+        <option value="personal">🧠 Personal</option>
+      </select></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('habitModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveHabit()">ADD HABIT</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOAL MODAL (Big Goals) -->
+<div class="overlay" id="goalModal">
+  <div class="modal">
+    <div class="modal-title">ADD BIG GOAL</div>
+    <div class="form-row"><label class="form-label">GOAL</label>
+      <input class="form-input" id="goalInput" placeholder="e.g., UPSC CSE Mains clear karna"></div>
+    <div class="form-row"><label class="form-label">TIMELINE</label>
+      <input class="form-input" id="goalTime" placeholder="e.g., 2026 tak"></div>
+    <div class="form-row"><label class="form-label">PRIORITY</label>
+      <select class="form-input" id="goalPriority">
+        <option value="critical">🔴 CRITICAL</option>
+        <option value="high">🟠 HIGH</option>
+        <option value="medium">🟡 MEDIUM</option>
+      </select></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('goalModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveGoal()">ADD GOAL</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY GOAL MODAL -->
+<div class="overlay" id="weekGoalModal">
+  <div class="modal">
+    <div class="modal-title">ADD WEEKLY GOAL</div>
+    <div class="form-row"><label class="form-label">GOAL</label>
+      <input class="form-input" id="weekGoalInput" placeholder="e.g., Maths ke 5 topics complete"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('weekGoalModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveWeekGoal()">ADD</button>
+    </div>
+  </div>
+</div>
+
+<!-- RULE MODAL -->
+<div class="overlay" id="ruleModal">
+  <div class="modal">
+    <div class="modal-title">ADD IRON RULE</div>
+    <div class="form-row"><label class="form-label">RULE (ZERO EXCEPTION)</label>
+      <input class="form-input" id="ruleInput" placeholder="e.g., 22:00 ke baad phone strictly band"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('ruleModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveRule()">ADD RULE</button>
+    </div>
+  </div>
+</div>
+
+<!-- WORD MODAL -->
+<div class="overlay" id="wordModal">
+  <div class="modal">
+    <div class="modal-title">ADD ENGLISH WORD</div>
+    <div class="form-row"><label class="form-label">WORD</label>
+      <input class="form-input" id="wordInput" placeholder="e.g., Perseverance"></div>
+    <div class="form-row"><label class="form-label">MEANING (Hindi)</label>
+      <input class="form-input" id="meaningInput" placeholder="e.g., Dridh nishchay, lagaatar koshish"></div>
+    <div class="form-row"><label class="form-label">EXAMPLE SENTENCE</label>
+      <input class="form-input" id="exampleInput" placeholder="e.g., His perseverance paid off."></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('wordModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveWord()">SAVE WORD</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE MODAL -->
+<div class="overlay" id="phaseModal">
+  <div class="modal">
+    <div class="modal-title">ADD MONTHLY PHASE</div>
+    <div class="form-row"><label class="form-label">PHASE NAME</label>
+      <input class="form-input" id="phaseName" placeholder="e.g., Phase 1 — Foundation"></div>
+    <div class="form-row"><label class="form-label">PERIOD</label>
+      <input class="form-input" id="phasePeriod" placeholder="e.g., Week 1-2"></div>
+    <div class="form-row"><label class="form-label">GOALS (ek ek line mein)</label>
+      <textarea class="form-input" id="phaseGoals" placeholder="SSC syllabus review&#10;Marketing client search&#10;Tech project start"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('phaseModal')">CANCEL</button>
+      <button class="btn btn-primary" onclick="savePhase()">SAVE PHASE</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+'use strict';
+
+// ===== QUOTES =====
+const QUOTES = [
+  '"Koi shortcut nahi hai duniya ke sabse amir aadmi banne ka — sirf discipline aur execution."',
+  '"Har second ek decision hai: kya main apne goal ke liye kaam kar raha hun ya nahi?"',
+  '"SSC CGL, UPSC CSE, Business Empire — ek baar commitment ki, ab karne se koi rok nahi sakta."',
+  '"Jo log 4 AM pe uthte hain, wahi log 40 saal baad upar se dekhte hain baaki sab ko."',
+  '"Paise kamana technology se hoga, lekin pehle apna dimag sharpen karo padhaai se."',
+  '"Digital marketing aaj ki income hai, tech aur exam kal ka future hai — dono pe dhyan do."',
+  '"Neend 6 ghante, kaam 18 ghante — yahi formula hai world-class banne ka."',
+  '"English sikhna weakness nahi hai — yeh ek weapon hai jo tumhare haath mein aane wala hai."',
+  '"Jab baaki log so rahe the, tab tumne pata padhte the — yaad rakhna yeh waqt."',
+  '"Business empire banane mein time lagega, lekin har roz ki mehnat compound hoti hai."',
+];
+
+// ===== DEFAULT DATA =====
+const DEF_SCHEDULE = [
+  {id:1,time:"04:00",endTime:"04:30",title:"Reveille — Morning Routine",sub:"Uthna, paani, freshen up, 5 min deep breathing",cat:"wake"},
+  {id:2,time:"04:30",endTime:"05:30",title:"Newspaper + Current Affairs",sub:"The Hindu / Indian Express, notes banana, UPSC relevance",cat:"study"},
+  {id:3,time:"05:30",endTime:"06:30",title:"English Mission",sub:"Grammar rules, vocabulary, reading aloud, writing practice",cat:"study"},
+  {id:4,time:"06:30",endTime:"08:00",title:"Mathematics Power Block",sub:"SSC CGL + UPSC level — Algebra, Quant, DI",cat:"study"},
+  {id:5,time:"08:00",endTime:"08:30",title:"Breakfast + Recovery",sub:"Nutrition break — screen-free meal time",cat:"rest"},
+  {id:6,time:"08:30",endTime:"12:30",title:"Digital Marketing — Morning Session",sub:"Client work, campaigns, content creation, ads management",cat:"work"},
+  {id:7,time:"12:30",endTime:"13:00",title:"Lunch + Short Rest",sub:"Khana + max 15 min rest — social media strictly NO",cat:"rest"},
+  {id:8,time:"13:00",endTime:"17:00",title:"Digital Marketing — Afternoon Session",sub:"Strategy, outreach, analytics, client scaling",cat:"work"},
+  {id:9,time:"17:00",endTime:"19:00",title:"Evening Walk — Mental Reset",sub:"Bahar walk — phone nahi, sochna + plan karna",cat:"health"},
+  {id:10,time:"19:00",endTime:"22:00",title:"Technology R&D Block",sub:"Research, learning, experiments, building products",cat:"tech"},
+  {id:11,time:"22:00",endTime:"04:00",title:"Lights Out — Sleep",sub:"22:00 pe phone band, 22:15 tak so jana — 6 hrs deep sleep",cat:"sleep"},
+];
+
+const DEF_HABITS = [
+  {id:1,text:"04:00 AM pe exact uthna",cat:"personal"},
+  {id:2,text:"2 glass paani piya (subah)",cat:"health"},
+  {id:3,text:"Newspaper padha + UPSC notes banaye",cat:"study"},
+  {id:4,text:"English practice ki — 1 ghanta",cat:"study"},
+  {id:5,text:"Maths problems solve kiye — 1.5 ghante",cat:"study"},
+  {id:6,text:"Digital marketing 8 ghante kaam kiya",cat:"work"},
+  {id:7,text:"Shaam ki walk ki (5-7 baje)",cat:"health"},
+  {id:8,text:"Tech R&D ki — 3 ghante",cat:"tech"},
+  {id:9,text:"22:00 pe phone band, 22:15 tak soye",cat:"personal"},
+  {id:10,text:"Social media 30 min se kam use kiya",cat:"personal"},
+];
+
+const DEF_BIG_GOALS = [
+  {id:1,text:"Duniya ka sabse amir aadmi banna",time:"Life Goal",priority:"critical",done:false},
+  {id:2,text:"SSC CGL clear karna",time:"2025-26",priority:"critical",done:false},
+  {id:3,text:"UPSC CSE clear karna",time:"2026-27",priority:"critical",done:false},
+  {id:4,text:"Digital Marketing Business scale karna",time:"2025",priority:"high",done:false},
+  {id:5,text:"English B2 level achieve karna",time:"6 months",priority:"high",done:false},
+  {id:6,text:"Technology product build karna",time:"1 year",priority:"high",done:false},
+];
+
+const DEF_WEEK_GOALS = [
+  {id:1,text:"Maths — 5 chapters complete karna",done:false},
+  {id:2,text:"English — 50 naye words seekhna",done:false},
+  {id:3,text:"Current Affairs — daily notes lena",done:false},
+  {id:4,text:"Marketing revenue 10% badhana",done:false},
+  {id:5,text:"Tech — 1 project/experiment complete",done:false},
+  {id:6,text:"Sunday full weekly review karna",done:false},
+];
+
+const DEF_RULES = [
+  "04:00 AM pe uthna — koi excuse nahi, kabhi nahi",
+  "22:00 ke baad phone strictly band — neend sacred hai",
+  "Social media max 30 min/day — strict",
+  "Kaam ke time pe koi distraction nahi — do not disturb",
+  "Ek baar commitment ki to nibhana hi hai — no backing out",
+  "Har roz newspaper padna compulsory hai",
+  "Daily maths aur English — skip nahi hoga kabhi",
+  "Paise kamana priority hai — digital marketing se nahi bhaagna",
+  "Technology seekhna investment hai — roz kuch naya",
+  "Apne goal ko hamesha yaad rakhna — duniya ka sabse amir aadmi",
+];
+
+const DEF_OATH = "\"Main apni commitment par kayam rahunga. SSC CGL, UPSC CSE nikaalna hai — nikaalna hi hai. Digital marketing se empire banaunga. Technology se duniya badal dunga. Yeh meri oath hai — aaj se forever.\"";
+
+const DEF_MONTHLY = [
+  {id:1,phase:"Phase 1 — FOUNDATION",period:"Week 1-2",color:"#4a9ebe",
+   goals:["English grammar basics complete","Maths — Number System, Algebra","News habit establish karna","Marketing 1 naya client lena","Tech — Python basics shuru karna","Daily routine 100% follow karna"]},
+  {id:2,phase:"Phase 2 — ACCELERATION",period:"Week 3-4",color:"#4fc14a",
+   goals:["Current Affairs — 30 days revise karna","SSC CGL mock test dena","Marketing revenue double karna","Tech project — first version launch","English speaking practice daily","SSC CGL full syllabus map karna"]},
+  {id:3,phase:"Phase 3 — DOMINANCE",period:"Month 2-3",color:"#c8a84b",
+   goals:["UPSC prelims preparation shuru","Marketing automation setup","Tech product beta launch","English — newspaper article likhna","SSC CGL — speed + accuracy test","Monthly review + next 3 month plan"]},
+];
+
+const DEF_WEEKLY = [
+  {day:"MON",focus:"Study Focus",items:"• Maths: 2 topics\n• English: vocab+grammar\n• CA: newspaper notes"},
+  {day:"TUE",focus:"Work Focus",items:"• Marketing: client outreach\n• New campaigns setup\n• Analytics review"},
+  {day:"WED",focus:"Tech Focus",items:"• R&D: new tool learn\n• Build / experiment\n• Document findings"},
+  {day:"THU",focus:"Study Focus",items:"• Maths: mock test\n• English: reading+writing\n• CA: weekly test"},
+  {day:"FRI",focus:"Work Focus",items:"• Marketing: scaling\n• Revenue review\n• Content creation"},
+  {day:"SAT",focus:"Tech+Study",items:"• Deep tech project\n• UPSC specific study\n• English practice"},
+  {day:"SUN",focus:"REVIEW DAY",items:"• Weekly review+plan\n• Notes consolidate\n• Next week prepare"},
+];
+
+// ===== STATE =====
+let S = {
+  schedule: [], habits: [], habitDone: {}, bigGoals: [], weekGoals: [],
+  rules: [], oath: DEF_OATH, monthly: [], weekly: DEF_WEEKLY,
+  notes: '', words: [], settings: {name:'', startDate:'', notif:false, sleep:false, accent:'#4fc14a'},
+  streakData: {}, editSlotId: null,
+};
+
+// ===== LOCALSTORAGE =====
+function save() { localStorage.setItem('cmdr_v3', JSON.stringify(S)); }
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('cmdr_v3') || 'null');
+    if (d) {
+      S.schedule = d.schedule || DEF_SCHEDULE;
+      S.habits = d.habits || DEF_HABITS;
+      S.habitDone = d.habitDone || {};
+      S.bigGoals = d.bigGoals || DEF_BIG_GOALS;
+      S.weekGoals = d.weekGoals || DEF_WEEK_GOALS;
+      S.rules = d.rules || DEF_RULES;
+      S.oath = d.oath || DEF_OATH;
+      S.monthly = d.monthly || DEF_MONTHLY;
+      S.weekly = d.weekly || DEF_WEEKLY;
+      S.notes = d.notes || '';
+      S.words = d.words || [];
+      S.settings = Object.assign({name:'',startDate:'',notif:false,sleep:false,accent:'#4fc14a'}, d.settings || {});
+      S.streakData = d.streakData || {};
+    } else {
+      S.schedule = [...DEF_SCHEDULE];
+      S.habits = DEF_HABITS.map(h => ({...h}));
+      S.habitDone = {};
+      S.bigGoals = DEF_BIG_GOALS.map(g => ({...g}));
+      S.weekGoals = DEF_WEEK_GOALS.map(g => ({...g}));
+      S.rules = [...DEF_RULES];
+      S.oath = DEF_OATH;
+      S.monthly = DEF_MONTHLY.map(p => ({...p, goals:[...p.goals]}));
+      S.weekly = DEF_WEEKLY.map(w => ({...w}));
+    }
+  } catch(e) {
+    S.schedule = [...DEF_SCHEDULE];
+    S.habits = DEF_HABITS.map(h => ({...h}));
+    S.bigGoals = DEF_BIG_GOALS.map(g => ({...g}));
+    S.weekGoals = DEF_WEEK_GOALS.map(g => ({...g}));
+    S.rules = [...DEF_RULES];
+    S.oath = DEF_OATH;
+    S.monthly = DEF_MONTHLY.map(p => ({...p, goals:[...p.goals]}));
+    S.weekly = DEF_WEEKLY.map(w => ({...w}));
+  }
+}
+
+// ===== TIME UTILS =====
+function pad(n) { return String(n).padStart(2,'0'); }
+function toMins(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+function getMins(now) { return now.getHours()*60+now.getMinutes(); }
+function dur(s, e) {
+  let sm = toMins(s), em = toMins(e);
+  if (em <= sm) em += 24*60;
+  const d = em - sm;
+  const h = Math.floor(d/60), m = d%60;
+  return h > 0 ? `${h}h ${m>0?m+'m':''}` : `${m}m`;
+}
+function durMins(s, e) {
+  let sm = toMins(s), em = toMins(e);
+  if (em <= sm) em += 24*60;
+  return em - sm;
+}
+function formatHMS(sec) {
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+function todayKey() {
+  const n = new Date();
+  return `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;
+}
+
+// ===== CLOCK =====
+let timerInterval = null, timerRunning = false;
+let pomoLeft = 25*60, pomoTimer = null, pomoPaused = false;
+
+function tick() {
+  const now = new Date();
+  const h = pad(now.getHours()), m = pad(now.getMinutes()), sec = pad(now.getSeconds());
+  document.getElementById('clock').textContent = `${h}:${m}:${sec}`;
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateStr').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  updateLiveMission(now);
+  updateDashboard(now);
+  updateTimerPage(now);
+  checkNotifs(now);
+}
+
+function getCurrentSlot(now) {
+  const cur = getMins(now);
+  for (const sl of S.schedule) {
+    let sm = toMins(sl.time), em = toMins(sl.endTime);
+    if (em <= sm) em += 24*60;
+    let c = cur;
+    if (em > 24*60 && c < sm) c += 24*60;
+    if (c >= sm && c < em) return sl;
+  }
+  return null;
+}
+
+function updateLiveMission(now) {
+  const sl = getCurrentSlot(now);
+  const el = document.getElementById('liveTitle');
+  if (el) el.textContent = sl ? sl.title : '— No Active Slot —';
+}
+
+// ===== DASHBOARD =====
+function updateDashboard(now) {
+  const cur = getMins(now);
+  const todayKey_ = todayKey();
+  const done_ = S.habitDone[todayKey_] || {};
+  const doneCnt = S.habits.filter(h => done_[h.id]).length;
+  const habPct = S.habits.length > 0 ? Math.round(doneCnt/S.habits.length*100) : 0;
+  const weekDone = S.weekGoals.filter(g => g.done).length;
+  const weekPct = S.weekGoals.length > 0 ? Math.round(weekDone/S.weekGoals.length*100) : 0;
+
+  setEl('dashHabitCount', `${doneCnt}/${S.habits.length}`);
+  setEl('dashGoalCount', `${weekDone}/${S.weekGoals.length}`);
+  setStyle('dashHabitProg', 'width', habPct+'%');
+  setStyle('dashGoalProg', 'width', weekPct+'%');
+
+  const sl = getCurrentSlot(now);
+  if (sl) {
+    let sm = toMins(sl.time), em = toMins(sl.endTime);
+    if (em <= sm) em += 24*60;
+    const elapsed = cur - sm < 0 ? cur + 24*60 - sm : cur - sm;
+    const total = em - sm;
+    const pct = Math.min(100, Math.round(elapsed/total*100));
+    const left = total - elapsed;
+    const lh = Math.floor(left/60), lm = left%60;
+    setEl('dashTimeLeft', lh > 0 ? `${lh}h${lm}m` : `${lm}m`);
+    setStyle('dashTaskProg', 'width', pct+'%');
+  } else {
+    setEl('dashTimeLeft', '—');
+    setStyle('dashTaskProg', 'width', '0%');
+  }
+
+  // Update nav badge
+  const remaining = S.habits.length - doneCnt;
+  const badge = document.getElementById('habitBadge');
+  if (badge) { badge.textContent = remaining; badge.style.display = remaining > 0 ? '' : 'none'; }
+
+  // Day count
+  if (S.settings.startDate) {
+    const start = new Date(S.settings.startDate);
+    const diff = Math.floor((now - start) / 86400000) + 1;
+    setEl('dayBadge', `DAY ${diff}`);
+  }
+
+  // Update name in sidebar
+  if (S.settings.name) {
+    const sn = document.getElementById('sidebarName');
+    if (sn) sn.textContent = '⚔ ' + S.settings.name.toUpperCase();
+  }
+
+  // Update dash timeline current slot
+  updateDashTimeline(now, cur);
+}
+
+function setEl(id, val) { const e = document.getElementById(id); if(e) e.textContent = val; }
+function setStyle(id, prop, val) { const e = document.getElementById(id); if(e) e.style[prop] = val; }
+
+function updateDashTimeline(now, cur) {
+  const tl = document.getElementById('dashTimeline');
+  if (!tl || tl.children.length === 0) renderDashTimeline();
+  else {
+    Array.from(tl.children).forEach((item, i) => {
+      if (!S.schedule[i]) return;
+      const sl = S.schedule[i];
+      let sm = toMins(sl.time), em = toMins(sl.endTime);
+      if (em <= sm) em += 24*60;
+      let c = cur;
+      if (em > 24*60 && c < sm) c += 24*60;
+      item.classList.remove('current','past');
+      if (c >= em) item.classList.add('past');
+      else if (c >= sm && c < em) item.classList.add('current');
+    });
+  }
+}
+
+function renderDashTimeline() {
+  const tl = document.getElementById('dashTimeline');
+  if (!tl) return;
+  const now = new Date(), cur = getMins(now);
+  tl.innerHTML = '';
+  S.schedule.forEach(sl => {
+    let sm = toMins(sl.time), em = toMins(sl.endTime);
+    if (em <= sm) em += 24*60;
+    let c = cur;
+    if (em > 24*60 && c < sm) c += 24*60;
+    const isPast = c >= em;
+    const isCur = c >= sm && c < em;
+    const div = document.createElement('div');
+    div.className = 'slot' + (isCur ? ' current' : '') + (isPast ? ' past' : '');
+    div.innerHTML = `<div class="slot-bar cat-${sl.cat}"></div>
+      <div class="slot-main">
+        <div class="slot-time">${sl.time} — ${sl.endTime}</div>
+        <div class="slot-title">${sl.title}</div>
+      </div>
+      <div class="slot-right"><div class="slot-dur">${dur(sl.time,sl.endTime)}</div></div>`;
     tl.appendChild(div);
   });
 }
 
-function buildGoals(){
-  const gl=document.getElementById('goalsList');
-  gl.innerHTML='';
-  GOALS.forEach(g=>{
-    const div=document.createElement('div');
-    div.className='goal-card';
-    div.innerHTML=`
-      <span class="goal-tag">${g.tag}</span>
-      <div class="goal-title">${g.title}</div>
-      <div class="goal-sub">${g.sub}</div>
-      <div style="font-size:11px;color:var(--army-muted);margin-bottom:4px;">PROGRESS: ${g.pct}%</div>
-      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${g.pct}%"></div></div>
-    `;
-    gl.appendChild(div);
-  });
-}
-
-function buildWeekly(){
-  const wg=document.getElementById('weekGrid');
-  wg.innerHTML='';
-  WEEKLY.forEach(w=>{
-    const div=document.createElement('div');
-    div.className='day-card';
-    div.innerHTML=`
-      <div class="day-name">${w.day}</div>
-      <div class="day-focus">${w.focus}</div>
-      <div class="day-items">${w.items.replace(/·/g,'<br>·')}</div>
-    `;
-    wg.appendChild(div);
-  });
-}
-
-function renderTasks(){
-  const list=document.getElementById('taskList');
-  if(!list) return;
-  list.innerHTML='';
-  if(tasks.length===0){
-    list.innerHTML='<div style="text-align:center;color:var(--army-muted);padding:20px;font-size:13px;">No tasks. Add your mission above.</div>';
-    return;
+// ===== TIMER PAGE =====
+function updateTimerPage(now) {
+  const cur = getMins(now);
+  const sl = getCurrentSlot(now);
+  if (sl) {
+    let sm = toMins(sl.time), em = toMins(sl.endTime);
+    if (em <= sm) em += 24*60;
+    const elapsed = cur - sm < 0 ? cur + 24*60 - sm : cur - sm;
+    const total = em - sm;
+    const pct = Math.min(100, Math.round(elapsed/total*100));
+    const left = total - elapsed;
+    setEl('timerTaskName', sl.title);
+    setEl('timerTaskSub', sl.sub);
+    setEl('timerDisplay', formatHMS(elapsed * 60 + now.getSeconds()));
+    setEl('timerSubText', 'ELAPSED IN CURRENT SLOT');
+    setStyle('timerProg', 'width', pct+'%');
+    const lh = Math.floor(left/60), lm = left%60;
+    setEl('timerEndText', `Ends at ${sl.endTime} — ${lh>0?lh+'h ':''} ${lm}m bacha`);
+  } else {
+    setEl('timerTaskName', 'Koi active slot nahi');
+    setEl('timerTaskSub', 'Schedule mein check karo');
+    setEl('timerDisplay', '00:00:00');
+    setEl('timerSubText', 'NO ACTIVE SLOT');
+    setStyle('timerProg', 'width', '0%');
+    setEl('timerEndText', '—');
   }
-  tasks.forEach((t,i)=>{
-    const div=document.createElement('div');
-    div.className='task-item';
-    div.innerHTML=`
-      <div class="task-check ${t.done?'done-check':''}" onclick="toggleTask(${i})">${t.done?'✓':''}</div>
-      <span class="task-text ${t.done?'done-text':''}">${t.text}</span>
-      <button class="del-btn" onclick="delTask(${i})">✕</button>
-    `;
+}
+
+// ===== POMODORO =====
+function startPomo() {
+  if (pomoTimer) { clearInterval(pomoTimer); pomoTimer = null; }
+  pomoLeft = parseInt(document.getElementById('pomoDur').value) * 60;
+  pomoPaused = false;
+  pomoTimer = setInterval(() => {
+    if (pomoPaused) return;
+    if (pomoLeft <= 0) {
+      clearInterval(pomoTimer); pomoTimer = null;
+      setEl('pomoDisplay', '00:00'); showToast('🔥 Pomodoro complete! Break lo.');
+      if (S.settings.notif && Notification.permission === 'granted')
+        new Notification('COMMANDER', {body: 'Pomodoro complete! Ek chhoti break lo.',icon:'⚔'});
+      return;
+    }
+    pomoLeft--;
+    updatePomoDisplay();
+  }, 1000);
+  updatePomoDisplay();
+}
+function pausePomo() { pomoPaused = !pomoPaused; showToast(pomoPaused ? '⏸ Paused' : '▶ Resumed'); }
+function stopPomo() {
+  if (pomoTimer) clearInterval(pomoTimer);
+  pomoTimer = null; pomoPaused = false;
+  pomoLeft = parseInt(document.getElementById('pomoDur').value) * 60;
+  updatePomoDisplay();
+}
+function setPomoMin(m) {
+  stopPomo();
+  document.getElementById('pomoDur').value = m;
+  pomoLeft = m * 60; updatePomoDisplay();
+}
+function updatePomoDisplay() {
+  setEl('pomoDisplay', `${pad(Math.floor(pomoLeft/60))}:${pad(pomoLeft%60)}`);
+}
+
+// ===== SCHEDULE PAGE =====
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  if (!list) return;
+  list.innerHTML = '';
+  S.schedule.forEach((sl, i) => {
+    const div = document.createElement('div');
+    div.className = 'slot';
+    div.innerHTML = `<div class="slot-bar cat-${sl.cat}"></div>
+      <div class="slot-main">
+        <div class="slot-time">${sl.time} — ${sl.endTime}</div>
+        <div class="slot-title">${sl.title}</div>
+        <div class="slot-sub">${sl.sub}</div>
+      </div>
+      <div class="slot-right">
+        <div class="slot-dur">${dur(sl.time,sl.endTime)}</div>
+        <div class="slot-actions">
+          <button class="icon-btn success" onclick="editSlot(${sl.id})" title="Edit">✏</button>
+          <button class="icon-btn danger" onclick="confirmDelSlot(${sl.id})" title="Delete">✕</button>
+        </div>
+      </div>`;
     list.appendChild(div);
   });
 }
 
-function addTask(){
-  const inp=document.getElementById('taskInput');
-  const text=inp.value.trim();
-  if(!text) return;
-  tasks.push({text,done:false});
-  localStorage.setItem('cmdr_tasks',JSON.stringify(tasks));
-  inp.value='';
-  renderTasks();
-}
-
-function toggleTask(i){
-  tasks[i].done=!tasks[i].done;
-  localStorage.setItem('cmdr_tasks',JSON.stringify(tasks));
-  renderTasks();
-}
-
-function delTask(i){
-  tasks.splice(i,1);
-  localStorage.setItem('cmdr_tasks',JSON.stringify(tasks));
-  renderTasks();
-}
-
-function formatTimer(sec){
-  return pad(Math.floor(sec/60))+':'+pad(sec%60);
-}
-
-function startTimer(){
-  if(timerRunning){
-    clearInterval(timerInterval);
-    timerRunning=false;
-    document.getElementById('startBtn').textContent='▶ START';
-    document.getElementById('startBtn').className='t-btn start-btn';
-    return;
+let editingSlotId = null;
+function openSlotModal(id) {
+  editingSlotId = id || null;
+  const title = document.getElementById('slotModalTitle');
+  const delBtn = document.getElementById('slotDeleteBtn');
+  if (id) {
+    const sl = S.schedule.find(s => s.id === id);
+    if (!sl) return;
+    title.textContent = 'EDIT TIME SLOT';
+    document.getElementById('slotTitle').value = sl.title;
+    document.getElementById('slotSub').value = sl.sub;
+    document.getElementById('slotStart').value = sl.time;
+    document.getElementById('slotEnd').value = sl.endTime;
+    document.getElementById('slotCat').value = sl.cat;
+    delBtn.style.display = '';
+  } else {
+    title.textContent = 'ADD TIME SLOT';
+    document.getElementById('slotTitle').value = '';
+    document.getElementById('slotSub').value = '';
+    document.getElementById('slotStart').value = '';
+    document.getElementById('slotEnd').value = '';
+    document.getElementById('slotCat').value = 'study';
+    delBtn.style.display = 'none';
   }
-  timerRunning=true;
-  document.getElementById('startBtn').textContent='⏸ PAUSE';
-  document.getElementById('startBtn').className='t-btn stop-btn';
-  timerInterval=setInterval(()=>{
-    timerSeconds--;
-    document.getElementById('timerDisplay').textContent=formatTimer(timerSeconds);
-    if(timerSeconds<=0){
-      clearInterval(timerInterval);
-      timerRunning=false;
-      document.getElementById('startBtn').textContent='▶ START';
-      document.getElementById('startBtn').className='t-btn start-btn';
-      document.getElementById('timerLabel').textContent=timerLabel+' — COMPLETE!';
-      document.getElementById('timerDisplay').style.color='var(--army-gold)';
+  openModal('slotModal');
+}
+function editSlot(id) { openSlotModal(id); }
+function saveSlot() {
+  const title = document.getElementById('slotTitle').value.trim();
+  const sub = document.getElementById('slotSub').value.trim();
+  const start = document.getElementById('slotStart').value;
+  const end = document.getElementById('slotEnd').value;
+  const cat = document.getElementById('slotCat').value;
+  if (!title || !start || !end) { showToast('⚠ Title aur time required hai!'); return; }
+  if (editingSlotId) {
+    const i = S.schedule.findIndex(s => s.id === editingSlotId);
+    if (i >= 0) S.schedule[i] = {id:editingSlotId,time:start,endTime:end,title,sub,cat};
+  } else {
+    const newId = Date.now();
+    S.schedule.push({id:newId,time:start,endTime:end,title,sub,cat});
+    S.schedule.sort((a,b) => toMins(a.time) - toMins(b.time));
+  }
+  save(); closeModal('slotModal'); renderSchedule(); renderDashTimeline(); showToast('✓ Slot saved!');
+}
+function confirmDelSlot(id) {
+  if (!confirm('Is slot ko delete karo?')) return;
+  S.schedule = S.schedule.filter(s => s.id !== id);
+  save(); closeModal('slotModal'); renderSchedule(); renderDashTimeline(); showToast('Slot deleted.');
+}
+function deleteSlot() { if (editingSlotId) confirmDelSlot(editingSlotId); }
+
+// ===== HABITS =====
+function renderHabits() {
+  const list = document.getElementById('habitList');
+  if (!list) return;
+  const tk = todayKey();
+  const done_ = S.habitDone[tk] || {};
+  const now = new Date();
+  const day = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  setEl('habitDate', `${day}, ${now.getDate()} ${months[now.getMonth()]}`);
+
+  if (S.habits.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3)">Koi habit nahi. Upar se add karo.</div>'; return; }
+
+  list.innerHTML = '';
+  S.habits.forEach(h => {
+    const isDone = !!done_[h.id];
+    const catColors = {study:'badge-blue',work:'badge-green',tech:'badge-amber',health:'badge-red',personal:'badge-purple'};
+    const div = document.createElement('div');
+    div.className = 'habit-item' + (isDone ? ' done' : '');
+    div.innerHTML = `<div class="habit-cb">${isDone ? '✓' : ''}</div>
+      <div class="habit-text">${h.text}</div>
+      <span class="habit-cat badge ${catColors[h.cat]||'badge-gray'}">${h.cat.toUpperCase()}</span>
+      <div class="ia">
+        <button class="icon-btn danger" onclick="deleteHabit(${h.id})" title="Delete">✕</button>
+      </div>`;
+    div.addEventListener('click', (e) => {
+      if (e.target.closest('.ia')) return;
+      toggleHabit(h.id);
+    });
+    list.appendChild(div);
+  });
+
+  // Streak
+  const doneCnt = S.habits.filter(h => done_[h.id]).length;
+  const pct = S.habits.length > 0 ? Math.round(doneCnt/S.habits.length*100) : 0;
+  setStyle('streakProg', 'width', pct+'%');
+  setEl('streakPct', pct + '%');
+
+  // Calc streak
+  let streak = 0, d = new Date();
+  while (true) {
+    const k = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const dd = S.streakData[k];
+    if (dd && dd >= 50) { streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  setEl('streakNum', streak);
+}
+
+function toggleHabit(id) {
+  const tk = todayKey();
+  if (!S.habitDone[tk]) S.habitDone[tk] = {};
+  S.habitDone[tk][id] = !S.habitDone[tk][id];
+  // Update streak data
+  const doneCnt = S.habits.filter(h => S.habitDone[tk][h.id]).length;
+  const pct = S.habits.length > 0 ? Math.round(doneCnt/S.habits.length*100) : 0;
+  S.streakData[tk] = pct;
+  save(); renderHabits();
+}
+
+function openHabitModal() {
+  document.getElementById('habitInput').value = '';
+  document.getElementById('habitCat').value = 'study';
+  openModal('habitModal');
+}
+function saveHabit() {
+  const text = document.getElementById('habitInput').value.trim();
+  const cat = document.getElementById('habitCat').value;
+  if (!text) { showToast('⚠ Habit text likhna zaroori hai!'); return; }
+  S.habits.push({id:Date.now(), text, cat});
+  save(); closeModal('habitModal'); renderHabits(); showToast('✓ Habit add ho gaya!');
+}
+function deleteHabit(id) {
+  if (!confirm('Habit delete karo?')) return;
+  S.habits = S.habits.filter(h => h.id !== id);
+  save(); renderHabits(); showToast('Habit deleted.');
+}
+function resetHabits() {
+  if (!confirm('Aaj ke saare habits reset karo?')) return;
+  const tk = todayKey();
+  S.habitDone[tk] = {};
+  save(); renderHabits(); showToast('Habits reset!');
+}
+
+// ===== GOALS =====
+function renderGoals() {
+  const big = document.getElementById('bigGoalsList');
+  const week = document.getElementById('weekGoalsList');
+  if (big) {
+    if (S.bigGoals.length === 0) { big.innerHTML = '<div class="text-center" style="color:var(--text3);padding:16px">Koi goal nahi.</div>'; }
+    else {
+      big.innerHTML = '';
+      S.bigGoals.forEach(g => {
+        const priColors = {critical:'badge-red',high:'badge-amber',medium:'badge-blue'};
+        const div = document.createElement('div');
+        div.className = 'goal-item' + (g.done ? ' done' : '');
+        div.innerHTML = `<div class="goal-cb">${g.done?'✓':''}</div>
+          <div class="goal-text">${g.text}</div>
+          <span class="goal-pri badge ${priColors[g.priority]||'badge-gray'}">${(g.priority||'').toUpperCase()}</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-left:6px;white-space:nowrap">${g.time||''}</span>
+          <button class="icon-btn danger" onclick="deleteBigGoal(${g.id})" style="margin-left:4px">✕</button>`;
+        div.querySelector('.goal-cb').addEventListener('click', () => toggleBigGoal(g.id));
+        big.appendChild(div);
+      });
     }
-  },1000);
+  }
+  if (week) {
+    if (S.weekGoals.length === 0) { week.innerHTML = '<div class="text-center" style="color:var(--text3);padding:16px">Koi weekly goal nahi.</div>'; }
+    else {
+      week.innerHTML = '';
+      S.weekGoals.forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'goal-item' + (g.done ? ' done' : '');
+        div.innerHTML = `<div class="goal-cb">${g.done?'✓':''}</div>
+          <div class="goal-text">${g.text}</div>
+          <button class="icon-btn danger" onclick="deleteWeekGoal(${g.id})">✕</button>`;
+        div.querySelector('.goal-cb').addEventListener('click', () => toggleWeekGoal(g.id));
+        week.appendChild(div);
+      });
+    }
+  }
 }
 
-function resetTimer(){
-  clearInterval(timerInterval);
-  timerRunning=false;
-  document.getElementById('startBtn').textContent='▶ START';
-  document.getElementById('startBtn').className='t-btn start-btn';
-  document.getElementById('timerDisplay').style.color='var(--army-accent)';
-  document.getElementById('timerDisplay').textContent=formatTimer(timerSeconds);
-  document.getElementById('timerLabel').textContent=timerLabel+' — READY';
+function openGoalModal() {
+  document.getElementById('goalInput').value = '';
+  document.getElementById('goalTime').value = '';
+  document.getElementById('goalPriority').value = 'critical';
+  openModal('goalModal');
+}
+function saveGoal() {
+  const text = document.getElementById('goalInput').value.trim();
+  if (!text) { showToast('⚠ Goal likhna zaroori hai!'); return; }
+  S.bigGoals.push({id:Date.now(),text,time:document.getElementById('goalTime').value,priority:document.getElementById('goalPriority').value,done:false});
+  save(); closeModal('goalModal'); renderGoals(); showToast('✓ Goal add!');
+}
+function toggleBigGoal(id) { const g = S.bigGoals.find(g=>g.id===id); if(g){g.done=!g.done;save();renderGoals();} }
+function deleteBigGoal(id) { if(!confirm('Goal delete karo?'))return; S.bigGoals=S.bigGoals.filter(g=>g.id!==id);save();renderGoals(); }
+function openWeekGoalModal() { document.getElementById('weekGoalInput').value=''; openModal('weekGoalModal'); }
+function saveWeekGoal() {
+  const text = document.getElementById('weekGoalInput').value.trim();
+  if(!text){showToast('⚠ Goal likhna zaroori!');return;}
+  S.weekGoals.push({id:Date.now(),text,done:false});
+  save();closeModal('weekGoalModal');renderGoals();showToast('✓ Weekly goal add!');
+}
+function toggleWeekGoal(id){const g=S.weekGoals.find(g=>g.id===id);if(g){g.done=!g.done;save();renderGoals();}}
+function deleteWeekGoal(id){if(!confirm('Delete?'))return;S.weekGoals=S.weekGoals.filter(g=>g.id!==id);save();renderGoals();}
+
+// ===== WEEKLY VIEW =====
+function renderWeekly() {
+  const el = document.getElementById('weeklyCards');
+  if (!el) return;
+  el.innerHTML = '';
+  S.weekly.forEach(w => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="flex justify-between items-center mb-8">
+      <div style="font-size:18px;font-weight:700;color:var(--accent);font-family:var(--font-mono)">${w.day}</div>
+      <span class="badge badge-amber">${w.focus}</span>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:2;white-space:pre-line">${w.items}</div>`;
+    el.appendChild(div);
+  });
 }
 
-function setTimer(mins, label){
-  clearInterval(timerInterval);
-  timerRunning=false;
-  timerSeconds=mins*60;
-  timerLabel=label;
-  document.getElementById('startBtn').textContent='▶ START';
-  document.getElementById('startBtn').className='t-btn start-btn';
-  document.getElementById('timerDisplay').style.color='var(--army-accent)';
-  document.getElementById('timerDisplay').textContent=formatTimer(timerSeconds);
-  document.getElementById('timerLabel').textContent=label+' — READY';
+// ===== MONTHLY =====
+function renderMonthly() {
+  const el = document.getElementById('monthlyContent');
+  if (!el) return;
+  const colors = ['var(--blue)','var(--accent)','var(--amber)','var(--purple)','var(--red)'];
+  el.innerHTML = '';
+  S.monthly.forEach((ph, i) => {
+    const c = ph.color || colors[i % colors.length];
+    const div = document.createElement('div');
+    div.className = 'phase-card';
+    div.style.borderColor = c;
+    div.innerHTML = `<div class="phase-head">
+        <div style="font-size:14px;font-weight:700;color:${c};letter-spacing:1px">${ph.phase}</div>
+        <div class="flex items-center gap-8">
+          <span class="badge" style="background:rgba(0,0,0,0.3);color:${c};border-color:${c}">${ph.period}</span>
+          <button class="icon-btn danger" onclick="deletePhase(${ph.id})">✕</button>
+        </div>
+      </div>
+      <div class="phase-body">${(ph.goals||[]).map(g=>`<div class="phase-li">${g}</div>`).join('')}</div>`;
+    el.appendChild(div);
+  });
 }
 
+function openPhaseModal() {
+  document.getElementById('phaseName').value='';
+  document.getElementById('phasePeriod').value='';
+  document.getElementById('phaseGoals').value='';
+  openModal('phaseModal');
+}
+function savePhase() {
+  const name = document.getElementById('phaseName').value.trim();
+  if(!name){showToast('⚠ Phase naam likhna zaroori!');return;}
+  const goals = document.getElementById('phaseGoals').value.split('\n').map(g=>g.trim()).filter(Boolean);
+  S.monthly.push({id:Date.now(),phase:name,period:document.getElementById('phasePeriod').value,color:'#4fc14a',goals});
+  save();closeModal('phaseModal');renderMonthly();showToast('✓ Phase add!');
+}
+function deletePhase(id){if(!confirm('Phase delete karo?'))return;S.monthly=S.monthly.filter(p=>p.id!==id);save();renderMonthly();}
+
+// ===== RULES =====
+function renderRules() {
+  const el = document.getElementById('rulesList');
+  if (!el) return;
+  setEl('oathBox', S.oath);
+  if (S.rules.length === 0) { el.innerHTML='<div class="text-center" style="color:var(--text3);padding:16px">Koi rule nahi.</div>'; return; }
+  el.innerHTML = '';
+  S.rules.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'rule-item';
+    div.innerHTML = `<div class="rule-num">0${i+1}</div>
+      <div class="rule-text">${r}</div>
+      <button class="icon-btn danger" onclick="deleteRule(${i})">✕</button>`;
+    el.appendChild(div);
+  });
+}
+function openRuleModal(){document.getElementById('ruleInput').value='';openModal('ruleModal');}
+function saveRule(){
+  const t=document.getElementById('ruleInput').value.trim();
+  if(!t){showToast('⚠ Rule likhna zaroori!');return;}
+  S.rules.push(t);save();closeModal('ruleModal');renderRules();showToast('✓ Rule add!');
+}
+function deleteRule(i){if(!confirm('Rule delete karo?'))return;S.rules.splice(i,1);save();renderRules();}
+function editOath(){const v=prompt('Apni oath edit karo:',S.oath);if(v){S.oath=v;save();renderRules();}}
+
+// ===== NOTES =====
 function saveNotes(){
-  const n=document.getElementById('notesArea').value;
-  localStorage.setItem('cmdr_notes',n);
-  const msg=document.getElementById('saveMsg');
-  msg.textContent='✓ SAVED SUCCESSFULLY';
-  setTimeout(()=>msg.textContent='',2000);
+  S.notes=document.getElementById('notesArea').value;
+  save();setEl('saveMsg','✓ SAVED — '+new Date().toLocaleTimeString());
+  setTimeout(()=>setEl('saveMsg',''),3000);
 }
 
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  event.target.classList.add('active');
-  if(id==='tasks') renderTasks();
-  if(id==='notes') document.getElementById('notesArea').value=notes;
+// ===== ENGLISH TRACKER =====
+function renderWords(){
+  const list=document.getElementById('wordList');
+  if(!list)return;
+  setEl('wordCount',S.words.length);
+  const thisWeek = S.words.filter(w=>{
+    const d=new Date(w.date);
+    const now=new Date();
+    const diff=(now-d)/86400000;
+    return diff<=7;
+  }).length;
+  setEl('weekWordCount',thisWeek);
+  if(S.words.length===0){list.innerHTML='<div class="text-center" style="color:var(--text3);padding:20px">Koi word nahi. Ek nayi word seekho aur add karo!</div>';return;}
+  list.innerHTML='';
+  [...S.words].reverse().forEach(w=>{
+    const div=document.createElement('div');
+    div.className='habit-item';
+    div.style.cursor='default';
+    div.innerHTML=`<div style="flex:1">
+      <div style="font-size:15px;font-weight:700;color:var(--accent)">${w.word}</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:2px">${w.meaning}</div>
+      ${w.example?`<div style="font-size:11px;color:var(--text3);margin-top:3px;font-style:italic">"${w.example}"</div>`:''}
+    </div>
+    <div class="flex flex-col items-end gap-6">
+      <span class="badge badge-gray" style="font-size:9px">${new Date(w.date).toLocaleDateString('hi-IN')}</span>
+      <button class="icon-btn danger" onclick="deleteWord(${w.id})">✕</button>
+    </div>`;
+    list.appendChild(div);
+  });
+}
+function openWordModal(){
+  document.getElementById('wordInput').value='';
+  document.getElementById('meaningInput').value='';
+  document.getElementById('exampleInput').value='';
+  openModal('wordModal');
+}
+function saveWord(){
+  const word=document.getElementById('wordInput').value.trim();
+  const meaning=document.getElementById('meaningInput').value.trim();
+  if(!word||!meaning){showToast('⚠ Word aur meaning zaroori!');return;}
+  S.words.push({id:Date.now(),word,meaning,example:document.getElementById('exampleInput').value.trim(),date:new Date().toISOString()});
+  save();closeModal('wordModal');renderWords();showToast('✓ Word saved — great job!');
+}
+function deleteWord(id){S.words=S.words.filter(w=>w.id!==id);save();renderWords();}
+
+// ===== SETTINGS =====
+function renderSettings(){
+  const ni=document.getElementById('settName');
+  const si=document.getElementById('settStart');
+  if(ni)ni.value=S.settings.name||'';
+  if(si)si.value=S.settings.startDate||'';
+  const nT=document.getElementById('notifToggle'),sT=document.getElementById('sleepToggle');
+  if(nT)nT.classList.toggle('on',!!S.settings.notif);
+  if(sT)sT.classList.toggle('on',!!S.settings.sleep);
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('selected',c.dataset.c===S.settings.accent);
+  });
+}
+function saveSetting(k,v){S.settings[k]=v;save();}
+function toggleNotif(){
+  if(!S.settings.notif&&Notification&&Notification.permission!=='granted'){
+    Notification.requestPermission().then(p=>{if(p==='granted'){S.settings.notif=true;save();renderSettings();showToast('🔔 Notifications on!');}else{showToast('Permission denied.');}});
+  }else{S.settings.notif=!S.settings.notif;save();renderSettings();showToast(S.settings.notif?'🔔 On':'🔕 Off');}
+}
+function toggleSleep(){S.settings.sleep=!S.settings.sleep;save();renderSettings();showToast(S.settings.sleep?'😴 Sleep reminder on':'Sleep reminder off');}
+function setAccent(c){
+  S.settings.accent=c;save();
+  document.documentElement.style.setProperty('--accent',c);
+  renderSettings();showToast('✓ Color change ho gaya!');
+}
+function applyAccent(){
+  if(S.settings.accent) document.documentElement.style.setProperty('--accent',S.settings.accent);
+}
+function confirmReset(){
+  if(!confirm('SAB DATA DELETE HO JAYEGA! Are you sure?'))return;
+  if(!confirm('Last chance — sach mein sab reset karo?'))return;
+  localStorage.clear();location.reload();
 }
 
-// Quote rotation
-const qbox=document.getElementById('quoteBox');
+// ===== NOTIFICATIONS =====
+let lastNotifSlot = null;
+function checkNotifs(now){
+  if(!S.settings.notif||!Notification||Notification.permission!=='granted')return;
+  const sl=getCurrentSlot(now);
+  const slId=sl?sl.id:null;
+  if(slId!==lastNotifSlot){
+    lastNotifSlot=slId;
+    if(sl) new Notification('⚔ COMMANDER',{body:`Mission start: ${sl.title}`,silent:false});
+  }
+  if(S.settings.sleep){
+    const h=now.getHours(),m=now.getMinutes();
+    if(h===22&&m===0&&now.getSeconds()<5){
+      new Notification('⚔ COMMANDER — LIGHTS OUT',{body:'22:00 ho gaye! Phone band karo, sone ka waqt hai.',silent:false});
+    }
+  }
+}
+
+// ===== WEEK STRIP =====
+function renderWeekStrip(){
+  const el=document.getElementById('weekStrip');
+  if(!el)return;
+  const now=new Date();
+  const days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  el.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d=new Date(now);
+    d.setDate(now.getDate()-now.getDay()+i);
+    const isToday=d.getDate()===now.getDate()&&d.getMonth()===now.getMonth();
+    const div=document.createElement('div');
+    div.className='wday'+(isToday?' today':'');
+    div.innerHTML=`<div class="wday-name">${days[i]}</div><div class="wday-num">${d.getDate()}</div>`;
+    el.appendChild(div);
+  }
+}
+
+// ===== QUOTE ROTATION =====
 let qi=0;
-setInterval(()=>{qi=(qi+1)%QUOTES.length; qbox.textContent=QUOTES[qi];},8000);
+function rotateQuote(){
+  const el=document.getElementById('quoteBox');
+  if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{
+    qi=(qi+1)%QUOTES.length;
+    el.textContent=QUOTES[qi];
+    el.style.opacity='1';
+  },400);
+}
 
-buildTimeline();
-buildGoals();
-buildWeekly();
-renderTasks();
-updateClock();
-setInterval(updateClock,1000);
+// ===== EXPORT / IMPORT =====
+function exportData(){
+  const data={...S,exported:new Date().toISOString(),version:'3.0'};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`commander-backup-${todayKey()}.json`;
+  a.click();showToast('✓ Backup download ho gaya!');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.schedule)S.schedule=d.schedule;
+      if(d.habits)S.habits=d.habits;
+      if(d.habitDone)S.habitDone=d.habitDone;
+      if(d.bigGoals)S.bigGoals=d.bigGoals;
+      if(d.weekGoals)S.weekGoals=d.weekGoals;
+      if(d.rules)S.rules=d.rules;
+      if(d.oath)S.oath=d.oath;
+      if(d.monthly)S.monthly=d.monthly;
+      if(d.notes)S.notes=d.notes;
+      if(d.words)S.words=d.words;
+      if(d.settings)S.settings=Object.assign(S.settings,d.settings);
+      if(d.streakData)S.streakData=d.streakData;
+      save();applyAccent();
+      const ap=document.querySelector('.page.active');
+      if(ap)renderPage(ap.id.replace('page-',''));
+      showToast('✓ Data import ho gaya!');
+    }catch(err){showToast('⚠ File galat format mein hai!');}
+  };
+  r.readAsText(file);
+  e.target.value='';
+}
+
+// ===== PWA INSTALL =====
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  const btn=document.getElementById('installBtn');
+  if(btn)btn.style.display='';
+});
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.prompt().then(()=>{deferredPrompt=null;});}
+  else{showToast('Browser menu → Add to Home Screen');}
+}
+
+// ===== SERVICE WORKER =====
+if('serviceWorker' in navigator){
+  const sw=`
+self.addEventListener('install',e=>e.waitUntil(
+  caches.open('cmdr-v3').then(c=>c.addAll([location.pathname]))
+));
+self.addEventListener('fetch',e=>e.respondWith(
+  caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    const clone=res.clone();
+    caches.open('cmdr-v3').then(c=>c.put(e.request,clone));
+    return res;
+  }))
+));`;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+// ===== NAVIGATION =====
+function nav(page, el, bnavId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n=>{
+      if(n.dataset.page===page)n.classList.add('active');
+    });
+  }
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  if(bnavId) document.querySelectorAll(`.bnav-item[data-bnav="${bnavId}"]`).forEach(b=>b.classList.add('active'));
+  renderPage(page);
+  closeSidebar();
+}
+
+function renderPage(page){
+  if(page==='dashboard'){renderDashTimeline();renderWeekStrip();}
+  else if(page==='schedule')renderSchedule();
+  else if(page==='habits')renderHabits();
+  else if(page==='goals')renderGoals();
+  else if(page==='weekly')renderWeekly();
+  else if(page==='monthly')renderMonthly();
+  else if(page==='rules')renderRules();
+  else if(page==='notes'){const na=document.getElementById('notesArea');if(na)na.value=S.notes;}
+  else if(page==='english')renderWords();
+  else if(page==='settings')renderSettings();
+}
+
+// ===== SIDEBAR TOGGLE =====
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('backdrop').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('show');
+}
+
+// ===== MODAL UTILS =====
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ===== INIT =====
+load();
+applyAccent();
+renderWeekStrip();
+renderDashTimeline();
+tick();
+setInterval(tick, 1000);
+setInterval(renderWeekStrip, 60000);
+setInterval(rotateQuote, 8000);
+rotateQuote();
+
+// Initialize badge
+(function(){
+  const tk=todayKey();
+  const done_=S.habitDone[tk]||{};
+  const remaining=S.habits.filter(h=>!done_[h.id]).length;
+  const badge=document.getElementById('habitBadge');
+  if(badge){badge.textContent=remaining;badge.style.display=remaining>0?'':'none';}
+})();
+
+// Keyboard shortcut (press ? to go home)
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));closeSidebar();}
+});
 </script>
 </body>
 </html>
